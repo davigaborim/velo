@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velo — Marketing Digital</title>
+<meta name="description" content="A Velo cuida da presença digital do seu negócio de ponta a ponta: sites que vendem, Instagram que sustenta e anúncios que trazem cliente.">
+<meta name="theme-color" content="#0B2E58">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Velo — Marketing Digital">
+<meta property="og:description" content="Sites que vendem, Instagram que sustenta. A gente coloca sua marca na crista da onda.">
+<meta property="og:url" content="https://davigaborim.github.io/velo/">
+<meta property="og:image" content="https://davigaborim.github.io/velo/images/mascote-velo.png">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600;12..96,75..100,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- barbatana da logo, reaproveitada por <use> no cabeçalho, rodapé e no mar -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="fin-d" d="M533.476,236.687c-2.868,7.051 -2.735,7.078 -5.375,14.202c-0.665,1.961 -0.655,1.933 -1.298,3.891c-1.359,3.837 -2.415,7.758 -2.599,8.44c-3.18,11.537 -3.532,18.194 -3.641,19.496c-3.623,43.295 36.017,53.731 49.881,58.988c5.008,1.899 7.762,1.144 7.697,2.551c-0.009,0.203 -0.031,0.669 -2.504,0.371c-4.062,-0.489 -4.062,-0.534 -20.09,-0.603c-48.63,-0.212 -77.812,3.609 -79.697,3.72c-5.437,0.32 -13.757,1.381 -14.95,1.533c-25.435,3.245 -58.062,7.095 -106.945,20.127c-9.177,2.447 -14.059,4.936 -14.778,4.507c-1.249,-0.745 1.896,-1.879 3.943,-2.766c30.979,-13.432 64.457,-29.235 122.385,-42.217c30.078,-6.741 32.151,-4.523 32.165,-6.027c0.001,-0.136 0.113,-0.306 0.023,-0.408c-0.58,-0.66 -11.619,0.619 -19.922,0.779c-3.922,0.076 -3.866,0.583 -7.777,0.645c-3.888,0.062 -3.859,0.211 -7.746,0.551c-31.949,2.797 -54.523,8.594 -64.805,10.858c-7.779,1.713 -13.864,3.713 -15.642,4.162c-14.314,3.617 -47.841,15.9 -61.395,22.523c-0.295,0.144 -6.348,4.121 -2.16,-0.947c0.458,-0.555 9.23,-13.298 15.267,-21.771c1.5,-1.967 2.606,-3.615 4.362,-5.968c3.101,-4.587 24.04,-32.709 30.929,-40.966c9.379,-11.241 42.024,-52.761 85.208,-88.447c9.427,-7.79 24.633,-18.578 25.909,-19.409c9.427,-6.146 9.43,-6.112 10.244,-6.653c18.32,-12.197 60.696,-32.06 96.508,-37.364c1.273,-0.189 1.379,0.538 0.539,1.536c-0.547,0.65 -1.793,2.132 -6.188,8.631c-27.413,40.547 -39.616,67.759 -47.547,86.037l-0.001,0.001Z"/>
+  </defs>
+</svg>
+
+<!-- ============================ NAV ============================ -->
+<header class="topo" id="topo">
+  <div class="wrap topo__in">
+    <a class="marca" href="#topo" aria-label="Velo — início">
+      <svg class="marca__fin" viewBox="312 138 278 238" aria-hidden="true"><use href="#fin-d"/></svg>
+      <span class="marca__nome">Velo</span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Navegação principal">
+      <a href="#servicos">Serviços</a>
+      <a href="#trabalhos">Trabalhos</a>
+      <a href="#processo">Como funciona</a>
+      <a href="#planos">Planos</a>
+      <a href="#contato">Contato</a>
+    </nav>
+
+    <a class="btn btn--sm btn--primario topo__cta" href="#contato">Pedir orçamento</a>
+
+    <button class="hamburguer" id="hamburguer" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="conteudo">
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div class="hero__texto">
+      <p class="olho reveal">Sites <span>·</span> Redes sociais <span>·</span> Anúncios</p>
+
+      <h1 class="hero__h1 reveal" style="--d:1">
+        A gente coloca sua marca
+        <span class="grifo">na crista da onda<svg class="grifo__risco" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M2 12c25-11 50 5 75-2s50-9 75-1 50 9 73 0" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></span>
+      </h1>
+
+      <p class="hero__sub reveal" style="--d:2">
+        Presença digital completa para quem não tem tempo de cuidar disso.
+        Fazemos o site, tocamos o Instagram e mantemos tudo no ar — com uma
+        pessoa só pra você falar.
+      </p>
+
+      <div class="hero__acoes reveal" style="--d:3">
+        <a class="btn btn--primario btn--lg" href="#contato">
+          Quero um orçamento
+          <svg class="btn__seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--vazado btn--lg" href="#trabalhos">Ver trabalhos</a>
+      </div>
+
+      <ul class="selos reveal" style="--d:4">
+        <li><strong>2</strong> sites no ar</li>
+        <li><strong>24h</strong> pra responder</li>
+        <li><strong>0</strong> fidelidade</li>
+      </ul>
+    </div>
+
+    <div class="hero__mascote reveal" style="--d:2">
+      <div class="mascote__aura" aria-hidden="true"></div>
+      <img src="images/mascote-velo.png" alt="Mascote da Velo: um tubarão-leopardo de óculos e gravata-borboleta, sorrindo e apontando" width="650" height="800" fetchpriority="high">
+      <div class="balao" aria-hidden="true">Oi! Eu cuido do seu digital.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SERVIÇOS ============================ -->
+<section class="secao secao--espuma" id="servicos">
+  <div class="wrap">
+    <header class="cab">
+      <p class="rotulo reveal">O que a Velo faz</p>
+      <h2 class="reveal" style="--d:1">Não é só site.<br>É a sua marca inteira na internet.</h2>
+      <p class="cab__texto reveal" style="--d:2">Você escolhe o que precisa agora. A gente cresce junto depois.</p>
+    </header>
+
+    <ul class="cards">
+      <li class="card reveal">
+        <span class="card__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 8.5h19M5.6 6.3h.01M8 6.3h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <h3>Sites e landing pages</h3>
+        <p>Site rápido, bonito no celular e feito pra converter visita em contato. Institucional, catálogo ou página de campanha.</p>
+      </li>
+      <li class="card reveal" style="--d:1">
+        <span class="card__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.15" fill="currentColor"/></svg>
+        </span>
+        <h3>Instagram e redes</h3>
+        <p>Calendário, artes, legenda e postagem. Feed que parece de gente grande e stories que não somem da sua rotina.</p>
+      </li>
+      <li class="card reveal" style="--d:2">
+        <span class="card__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 20V9m5 11V4m5 16v-7m5 7V7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <h3>Anúncios que trazem cliente</h3>
+        <p>Campanhas no Meta e no Google com verba controlada, público certo e relatório que você entende sem tradutor.</p>
+      </li>
+      <li class="card reveal" style="--d:3">
+        <span class="card__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3.2 14.7 9l6.3.6-4.8 4.2 1.5 6.2L12 16.7 6.3 20l1.5-6.2L3 9.6 9.3 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Identidade visual</h3>
+        <p>Logo, paleta, tipografia e um manual curto pra sua marca falar a mesma língua em todo lugar.</p>
+      </li>
+      <li class="card reveal" style="--d:4">
+        <span class="card__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </span>
+        <h3>Google e busca local</h3>
+        <p>Perfil do Google Meu Negócio arrumado, avaliações organizadas e o básico de SEO pra aparecer em quem procura perto.</p>
+      </li>
+      <li class="card reveal" style="--d:5">
+        <span class="card__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20.8 4.2v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h3>Manutenção e suporte</h3>
+        <p>Texto novo, foto trocada, promoção do mês. Você manda no WhatsApp, a gente publica — sem abrir chamado.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================ TRABALHOS ============================ -->
+<section class="secao" id="trabalhos">
+  <div class="wrap">
+    <header class="cab">
+      <p class="rotulo reveal">No ar agora</p>
+      <h2 class="reveal" style="--d:1">Dois clientes, dois mundos<br>bem diferentes.</h2>
+      <p class="cab__texto reveal" style="--d:2">Cada marca ganhou a cara dela — não um tema trocado de cor.</p>
+    </header>
+
+    <div class="obras">
+      <article class="obra reveal">
+        <a class="obra__tela obra__tela--clinica" href="https://clinicacastellobrancocg.com.br" target="_blank" rel="noopener" aria-label="Abrir o site da Clínica Castello Branco em nova aba">
+          <span class="tela__barra" aria-hidden="true"><i></i><i></i><i></i><em>clinicacastellobrancocg.com.br</em></span>
+          <span class="tela__corpo" aria-hidden="true">
+            <span class="tela__nav"><b></b><s></s><s></s><s></s></span>
+            <span class="tela__hero"><b></b><i></i><i></i><u></u></span>
+            <span class="tela__linha"><i></i><i></i><i></i></span>
+          </span>
+        </a>
+        <div class="obra__info">
+          <p class="obra__tipo">Site institucional · Saúde</p>
+          <h3>Clínica Castello Branco</h3>
+          <p>Clínica de odontologia e ginecologia em Campo Grande. Site de várias páginas com equipe, especialidades, convênios e blog — numa paleta clara de pérola e ouro.</p>
+          <a class="link" href="https://clinicacastellobrancocg.com.br" target="_blank" rel="noopener">
+            Visitar site
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7m0 0H8m9 0v9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="obra reveal" style="--d:1">
+        <a class="obra__tela obra__tela--imob" href="https://tagliacolo-ni.com.br" target="_blank" rel="noopener" aria-label="Abrir o site da Tagliacolo Negócios Imobiliários em nova aba">
+          <span class="tela__barra" aria-hidden="true"><i></i><i></i><i></i><em>tagliacolo-ni.com.br</em></span>
+          <span class="tela__corpo" aria-hidden="true">
+            <span class="tela__nav"><b></b><s></s><s></s><s></s></span>
+            <span class="tela__busca"><i></i><u></u></span>
+            <span class="tela__grade"><i></i><i></i><i></i><i></i></span>
+          </span>
+        </a>
+        <div class="obra__info">
+          <p class="obra__tipo">Landing page + painel · Imobiliário</p>
+          <h3>Tagliacolo Negócios Imobiliários</h3>
+          <p>Vitrine de imóveis com busca por filtro e um painel onde o próprio corretor cadastra, fotografa e tira do ar sem depender da gente.</p>
+          <a class="link" href="https://tagliacolo-ni.com.br" target="_blank" rel="noopener">
+            Visitar site
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7m0 0H8m9 0v9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <p class="obras__nota reveal">O próximo trabalho aqui pode ser o seu. <a class="link" href="#contato">Falar com a Velo</a></p>
+  </div>
+</section>
+
+<!-- ============================ PROCESSO ============================ -->
+<section class="secao secao--fundo" id="processo">
+  <div class="wrap">
+    <header class="cab cab--claro">
+      <p class="rotulo reveal">Como funciona</p>
+      <h2 class="reveal" style="--d:1">Quatro etapas.<br>Você acompanha todas.</h2>
+    </header>
+
+    <ol class="rota">
+      <li class="rota__item reveal">
+        <span class="rota__num">01</span>
+        <h3>Conversa</h3>
+        <p>Uma call de 30 minutos pra entender o negócio, quem compra de você e o que já foi tentado antes.</p>
+      </li>
+      <li class="rota__item reveal" style="--d:1">
+        <span class="rota__num">02</span>
+        <h3>Proposta</h3>
+        <p>Escopo, prazo e preço fechado por escrito. Sem "a partir de" e sem surpresa no meio do caminho.</p>
+      </li>
+      <li class="rota__item reveal" style="--d:2">
+        <span class="rota__num">03</span>
+        <h3>Produção</h3>
+        <p>A gente monta, te mostra num link e ajusta com você. Rodadas de revisão combinadas desde o começo.</p>
+      </li>
+      <li class="rota__item reveal" style="--d:3">
+        <span class="rota__num">04</span>
+        <h3>No ar</h3>
+        <p>Publicamos, medimos e seguimos junto. Toda alteração depois disso continua sendo pelo WhatsApp.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================ PLANOS ============================ -->
+<section class="secao" id="planos">
+  <div class="wrap">
+    <header class="cab">
+      <p class="rotulo reveal">Planos</p>
+      <h2 class="reveal" style="--d:1">Escolha a profundidade.</h2>
+      <p class="cab__texto reveal" style="--d:2">Mensalidade sem fidelidade, com tudo combinado antes de começar. Se nenhum encaixar, a gente monta um sob medida.</p>
+    </header>
+
+    <div class="planos">
+      <article class="plano reveal">
+        <h3 class="plano__nome">Raso</h3>
+        <p class="plano__pitch">Pra quem só precisa existir direito na internet.</p>
+        <p class="plano__preco"><span class="plano__valor">Sob consulta</span></p>
+        <ul class="plano__lista">
+          <li>Site de uma página</li>
+          <li>Domínio e hospedagem configurados</li>
+          <li>Google Meu Negócio arrumado</li>
+          <li>Botão de WhatsApp</li>
+          <li>Uma alteração por mês</li>
+        </ul>
+        <a class="btn btn--vazado btn--bloco" href="#contato">Começar pelo Raso</a>
+      </article>
+
+      <article class="plano plano--destaque reveal" style="--d:1">
+        <span class="plano__fita">Mais escolhido</span>
+        <h3 class="plano__nome">Correnteza</h3>
+        <p class="plano__pitch">Site no ar e Instagram andando toda semana.</p>
+        <p class="plano__preco"><span class="plano__valor">Sob consulta</span></p>
+        <ul class="plano__lista">
+          <li>Tudo do Raso</li>
+          <li>Site de até 5 páginas</li>
+          <li>12 posts por mês, com artes</li>
+          <li>Stories e calendário do mês</li>
+          <li>Relatório mensal simples</li>
+          <li>Alterações ilimitadas no site</li>
+        </ul>
+        <a class="btn btn--primario btn--bloco" href="#contato">Quero o Correnteza</a>
+      </article>
+
+      <article class="plano reveal" style="--d:2">
+        <h3 class="plano__nome">Alto-mar</h3>
+        <p class="plano__pitch">Presença completa, com verba de anúncio rodando.</p>
+        <p class="plano__preco"><span class="plano__valor">Sob consulta</span></p>
+        <ul class="plano__lista">
+          <li>Tudo do Correnteza</li>
+          <li>Gestão de anúncios Meta e Google</li>
+          <li>Identidade visual completa</li>
+          <li>Sessão de fotos ou vídeo por trimestre</li>
+          <li>Reunião mensal de resultado</li>
+          <li>Atendimento prioritário</li>
+        </ul>
+        <a class="btn btn--vazado btn--bloco" href="#contato">Falar sobre o Alto-mar</a>
+      </article>
+    </div>
+
+    <p class="planos__nota reveal">Os valores saem na conversa, depois de entender o tamanho do seu negócio. Nada de pacote fechado que não serve.</p>
+  </div>
+</section>
+
+<!-- ============================ CTA / CONTATO ============================ -->
+<section class="secao chamada" id="contato">
+  <div class="wrap chamada__grid">
+    <div class="chamada__texto">
+      <h2 class="reveal">Bora tirar isso do papel?</h2>
+      <p class="reveal" style="--d:1">
+        Conta rapidinho o que você faz e o que precisa. A gente responde em até
+        24 horas com um caminho — mesmo que a resposta seja "isso você não
+        precisa contratar agora".
+      </p>
+      <div class="chamada__acoes reveal" style="--d:2">
+        <a class="btn btn--zap btn--lg" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20um%20or%C3%A7amento." target="_blank" rel="noopener">
+          <svg class="btn__zap" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6a11.4 11.4 0 0 1-4.4-4c-.3-.5-.7-1.2-.7-2s.4-1.2.6-1.4c.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .5.4l.7 1.7c.1.1.1.3 0 .4l-.2.4-.3.3c-.1.1-.2.2-.1.4.2.4.7 1.2 1.4 1.8.9.8 1.6 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3v.9Z"/></svg>
+          Chamar no WhatsApp
+        </a>
+        <a class="btn btn--fantasma btn--lg" href="mailto:contato@velo.com.br?subject=Or%C3%A7amento%20Velo">Mandar e-mail</a>
+      </div>
+      <p class="chamada__rodape reveal" style="--d:3">
+        Prefere Instagram? <a class="link link--claro" href="https://instagram.com/" target="_blank" rel="noopener">@velo</a>
+      </p>
+    </div>
+
+    <div class="chamada__mascote reveal" style="--d:1" aria-hidden="true">
+      <img src="images/mascote-velo.png" alt="" width="650" height="800" loading="lazy">
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================ RODAPÉ ============================ -->
+<footer class="rodape">
+  <div class="wrap rodape__in">
+    <div class="rodape__marca">
+      <a class="marca marca--rodape" href="#topo" aria-label="Velo — voltar ao topo">
+        <svg class="marca__fin" viewBox="312 138 278 238" aria-hidden="true"><use href="#fin-d"/></svg>
+        <span class="marca__nome">Velo</span>
+      </a>
+      <p>Marketing digital para negócios que precisam aparecer.</p>
+    </div>
+
+    <nav class="rodape__links" aria-label="Rodapé">
+      <div>
+        <h4>Site</h4>
+        <a href="#servicos">Serviços</a>
+        <a href="#trabalhos">Trabalhos</a>
+        <a href="#processo">Como funciona</a>
+        <a href="#planos">Planos</a>
+      </div>
+      <div>
+        <h4>Falar com a gente</h4>
+        <a href="https://wa.me/5567000000000" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:contato@velo.com.br">contato@velo.com.br</a>
+        <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </nav>
+  </div>
+  <div class="wrap rodape__fim">
+    <p>© <span id="ano">2026</span> Velo Marketing Digital</p>
+    <p>Feito por gente que também faz o seu.</p>
+  </div>
+</footer>
+
+<!-- ============================ O MAR ============================ -->
+<div class="mar" id="mar" aria-hidden="true">
+  <svg class="mar__svg" id="marSvg" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="gradFrente" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#5FB0E6"/>
+        <stop offset="100%" stop-color="#1F6FBF"/>
+      </linearGradient>
+    </defs>
+    <path id="ondaFundo"  fill="#B9DEF6" fill-opacity=".55"/>
+    <path id="ondaMeio"   fill="#8CCBF0" fill-opacity=".8"/>
+    <path id="ondaFrente" fill="url(#gradFrente)"/>
+    <path id="cristaFrente" fill="none" stroke="#0B2E58" stroke-width="3.5" stroke-linecap="round"/>
+    <g id="espuma" fill="#FFFFFF" opacity=".85"></g>
+    <g id="barbatana">
+      <path id="rastro" fill="#FFFFFF" opacity=".5"/>
+      <g id="finWrap"><use href="#fin-d" fill="#0B2E58"/></g>
+    </g>
+  </svg>
+</div>
+
+<script src="js/main.js" defer></script>
+</body>
+</html>
