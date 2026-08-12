@@ -610,3 +610,267 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   .reveal{ opacity:1; transform:none; }
   .grifo__risco path{ stroke-dashoffset:0; }
 }
+
+/* ==========================================================================
+   14. PÁGINA DE PLANOS
+   Os três blocos têm peso visual diferente de propósito: site é card branco
+   (obra, paga uma vez), mensalidade é faixa clara (o que sustenta o mês) e
+   mídia é card fundo (mar aberto, mensalidade cheia).
+   ========================================================================== */
+
+/* ---------- abertura ---------- */
+
+.pl-abre{ padding-top:clamp(96px,12vw,132px); padding-bottom:clamp(36px,5vw,56px); }
+.pl-abre__grid{
+  display:grid; grid-template-columns:1fr auto; gap:clamp(24px,4vw,56px); align-items:center;
+}
+.pl-abre__h1{ font-size:clamp(34px,5.6vw,60px); margin:14px 0 20px; max-width:15ch; }
+.pl-abre__texto{ color:var(--texto-fraco); font-size:17px; max-width:56ch; margin-bottom:14px; }
+.pl-abre__texto strong{ color:var(--texto); font-weight:600; }
+
+.pl-volta{ color:var(--rotulo); text-decoration:none; border-bottom:1px solid var(--borda); }
+.pl-volta:hover{ border-color:var(--rotulo); }
+
+.pl-abre__pulos{ display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+.pl-pulo{
+  display:inline-flex; align-items:baseline; gap:8px;
+  padding:9px 16px; border:1px solid var(--borda); border-radius:999px;
+  background:var(--branco); text-decoration:none; font-size:14.5px; font-weight:500;
+  transition:border-color .2s ease,transform .2s ease;
+}
+.pl-pulo span{ font-family:var(--mono); font-size:11px; color:var(--rotulo); }
+.pl-pulo:hover{ border-color:var(--abissal); transform:translateY(-2px); }
+
+.pl-abre__mascote{ width:clamp(180px,22vw,270px); justify-self:end; }
+.pl-abre__mascote img{ width:100%; filter:drop-shadow(0 18px 30px rgba(11,46,88,.18)); }
+
+@media (max-width:840px){
+  .pl-abre__grid{ grid-template-columns:1fr; }
+  .pl-abre__mascote{ display:none; }
+}
+
+.pl-secao{ padding-block:clamp(64px,8vw,104px); }
+
+/* ---------- o mascote apoiado nos cards ---------- */
+
+.planos--com-mascote{ position:relative; }
+.planos__mascote{
+  position:absolute; right:6px; bottom:100%; z-index:3;
+  width:clamp(150px,17vw,212px); margin-bottom:-10px;
+  pointer-events:none; user-select:none;
+  filter:drop-shadow(0 10px 18px rgba(11,46,88,.16));
+}
+@media (max-width:760px){ .planos__mascote{ display:none; } }
+
+/* ---------- preço ---------- */
+
+.plano__de{
+  display:block; font-family:var(--mono); font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--texto-fraco);
+  margin-bottom:4px;
+}
+.plano__antes{
+  display:block; font-size:14.5px; color:var(--texto-fraco);
+  text-decoration:line-through; text-decoration-thickness:1.5px; margin-bottom:2px;
+}
+.plano__periodo{ font-size:15px; color:var(--texto-fraco); margin-left:3px; }
+.plano__lista li.plano__herda{ color:var(--texto); font-weight:600; }
+
+/* ---------- upsell ---------- */
+
+.upsell{
+  display:grid; gap:12px; margin-top:14px; padding:16px 18px;
+  border-radius:var(--raio-sm); background:var(--espuma);
+  border:1px dashed var(--raso);
+  animation:upsell-entra .28s cubic-bezier(.22,1,.36,1) both;
+}
+.upsell[hidden]{ display:none; }          /* grid ignora [hidden] sozinho */
+
+@keyframes upsell-entra{
+  from{ opacity:0; transform:translateY(-6px); }
+  to{ opacity:1; transform:none; }
+}
+
+.upsell__linha{ font-size:14.5px; line-height:1.5; color:var(--texto); }
+.upsell__linha strong{ font-weight:650; }
+.upsell__linha b{
+  font-family:var(--display); font-weight:800; font-size:17px;
+  letter-spacing:-.02em; color:var(--abissal);
+}
+.upsell__acoes{ display:flex; flex-wrap:wrap; gap:8px; }
+.upsell__acoes .btn{ flex:1 1 auto; justify-content:center; }
+
+.upsell--claro{ background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.32); }
+.upsell--claro .upsell__linha{ color:rgba(255,255,255,.86); }
+.upsell--claro .upsell__linha b{ color:var(--sol); }
+
+/* ---------- o que muda o preço / fora da carta ---------- */
+
+.pl-extras{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));
+  gap:18px; margin-top:34px;
+}
+.pl-extras__bloco{
+  background:var(--branco); border:1px solid var(--borda);
+  border-radius:var(--raio); padding:24px 26px;
+}
+.pl-extras__bloco h3{ font-size:19px; margin-bottom:14px; }
+.pl-extras__bloco p{ font-size:15px; color:var(--texto-fraco); margin-bottom:12px; }
+.pl-extras__bloco ul{ display:grid; gap:12px; }
+.pl-extras__bloco li{
+  display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
+  gap:8px 14px; font-size:15px; color:var(--texto-fraco);
+  padding-bottom:12px; border-bottom:1px solid var(--borda);
+}
+.pl-extras__bloco li:last-child{ padding-bottom:0; border-bottom:0; }
+.pl-extras__bloco li em{ font-style:normal; color:var(--rotulo); }
+.pl-extras__bloco li b{
+  font-family:var(--mono); font-size:15px; color:var(--texto); white-space:nowrap;
+}
+.pl-extras__bloco li b small{ font-size:12px; color:var(--texto-fraco); }
+
+/* ---------- mensalidade ---------- */
+
+.mens{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(min(258px,100%),1fr));
+  gap:16px; align-items:stretch;
+}
+.mens__card{
+  display:flex; flex-direction:column;
+  background:var(--branco); border:1px solid var(--borda);
+  border-radius:var(--raio); padding:24px 24px 26px;
+  transition:transform .3s cubic-bezier(.34,1.3,.64,1),box-shadow .3s ease;
+}
+.mens__card:hover{ transform:translateY(-3px); box-shadow:var(--sombra); }
+.mens__card--destaque{ border:2px solid var(--abissal); box-shadow:var(--sombra); }
+
+.mens__topo{
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid var(--borda);
+}
+.mens__topo h3{ font-size:21px; }
+.mens__preco{ white-space:nowrap; }
+.mens__valor{
+  font-family:var(--display); font-size:27px; font-weight:800; letter-spacing:-.03em;
+}
+.mens__preco small{ font-size:13px; color:var(--texto-fraco); }
+
+.mens__card ul{ display:grid; gap:10px; margin-bottom:22px; font-size:14.5px; }
+.mens__card ul li{ position:relative; padding-left:24px; color:var(--texto-fraco); }
+.mens__card ul li::before{
+  content:""; position:absolute; left:0; top:.45em; width:15px; height:8px;
+  border-left:2.5px solid var(--mare); border-bottom:2.5px solid var(--mare);
+  border-radius:0 0 0 3px; transform:rotate(-45deg) scale(.72); transform-origin:left center;
+}
+.mens__card ul li.plano__herda{ color:var(--texto); font-weight:600; }
+.mens__card--destaque ul li::before{ border-color:var(--sol); }
+.mens__card .btn--bloco{ margin-top:auto; }
+
+/* ---------- promoção e relógio ---------- */
+
+.promo{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:18px 28px; margin-bottom:30px; padding:20px 24px;
+  border-radius:var(--raio); border:1px solid rgba(255,194,75,.42);
+  background:linear-gradient(100deg,rgba(255,194,75,.16),rgba(255,194,75,.05));
+}
+.promo[hidden]{ display:none; }
+
+.promo__selo{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--sol); margin-bottom:6px;
+}
+.promo__frase{ font-size:16.5px; color:rgba(255,255,255,.88); max-width:44ch; }
+.promo__frase strong{ color:var(--sol); font-weight:600; }
+
+.promo__relogio{ display:flex; gap:8px; }
+.promo__relogio > div{
+  min-width:58px; padding:9px 8px 7px; text-align:center;
+  border-radius:var(--raio-sm); background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+}
+.promo__relogio b{
+  display:block; font-family:var(--mono); font-size:21px; font-weight:500;
+  font-variant-numeric:tabular-nums; color:#fff; line-height:1.2;
+}
+.promo__relogio span{
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:rgba(255,255,255,.55);
+}
+
+/* ---------- cards de mídia: o mar por trás ---------- */
+
+/* sem overflow:hidden aqui — ele cortaria a fita "Mais escolhido", que fica
+   pendurada pra fora do card. Quem arredonda a foto é o border-radius:inherit. */
+.plano--mar{
+  position:relative; isolation:isolate;
+  background:var(--profundo); border:1px solid rgba(255,255,255,.16); color:#fff;
+}
+.plano--mar::before{
+  content:""; position:absolute; inset:0; z-index:-2; border-radius:inherit;
+  background-image:var(--foto); background-size:cover; background-position:center;
+}
+.plano--mar::after{
+  content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit;
+  background:linear-gradient(180deg,rgba(11,46,88,.62) 0%,rgba(11,46,88,.9) 58%,rgba(11,46,88,.97) 100%);
+  transition:opacity .5s ease;
+}
+.plano--mar:hover::after{ opacity:.87; }   /* a água clareia de leve */
+
+.plano--mar[data-fundo="raso"]{ --foto:url(../images/fundo-raso.jpg); }
+.plano--mar[data-fundo="correnteza"]{ --foto:url(../images/fundo-correnteza.jpg); }
+.plano--mar[data-fundo="alto-mar"]{ --foto:url(../images/fundo-alto-mar.jpg); }
+
+.plano--mar.plano--destaque{ border:2px solid var(--sol); }
+.plano--mar .plano__pitch{ color:rgba(255,255,255,.7); }
+.plano--mar .plano__preco{ border-bottom-color:rgba(255,255,255,.2); }
+.plano--mar .plano__antes{ color:rgba(255,255,255,.6); }
+.plano--mar .plano__periodo{ color:rgba(255,255,255,.66); }
+.plano--mar .plano__lista li{ color:rgba(255,255,255,.8); }
+.plano--mar .plano__lista li.plano__herda{ color:#fff; }
+.plano--mar:not(.plano--destaque) .plano__lista li::before{ border-color:var(--raso); }
+.plano--mar:hover{ box-shadow:0 24px 56px -12px rgba(0,0,0,.5); }
+
+.planos__nota--claro{ color:rgba(255,255,255,.66); }
+
+/* ---------- avulsos ---------- */
+
+.avulsos{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(min(390px,100%),1fr));
+  gap:0 40px;
+}
+.avulso{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:20px;
+  padding:20px 0; border-bottom:1px solid var(--borda);
+}
+.avulso h3{ font-size:17px; margin-bottom:5px; }
+.avulso p{ font-size:14.5px; color:var(--texto-fraco); max-width:46ch; }
+.avulso__preco{
+  font-family:var(--mono); font-size:17px; color:var(--texto);
+  white-space:nowrap; padding-top:2px;
+}
+.avulso__preco small{ font-size:12px; color:var(--texto-fraco); }
+
+/* ==========================================================================
+   15. PLANOS NA HOME — prévia com fadeout
+   ========================================================================== */
+
+/* o padding-top dá o espaço que a fita "Mais escolhido" precisa pra não ser
+   comida pelo overflow:hidden que faz o corte da prévia. */
+.planos--teaser{ position:relative; max-height:416px; padding-top:16px; overflow:hidden; }
+.planos--teaser::after{
+  content:""; position:absolute; inset:auto 0 0 0; height:210px; pointer-events:none;
+  background:linear-gradient(180deg,rgba(242,249,254,0) 0%,var(--bruma) 76%);
+}
+.planos__veja{
+  position:relative; z-index:2; display:flex; justify-content:center; margin-top:-46px;
+}
+@media (max-width:760px){
+  .planos--teaser{ max-height:368px; }
+  .planos--teaser::after{ height:170px; }
+}
+
+/* preços alinhados entre os cards: o pitch mais longo tem 3 linhas */
+@media (min-width:761px){
+  .plano__pitch{ min-height:4.35em; }
+}

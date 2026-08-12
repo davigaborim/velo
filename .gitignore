@@ -1,0 +1,5 @@
+# Originais que o cliente manda por WhatsApp. Ficam na pasta pra refazer
+# recorte se precisar, mas não vão pro repositório nem pro servidor —
+# o que o site usa são os arquivos tratados dentro de images/.
+WhatsApp Image *.jpeg
+WhatsApp Image *.jpg
