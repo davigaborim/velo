@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Planos e preços — Velo</title>
-<meta name="description" content="Site a partir de R$ 300 com mensalidade de R$ 80 que cobre hospedagem, alterações e suporte. Planos de mídia digital com 50% de desconto no lançamento.">
+<meta name="description" content="Criação do site a partir de R$ 300 no primeiro mês e manutenção a partir de R$ 80/mês, com hospedagem, alterações e suporte inclusos. Preços negociáveis. Criação e mídia digital com 50% de desconto no lançamento.">
 <meta name="theme-color" content="#0B2E58">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="favicon.svg">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Planos e preços — Velo">
-<meta property="og:description" content="Site a partir de R$ 300, mensalidade a partir de R$ 80. Mídia digital com 50% off no lançamento.">
+<meta property="og:description" content="Criação a partir de R$ 300 e manutenção a partir de R$ 80/mês, sem fidelidade e com preço negociável. 50% off no lançamento.">
 <meta property="og:url" content="https://davigaborim.github.io/velo/planos.html">
 <meta property="og:image" content="https://davigaborim.github.io/velo/images/mascote-novo.png">
 <meta property="og:locale" content="pt_BR">
@@ -63,21 +63,27 @@
   <div class="wrap pl-abre__grid">
     <div>
       <p class="rotulo reveal"><a class="pl-volta" href="index.html">Velo</a> · Planos e preços</p>
-      <h1 class="pl-abre__h1 reveal" style="--d:1">O site é barato de propósito.</h1>
+      <h1 class="pl-abre__h1 reveal" style="--d:1">Preço aberto, do começo ao fim.</h1>
       <p class="pl-abre__texto reveal" style="--d:2">
-        A gente cobra pouco pra construir e uma mensalidade pequena pra manter no ar —
-        hospedagem, alterações, atualizações e suporte inclusos. Assim você não gasta
-        de uma vez e não fica sozinho depois que o site sobe.
+        Um valor para construir o site, cobrado uma vez só no primeiro mês. E uma
+        mensalidade a partir do segundo, que mantém tudo no ar: hospedagem,
+        domínio, certificado de segurança, backup, alterações e suporte.
+        <strong>Os dois valores estão escritos em cada plano</strong> — nada aparece
+        depois que você já disse sim.
       </p>
       <p class="pl-abre__texto reveal" style="--d:3">
-        Divulgação é outra conversa, e fica em outra página deste mesmo lugar:
+        E nenhum deles é tabela fechada: são <strong>ponto de partida</strong>, negociáveis
+        conforme o tamanho do que você precisa. O número final sai da conversa, por escrito,
+        antes de começar.
+      </p>
+      <p class="pl-abre__texto reveal" style="--d:4">
+        Divulgação é outra conversa, e tem plano próprio mais abaixo:
         <strong>site é obra, mídia é rotina.</strong> Você contrata um, o outro, ou os dois.
       </p>
-      <div class="pl-abre__pulos reveal" style="--d:4">
+      <div class="pl-abre__pulos reveal" style="--d:5">
         <a class="pl-pulo" href="#sites"><span>01</span> Sites</a>
-        <a class="pl-pulo" href="#mensalidade"><span>02</span> Mensalidade</a>
-        <a class="pl-pulo" href="#midia"><span>03</span> Mídia digital</a>
-        <a class="pl-pulo" href="#avulsos"><span>04</span> Avulsos</a>
+        <a class="pl-pulo" href="#midia"><span>02</span> Mídia digital</a>
+        <a class="pl-pulo" href="#avulsos"><span>03</span> Avulsos</a>
       </div>
     </div>
 
@@ -92,96 +98,183 @@
   <div class="wrap">
     <header class="cab">
       <p class="rotulo reveal">01 · O barco</p>
-      <h2 class="reveal" style="--d:1">Sites, pagos uma vez só.</h2>
+      <h2 class="reveal" style="--d:1">Três planos, dois valores cada.</h2>
       <p class="cab__texto reveal" style="--d:2">
-        Os valores são o piso — sobem conforme o tamanho do que você precisa,
-        e a gente fecha isso na primeira conversa, antes de começar.
+        A criação é cobrada uma vez, no primeiro mês. A manutenção começa no
+        segundo e é a mensalidade daquele mesmo plano — elas andam juntas.
+        Todos os valores aqui são ponto de partida, não tabela fechada.
       </p>
     </header>
+
+    <div class="promo promo--claro reveal" id="promo-sites">
+      <div class="promo__texto">
+        <p class="promo__selo">Lançamento da Velo</p>
+        <p class="promo__frase"><strong>50% de desconto</strong> na criação de qualquer plano de site.</p>
+      </div>
+      <div class="promo__relogio" role="timer" aria-live="off">
+        <div><b data-rel="d">00</b><span>dias</span></div>
+        <div><b data-rel="h">00</b><span>horas</span></div>
+        <div><b data-rel="m">00</b><span>min</span></div>
+        <div><b data-rel="s">00</b><span>seg</span></div>
+      </div>
+    </div>
 
     <div class="planos planos--com-mascote">
       <img class="planos__mascote" src="images/mascote-apoiado.png" alt="" width="630" height="600" loading="lazy" aria-hidden="true">
 
-      <article class="plano reveal" data-plano="Bote">
-        <h3 class="plano__nome">Bote</h3>
+      <article class="plano plano--escuro plano--mar reveal" data-fundo="recife" data-plano="Recife">
+        <h3 class="plano__nome">Recife</h3>
         <p class="plano__pitch">Uma página só, feita pra converter. Pra quem precisa existir direito e ter pra onde mandar o cliente.</p>
-        <p class="plano__preco">
-          <span class="plano__de">a partir de</span>
-          <span class="plano__valor">R$ 300</span>
-        </p>
+        <div class="plano__duplo">
+          <p class="plano__linha">
+            <span class="plano__etapa">criação<br>1º mês</span>
+            <span class="plano__cifra">
+              <span class="plano__antes">de R$ 600</span>
+              <span class="plano__valor">R$ 300</span>
+            </span>
+          </p>
+          <p class="plano__linha">
+            <span class="plano__etapa">manutenção<br>do 2º mês</span>
+            <span class="plano__cifra">
+              <span class="plano__de">a partir de</span>
+              <span class="plano__valor plano__valor--menor">R$ 80<small class="plano__periodo">/mês</small></span>
+            </span>
+          </p>
+        </div>
         <ul class="plano__lista">
           <li>Página única, com seções de rolagem</li>
           <li>Domínio, hospedagem e SSL configurados</li>
           <li>Botão de WhatsApp e formulário</li>
           <li>Google Meu Negócio arrumado</li>
           <li>Rápido no celular e achável no Google</li>
+          <li class="plano__mens">Na manutenção: backup semanal, 1 alteração por mês e suporte em dia útil</li>
         </ul>
-        <button class="btn btn--vazado btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-bote">Tenho interesse</button>
-        <div class="upsell" id="up-bote" hidden>
-          <p class="upsell__linha">Por mais <strong>R$ 200</strong> você leva o <strong>Veleiro</strong> —<br>de R$ 550 por <b>R$ 500</b>.</p>
+        <button class="btn btn--fantasma btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-recife">Tenho interesse</button>
+        <div class="upsell upsell--claro" id="up-recife" hidden>
+          <p class="upsell__linha" data-fim="Por mais <strong>R$ 400</strong> na criação você sobe pro <strong>Alto mar</strong> — de R$ 1.100 por <b>R$ 1.000</b>.">Por mais <strong>R$ 200</strong> na criação você sobe pro <strong>Alto mar</strong> — de R$ 550 por <b>R$ 500</b>.</p>
           <div class="upsell__acoes">
-            <a class="btn btn--sm btn--primario" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Veleiro%20por%20R%24%20500." target="_blank" rel="noopener">Quero o Veleiro</a>
-            <a class="btn btn--sm btn--vazado" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Bote." target="_blank" rel="noopener">Fico no Bote</a>
+            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Alto%20mar%20por%20R%24%20500%20de%20cria%C3%A7%C3%A3o." target="_blank" rel="noopener">Quero o Alto mar</a>
+            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Recife." target="_blank" rel="noopener">Fico no Recife</a>
           </div>
         </div>
       </article>
 
-      <article class="plano plano--destaque reveal" style="--d:1" data-plano="Veleiro">
+      <article class="plano plano--escuro plano--mar plano--destaque reveal" style="--d:1" data-fundo="alto-mar" data-plano="Alto mar">
         <span class="plano__fita">Mais escolhido</span>
-        <h3 class="plano__nome">Veleiro</h3>
+        <h3 class="plano__nome">Alto mar</h3>
         <p class="plano__pitch">Site institucional de verdade, com páginas separadas pra serviço, equipe e contato.</p>
-        <p class="plano__preco">
-          <span class="plano__de">a partir de</span>
-          <span class="plano__valor">R$ 550</span>
-        </p>
+        <div class="plano__duplo">
+          <p class="plano__linha">
+            <span class="plano__etapa">criação<br>1º mês</span>
+            <span class="plano__cifra">
+              <span class="plano__antes">de R$ 1.100</span>
+              <span class="plano__valor">R$ 550</span>
+            </span>
+          </p>
+          <p class="plano__linha">
+            <span class="plano__etapa">manutenção<br>do 2º mês</span>
+            <span class="plano__cifra">
+              <span class="plano__de">a partir de</span>
+              <span class="plano__valor plano__valor--menor">R$ 150<small class="plano__periodo">/mês</small></span>
+            </span>
+          </p>
+        </div>
         <ul class="plano__lista">
-          <li class="plano__herda">Tudo do Bote</li>
+          <li class="plano__herda">Tudo do Recife</li>
           <li>Até 6 páginas internas</li>
           <li>Blog ou área de novidades</li>
           <li>Textos revisados junto com você</li>
           <li>2 rodadas de ajuste inclusas</li>
+          <li class="plano__mens">Na manutenção: backup diário, alterações livres, relatório de acessos e resposta em 24h</li>
         </ul>
-        <button class="btn btn--primario btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-veleiro">Tenho interesse</button>
-        <div class="upsell" id="up-veleiro" hidden>
-          <p class="upsell__linha">Por mais <strong>R$ 850</strong> você leva a <strong>Caravela</strong> —<br>de R$ 1.500 por <b>R$ 1.400</b>.</p>
+        <button class="btn btn--zap btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-altomar-site">Tenho interesse</button>
+        <div class="upsell upsell--claro" id="up-altomar-site" hidden>
+          <p class="upsell__linha" data-fim="Por mais <strong>R$ 1.700</strong> na criação você sobe pro <strong>Abissal</strong> — de R$ 3.000 por <b>R$ 2.800</b>.">Por mais <strong>R$ 850</strong> na criação você sobe pro <strong>Abissal</strong> — de R$ 1.500 por <b>R$ 1.400</b>.</p>
           <div class="upsell__acoes">
-            <a class="btn btn--sm btn--primario" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20a%20Caravela%20por%20R%24%201.400." target="_blank" rel="noopener">Quero a Caravela</a>
-            <a class="btn btn--sm btn--vazado" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Veleiro." target="_blank" rel="noopener">Fico no Veleiro</a>
+            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Abissal%20por%20R%24%201.400%20de%20cria%C3%A7%C3%A3o." target="_blank" rel="noopener">Quero o Abissal</a>
+            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Alto%20mar." target="_blank" rel="noopener">Fico no Alto mar</a>
           </div>
         </div>
       </article>
 
-      <article class="plano reveal" style="--d:2" data-plano="Caravela">
-        <h3 class="plano__nome">Caravela</h3>
+      <article class="plano plano--escuro plano--mar reveal" style="--d:2" data-fundo="abissal" data-plano="Abissal">
+        <h3 class="plano__nome">Abissal</h3>
         <p class="plano__pitch">Quando o site precisa fazer alguma coisa: catálogo, busca com filtro, área de login, integração.</p>
-        <p class="plano__preco">
-          <span class="plano__de">a partir de</span>
-          <span class="plano__valor">R$ 1.500</span>
-        </p>
+        <div class="plano__duplo">
+          <p class="plano__linha">
+            <span class="plano__etapa">criação<br>1º mês</span>
+            <span class="plano__cifra">
+              <span class="plano__antes">de R$ 3.000</span>
+              <span class="plano__valor">R$ 1.500</span>
+            </span>
+          </p>
+          <p class="plano__linha">
+            <span class="plano__etapa">manutenção<br>do 2º mês</span>
+            <span class="plano__cifra">
+              <span class="plano__de">a partir de</span>
+              <span class="plano__valor plano__valor--menor">R$ 300<small class="plano__periodo">/mês</small></span>
+            </span>
+          </p>
+        </div>
         <ul class="plano__lista">
-          <li class="plano__herda">Tudo do Veleiro</li>
+          <li class="plano__herda">Tudo do Alto mar</li>
           <li>Catálogo com busca e filtros</li>
           <li>Painel pra você mesmo editar</li>
           <li>Integrações: agendamento, pagamento, CRM</li>
           <li>Treinamento gravado e 30 dias de garantia</li>
+          <li class="plano__mens">Na manutenção: suporte VIP 24h, páginas novas sob demanda e ajustes de visual</li>
         </ul>
-        <button class="btn btn--vazado btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-caravela">Tenho interesse</button>
-        <div class="upsell" id="up-caravela" hidden>
-          <p class="upsell__linha">Fechando junto com o <strong>Estaleiro</strong>, os 3 primeiros meses de mensalidade saem por <b>R$ 150</b> em vez de R$ 300.</p>
+        <button class="btn btn--fantasma btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-abissal">Tenho interesse</button>
+        <div class="upsell upsell--claro" id="up-abissal" hidden>
+          <p class="upsell__linha">Pagando <strong>12 meses de manutenção</strong> de uma vez, um mês fica por nossa conta — <b>R$ 3.300</b> em vez de R$ 3.600.</p>
           <div class="upsell__acoes">
-            <a class="btn btn--sm btn--primario" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20a%20Caravela%20com%20o%20Estaleiro." target="_blank" rel="noopener">Quero os dois</a>
-            <a class="btn btn--sm btn--vazado" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20a%20Caravela." target="_blank" rel="noopener">Só a Caravela</a>
+            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Abissal%20com%20a%20manuten%C3%A7%C3%A3o%20anual." target="_blank" rel="noopener">Quero o anual</a>
+            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Abissal." target="_blank" rel="noopener">Prefiro mensal</a>
           </div>
         </div>
       </article>
+    </div>
+
+    <div class="pl-negocia reveal">
+      <span class="pl-negocia__icone" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-13 8l-5 1 1.4-4.2A9 9 0 1 1 21 12Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M8 10.5h8M8 14h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </span>
+      <div>
+        <h3>Nenhum preço daqui é fechado</h3>
+        <p>
+          Os valores acima são <strong>ponto de partida</strong>, não tabela. Eles sobem ou
+          descem conforme o tamanho do que você precisa, e o número final a gente combina
+          na conversa — por escrito e antes de qualquer coisa começar. Se o orçamento hoje
+          não cabe, fala: dá pra dividir, enxugar o escopo ou começar menor e crescer depois.
+          <strong>Perguntar não custa nada, e o diagnóstico também não.</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="pagto reveal">
+      <div class="pagto__item">
+        <span class="pagto__quando">1º mês</span>
+        <h3>Desenvolvimento</h3>
+        <p>Você investe o valor da <strong>criação do site</strong> — taxa única de setup — pra gente desenhar, montar e publicar sua página.</p>
+      </div>
+      <div class="pagto__item">
+        <span class="pagto__quando">a partir do 2º mês</span>
+        <h3>Manutenção e hospedagem</h3>
+        <p>Só a mensalidade do seu plano — <strong>a partir de R$ 80, R$ 150 ou R$ 300</strong> — pra manter o site seguro, rápido, hospedado e atualizado.</p>
+      </div>
+      <div class="pagto__item pagto__item--livre">
+        <span class="pagto__quando">quando você quiser</span>
+        <h3>Sem fidelidade</h3>
+        <p>Cancele sem multa e sem taxa escondida. A gente entrega o site e o domínio na sua mão e ainda ajuda a mudar de hospedagem.</p>
+      </div>
     </div>
 
     <div class="pl-extras reveal">
       <div class="pl-extras__bloco">
         <h3>O que faz o preço subir</h3>
         <ul>
-          <li><span>Página a mais, além do que o plano inclui</span> <b>+ R$ 150</b></li>
-          <li><span>A gente escrever os textos <em>(de graça se você entregar prontos)</em></span> <b>+ R$ 180 <small>/página</small></b></li>
+          <li><span>Página a mais, além do que o plano inclui</span> <b>a partir de R$ 150</b></li>
+          <li><span>A gente escrever os textos <em>(de graça se você entregar prontos)</em></span> <b>a partir de R$ 180 <small>/página</small></b></li>
         </ul>
       </div>
       <div class="pl-extras__bloco">
@@ -197,102 +290,20 @@
   </div>
 </section>
 
-<!-- ============================ 2. MENSALIDADE ============================ -->
-<section class="secao secao--espuma pl-secao" id="mensalidade">
-  <div class="wrap">
-    <header class="cab">
-      <p class="rotulo reveal">02 · O ancoradouro</p>
-      <h2 class="reveal" style="--d:1">A mensalidade que mantém tudo no ar.</h2>
-      <p class="cab__texto reveal" style="--d:2">
-        É o que permite o site custar R$ 300 em vez de R$ 3.000. Todo plano inclui
-        hospedagem, domínio, certificado de segurança, backup e atualizações — o que
-        muda é quanta coisa você pode pedir e com que rapidez a gente responde.
-      </p>
-    </header>
-
-    <div class="mens">
-      <article class="mens__card reveal" data-plano="Ancoradouro">
-        <div class="mens__topo">
-          <h3>Ancoradouro</h3>
-          <p class="mens__preco"><span class="mens__valor">R$ 80</span><small>/mês</small></p>
-        </div>
-        <ul>
-          <li>Hospedagem, domínio e SSL</li>
-          <li>Backup semanal e monitoramento</li>
-          <li>1 alteração por mês</li>
-          <li>Suporte por WhatsApp em dia útil</li>
-        </ul>
-        <button class="btn btn--sm btn--vazado btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-ancoradouro">Tenho interesse</button>
-        <div class="upsell" id="up-ancoradouro" hidden>
-          <p class="upsell__linha">Por mais <strong>R$ 60/mês</strong> você sobe pra <strong>Doca</strong> — de R$ 150 por <b>R$ 140</b>.</p>
-          <div class="upsell__acoes">
-            <a class="btn btn--sm btn--primario" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20a%20Doca%20por%20R%24%20140%2Fm%C3%AAs." target="_blank" rel="noopener">Quero a Doca</a>
-            <a class="btn btn--sm btn--vazado" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Ancoradouro." target="_blank" rel="noopener">Fico no Ancoradouro</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="mens__card mens__card--destaque reveal" style="--d:1" data-plano="Doca">
-        <div class="mens__topo">
-          <h3>Doca</h3>
-          <p class="mens__preco"><span class="mens__valor">R$ 150</span><small>/mês</small></p>
-        </div>
-        <ul>
-          <li class="plano__herda">Tudo do Ancoradouro</li>
-          <li>Alterações livres no conteúdo</li>
-          <li>Backup diário</li>
-          <li>Relatório de visitas todo mês</li>
-          <li>Resposta em até 24h</li>
-        </ul>
-        <button class="btn btn--sm btn--primario btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-doca">Tenho interesse</button>
-        <div class="upsell" id="up-doca" hidden>
-          <p class="upsell__linha">Por mais <strong>R$ 130/mês</strong> você sobe pro <strong>Estaleiro</strong> — de R$ 300 por <b>R$ 280</b>.</p>
-          <div class="upsell__acoes">
-            <a class="btn btn--sm btn--primario" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Estaleiro%20por%20R%24%20280%2Fm%C3%AAs." target="_blank" rel="noopener">Quero o Estaleiro</a>
-            <a class="btn btn--sm btn--vazado" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20a%20Doca." target="_blank" rel="noopener">Fico na Doca</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="mens__card reveal" style="--d:2" data-plano="Estaleiro">
-        <div class="mens__topo">
-          <h3>Estaleiro</h3>
-          <p class="mens__preco"><span class="mens__valor">R$ 300</span><small>/mês</small></p>
-        </div>
-        <ul>
-          <li class="plano__herda">Tudo da Doca</li>
-          <li>Suporte 24h, todo dia</li>
-          <li>Páginas e seções novas quando precisar</li>
-          <li>Ajustes de visual e estrutura</li>
-          <li>Prioridade na fila</li>
-        </ul>
-        <button class="btn btn--sm btn--vazado btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-estaleiro">Tenho interesse</button>
-        <div class="upsell" id="up-estaleiro" hidden>
-          <p class="upsell__linha">Pagando <strong>12 meses de uma vez</strong>, um mês fica por nossa conta — <b>R$ 3.300</b> em vez de R$ 3.600.</p>
-          <div class="upsell__acoes">
-            <a class="btn btn--sm btn--primario" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Estaleiro%20anual." target="_blank" rel="noopener">Quero o anual</a>
-            <a class="btn btn--sm btn--vazado" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Estaleiro%20mensal." target="_blank" rel="noopener">Prefiro mensal</a>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <p class="planos__nota reveal">
-      Sem fidelidade em nenhum dos três. Se você quiser sair, a gente entrega o site e o
-      domínio na sua mão e ajuda a mudar de hospedagem — sem multa e sem drama.
-    </p>
-  </div>
-</section>
-
-<!-- ============================ 3. MÍDIA ============================ -->
+<!-- ============================ 2. MÍDIA ============================ -->
 <section class="secao secao--fundo pl-secao" id="midia">
   <div class="wrap">
     <header class="cab cab--claro">
-      <p class="rotulo reveal">03 · A navegação</p>
+      <p class="rotulo reveal">02 · A navegação</p>
+      <a class="insta-selo reveal" style="--d:1" href="https://instagram.com/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>
+        Instagram
+      </a>
       <h2 class="reveal" style="--d:1">Mídia digital, todo mês.</h2>
       <p class="cab__texto reveal" style="--d:2">
-        Conteúdo, artes e anúncio. Contrata quem quer que a gente toque a divulgação —
-        não precisa ter site com a gente, e ter site com a gente não obriga a nada disso.
+        Conteúdo, artes e anúncio no <strong>Instagram</strong> — mais o Meta e o Google Ads
+        quando entra campanha. Contrata quem quer que a gente toque a divulgação: não precisa
+        ter site com a gente, e ter site com a gente não obriga a nada disso.
       </p>
     </header>
 
@@ -301,17 +312,17 @@
         <p class="promo__selo">Lançamento da Velo</p>
         <p class="promo__frase"><strong>50% de desconto</strong> no primeiro ano de qualquer plano de mídia.</p>
       </div>
-      <div class="promo__relogio" id="relogio" role="timer" aria-live="off">
-        <div><b id="relD">00</b><span>dias</span></div>
-        <div><b id="relH">00</b><span>horas</span></div>
-        <div><b id="relM">00</b><span>min</span></div>
-        <div><b id="relS">00</b><span>seg</span></div>
+      <div class="promo__relogio" role="timer" aria-live="off">
+        <div><b data-rel="d">00</b><span>dias</span></div>
+        <div><b data-rel="h">00</b><span>horas</span></div>
+        <div><b data-rel="m">00</b><span>min</span></div>
+        <div><b data-rel="s">00</b><span>seg</span></div>
       </div>
     </div>
 
     <div class="planos planos--midia">
-      <article class="plano plano--mar reveal" data-fundo="raso" data-plano="Raso">
-        <h3 class="plano__nome">Raso</h3>
+      <article class="plano plano--escuro plano--noite reveal" data-plano="Presença">
+        <h3 class="plano__nome">Presença</h3>
         <p class="plano__pitch">Só pra não ficar abandonado: perfil organizado e postagem constante, sem anúncio.</p>
         <p class="plano__preco">
           <span class="plano__antes">de R$ 700</span>
@@ -323,61 +334,61 @@
           <li>Calendário do mês aprovado antes</li>
           <li>Bio, destaques e perfil arrumados</li>
         </ul>
-        <button class="btn btn--fantasma btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-raso">Tenho interesse</button>
-        <div class="upsell upsell--claro" id="up-raso" hidden>
-          <p class="upsell__linha" data-fim="Por mais <strong>R$ 600/mês</strong> você leva o <strong>Correnteza</strong> — de R$ 1.400 por <b>R$ 1.300</b>.">Por mais <strong>R$ 300/mês</strong> você leva o <strong>Correnteza</strong> — de R$ 700 por <b>R$ 650</b>.</p>
+        <button class="btn btn--fantasma btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-presenca">Tenho interesse</button>
+        <div class="upsell upsell--claro" id="up-presenca" hidden>
+          <p class="upsell__linha" data-fim="Por mais <strong>R$ 500/mês</strong> você leva o <strong>Ataque</strong> — de R$ 1.300 por <b>R$ 1.200</b>.">Por mais <strong>R$ 250/mês</strong> você leva o <strong>Ataque</strong> — de R$ 650 por <b>R$ 600</b>.</p>
           <div class="upsell__acoes">
-            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Correnteza%20por%20R%24%20650%2Fm%C3%AAs." target="_blank" rel="noopener">Quero o Correnteza</a>
-            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Raso." target="_blank" rel="noopener">Fico no Raso</a>
+            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20plano%20Ataque%20por%20R%24%20600%2Fm%C3%AAs." target="_blank" rel="noopener">Quero o Ataque</a>
+            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20plano%20Presen%C3%A7a." target="_blank" rel="noopener">Fico na Presença</a>
           </div>
         </div>
       </article>
 
-      <article class="plano plano--mar plano--destaque reveal" style="--d:1" data-fundo="correnteza" data-plano="Correnteza">
+      <article class="plano plano--escuro plano--noite plano--destaque reveal" style="--d:1" data-plano="Ataque">
         <span class="plano__fita">Mais escolhido</span>
-        <h3 class="plano__nome">Correnteza</h3>
+        <h3 class="plano__nome">Ataque</h3>
         <p class="plano__pitch">Conteúdo toda semana e a primeira campanha rodando.</p>
         <p class="plano__preco">
-          <span class="plano__antes">de R$ 1.400</span>
-          <span class="plano__valor">R$ 700</span><small class="plano__periodo">/mês</small>
+          <span class="plano__antes">de R$ 1.300</span>
+          <span class="plano__valor">R$ 650</span><small class="plano__periodo">/mês</small>
         </p>
         <ul class="plano__lista">
-          <li class="plano__herda">Tudo do Raso</li>
+          <li class="plano__herda">Tudo da Presença</li>
           <li>16 posts por mês</li>
           <li>4 reels editados</li>
           <li>1 campanha de anúncio ativa</li>
           <li>Relatório mensal simples</li>
         </ul>
-        <button class="btn btn--zap btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-correnteza">Tenho interesse</button>
-        <div class="upsell upsell--claro" id="up-correnteza" hidden>
-          <p class="upsell__linha" data-fim="Por mais <strong>R$ 1.300/mês</strong> você leva o <strong>Alto-mar</strong> — de R$ 2.900 por <b>R$ 2.700</b>.">Por mais <strong>R$ 650/mês</strong> você leva o <strong>Alto-mar</strong> — de R$ 1.450 por <b>R$ 1.350</b>.</p>
+        <button class="btn btn--zap btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-ataque">Tenho interesse</button>
+        <div class="upsell upsell--claro" id="up-ataque" hidden>
+          <p class="upsell__linha" data-fim="Por mais <strong>R$ 300/mês</strong> você leva a <strong>Dominância</strong> — de R$ 1.700 por <b>R$ 1.600</b>.">Por mais <strong>R$ 150/mês</strong> você leva a <strong>Dominância</strong> — de R$ 850 por <b>R$ 800</b>.</p>
           <div class="upsell__acoes">
-            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Alto-mar%20por%20R%24%201.350%2Fm%C3%AAs." target="_blank" rel="noopener">Quero o Alto-mar</a>
-            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Correnteza." target="_blank" rel="noopener">Fico no Correnteza</a>
+            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20plano%20Domin%C3%A2ncia%20por%20R%24%20800%2Fm%C3%AAs." target="_blank" rel="noopener">Quero a Dominância</a>
+            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20plano%20Ataque." target="_blank" rel="noopener">Fico no Ataque</a>
           </div>
         </div>
       </article>
 
-      <article class="plano plano--mar reveal" style="--d:2" data-fundo="alto-mar" data-plano="Alto-mar">
-        <h3 class="plano__nome">Alto-mar</h3>
+      <article class="plano plano--escuro plano--noite reveal" style="--d:2" data-plano="Dominância">
+        <h3 class="plano__nome">Dominância</h3>
         <p class="plano__pitch">Quando o objetivo deixa de ser aparecer e passa a ser vender com previsibilidade.</p>
         <p class="plano__preco">
-          <span class="plano__antes">de R$ 2.900</span>
-          <span class="plano__valor">R$ 1.450</span><small class="plano__periodo">/mês</small>
+          <span class="plano__antes">de R$ 1.700</span>
+          <span class="plano__valor">R$ 850</span><small class="plano__periodo">/mês</small>
         </p>
         <ul class="plano__lista">
-          <li class="plano__herda">Tudo do Correnteza</li>
+          <li class="plano__herda">Tudo do Ataque</li>
           <li>Gestão de Meta e Google Ads</li>
           <li>Criativos novos toda quinzena</li>
           <li>Página de campanha inclusa</li>
           <li>Reunião mensal de resultado</li>
         </ul>
-        <button class="btn btn--fantasma btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-altomar">Tenho interesse</button>
-        <div class="upsell upsell--claro" id="up-altomar" hidden>
+        <button class="btn btn--fantasma btn--bloco plano__gatilho" type="button" aria-expanded="false" aria-controls="up-dominancia">Tenho interesse</button>
+        <div class="upsell upsell--claro" id="up-dominancia" hidden>
           <p class="upsell__linha">Fechando <strong>6 meses</strong>, o ensaio de fotos do seu ambiente (R$ 650) entra <b>de graça</b>.</p>
           <div class="upsell__acoes">
-            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Alto-mar%20por%206%20meses%20com%20o%20ensaio." target="_blank" rel="noopener">Quero com o ensaio</a>
-            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20Alto-mar." target="_blank" rel="noopener">Só o plano</a>
+            <a class="btn btn--sm btn--zap" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20a%20Domin%C3%A2ncia%20por%206%20meses%20com%20o%20ensaio." target="_blank" rel="noopener">Quero com o ensaio</a>
+            <a class="btn btn--sm btn--fantasma" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20o%20plano%20Domin%C3%A2ncia." target="_blank" rel="noopener">Só o plano</a>
           </div>
         </div>
       </article>
@@ -390,11 +401,11 @@
   </div>
 </section>
 
-<!-- ============================ 4. AVULSOS ============================ -->
+<!-- ============================ 3. AVULSOS ============================ -->
 <section class="secao pl-secao" id="avulsos">
   <div class="wrap">
     <header class="cab">
-      <p class="rotulo reveal">04 · Avulsos</p>
+      <p class="rotulo reveal">03 · Avulsos</p>
       <h2 class="reveal" style="--d:1">Serviços soltos, sem plano nenhum.</h2>
       <p class="cab__texto reveal" style="--d:2">
         Entram sozinhos ou grudam em qualquer plano — inclusive a sessão de fotos
@@ -514,25 +525,41 @@
 </footer>
 
 <!-- ============================ O MAR ============================ -->
-<div class="mar" id="mar" aria-hidden="true">
+<div class="mar mar--fundo" id="mar" aria-hidden="true">
   <svg class="mar__svg" id="marSvg" preserveAspectRatio="none">
+    <path id="ondaFundo" fill="#B9DEF6" fill-opacity=".55"/>
+    <path id="ondaMeio"  fill="#8CCBF0" fill-opacity=".8"/>
+  </svg>
+</div>
+
+<!-- a onda da frente mora numa camada separada, acima da boia do WhatsApp:
+     e o que faz a boia parecer meio afundada na agua -->
+<div class="mar mar--frente" aria-hidden="true">
+  <svg class="mar__svg" id="marSvgFrente" preserveAspectRatio="none">
     <defs>
       <linearGradient id="gradFrente" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#5FB0E6"/>
         <stop offset="100%" stop-color="#1F6FBF"/>
       </linearGradient>
     </defs>
-    <path id="ondaFundo"  fill="#B9DEF6" fill-opacity=".55"/>
-    <path id="ondaMeio"   fill="#8CCBF0" fill-opacity=".8"/>
     <path id="ondaFrente" fill="url(#gradFrente)"/>
     <path id="cristaFrente" fill="none" stroke="#0B2E58" stroke-width="3.5" stroke-linecap="round"/>
     <g id="espuma" fill="#FFFFFF" opacity=".85"></g>
     <g id="barbatana">
       <path id="rastro" fill="#FFFFFF" opacity=".5"/>
       <g id="finWrap"><use href="#fin-d" fill="#0B2E58"/></g>
+      <!-- area invisivel de agarre: puxar a barbatana rola a pagina -->
+      <circle id="finPega" r="30" fill="transparent"/>
     </g>
   </svg>
 </div>
+
+
+<!-- ======================= WHATSAPP BOIANDO NA CRISTA ======================= -->
+<a class="zap-boia" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Vim%20pelo%20site%20e%20quero%20conversar." target="_blank" rel="noopener" aria-label="Falar com a Velo no WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6a11.4 11.4 0 0 1-4.4-4c-.3-.5-.7-1.2-.7-2s.4-1.2.6-1.4c.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .5.4l.7 1.7c.1.1.1.3 0 .4l-.2.4-.3.3c-.1.1-.2.2-.1.4.2.4.7 1.2 1.4 1.8.9.8 1.6 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3v.9Z"/></svg>
+  <span class="zap-boia__texto">WhatsApp</span>
+</a>
 
 <script src="js/main.js" defer></script>
 <script src="js/planos.js" defer></script>

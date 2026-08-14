@@ -16,6 +16,7 @@
 
   var mar        = document.getElementById('mar');
   var svg        = document.getElementById('marSvg');
+  var svgFrente  = document.getElementById('marSvgFrente');
   var pFundo     = document.getElementById('ondaFundo');
   var pMeio      = document.getElementById('ondaMeio');
   var pFrente    = document.getElementById('ondaFrente');
@@ -23,9 +24,15 @@
   var gEspuma    = document.getElementById('espuma');
   var gFin       = document.getElementById('finWrap');
   var pRastro    = document.getElementById('rastro');
+  var pega       = document.getElementById('finPega');
+  var boia       = document.querySelector('.zap-boia');
 
   var L = 0, A = 0;              // largura e altura do mar, em px
   var bolhas = [];               // pontos de espuma na crista
+
+  // +1 = nadando pra direita (a página está descendo), -1 = pra esquerda.
+  // O tubarão vira de lado junto com o sentido do scroll.
+  var sentido = 1;
 
   // Cada camada: base (fração da altura), duas ondas somadas e velocidade.
   var camadas = [
@@ -48,7 +55,10 @@
     if (!mar) return;
     L = mar.clientWidth;
     A = mar.clientHeight;
-    svg.setAttribute('viewBox', '0 0 ' + L + ' ' + A);
+    // as duas camadas dividem o mesmo sistema de coordenadas
+    var caixa = '0 0 ' + L + ' ' + A;
+    svg.setAttribute('viewBox', caixa);
+    if (svgFrente) svgFrente.setAttribute('viewBox', caixa);
 
     // espuma: pontos fixos em x, redistribuídos quando a tela muda de tamanho
     gEspuma.textContent = '';
@@ -61,6 +71,16 @@
       gEspuma.appendChild(c);
       bolhas.push({ el: c, x: (i + 0.5) / n, dx: 0.012 * (i % 2 ? 1 : -1), fase: i * 1.3 });
     }
+  }
+
+  function margem() { return Math.min(70, L * 0.08); }
+
+  /* Faixa que a barbatana percorre. No fim da página ela para um pouco antes
+     da borda direita: é onde a boia do WhatsApp está ancorada, e o tubarão
+     passando por cima esconderia justamente o botão. */
+  function faixaUtil() {
+    var reserva = boia ? Math.min(L * 0.28, boia.offsetWidth + 22) : 0;
+    return Math.max(1, L - margem() * 2 - reserva);
   }
 
   function desenhar(t, avanco) {
@@ -94,8 +114,8 @@
     }
 
     // ---- a barbatana ----
-    var margem = Math.min(70, L * 0.08);
-    var fx = margem + avanco * (L - margem * 2);
+    // começa na esquerda e nada pra direita conforme a página desce.
+    var fx = margem() + avanco * faixaUtil();
     var fy = alturaEm(frente, fx, t) + 3;
 
     // inclina a barbatana conforme a inclinação da crista
@@ -104,22 +124,33 @@
 
     var alturaFin = Math.max(30, Math.min(A * 0.52, 64));
     var s = alturaFin / 234;                       // 234 = altura do path original
+    // O desenho original da barbatana aponta pra esquerda, então o x do scale
+    // é o sentido invertido: nadando pra direita (sentido +1) ela precisa ser
+    // espelhada; voltando pra esquerda, fica como veio.
     gFin.setAttribute('transform',
       'translate(' + fx.toFixed(1) + ',' + fy.toFixed(1) + ') ' +
       'rotate(' + ang.toFixed(2) + ') ' +
-      'scale(' + s.toFixed(4) + ') ' +
+      'scale(' + (-sentido * s).toFixed(4) + ',' + s.toFixed(4) + ') ' +
       'translate(-451,-366)');
 
-    // rastro de espuma atrás da barbatana — nunca passa da borda esquerda,
-    // e afina até zero pra não virar um bloco branco.
-    var comp = Math.min(alturaFin * 2.6, Math.max(0, fx - 4));
+    // área invisível de agarre, sempre em cima da barbatana
+    if (pega) {
+      pega.setAttribute('cx', fx.toFixed(1));
+      pega.setAttribute('cy', (fy - alturaFin * 0.35).toFixed(1));
+      pega.setAttribute('r', Math.max(26, alturaFin * 0.7).toFixed(1));
+    }
+
+    // rastro de espuma: sempre atrás, ou seja, do lado oposto ao que ela nada.
+    // Nunca passa da borda e afina até zero pra não virar um bloco branco.
+    var espaco = sentido > 0 ? (fx - 4) : (L - fx - 4);
+    var comp = Math.min(alturaFin * 2.6, Math.max(0, espaco));
     if (comp < 10) {
       pRastro.setAttribute('d', '');
     } else {
       var n = 12, larg = alturaFin * 0.085;
       var rastro = '', volta = '';
       for (i = 0; i <= n; i++) {
-        var rx = fx - comp * (i / n);
+        var rx = fx - sentido * comp * (i / n);
         var ry = alturaEm(frente, rx, t) + 4;
         // afina nas duas pontas: sem corte reto colado na barbatana
         var e = larg * Math.sin(Math.PI * Math.pow(i / n, 0.55));
@@ -130,10 +161,63 @@
     }
   }
 
+  function alcanceDaPagina() {
+    return document.documentElement.scrollHeight - window.innerHeight;
+  }
+
   function avancoDaPagina() {
-    var alcance = document.documentElement.scrollHeight - window.innerHeight;
+    var alcance = alcanceDaPagina();
     if (alcance <= 0) return 0;
     return Math.min(1, Math.max(0, window.scrollY / alcance));
+  }
+
+  /* ---- o tubarão vira de lado conforme o sentido do scroll ----
+     A folga de 2px evita que ele fique piscando de lado com o tremor de
+     trackpad; enquanto ela não é vencida, o ponto de partida não se move. */
+  var ultimoY = window.scrollY;
+
+  window.addEventListener('scroll', function () {
+    var y = window.scrollY, d = y - ultimoY;
+    if (d > 2)       { sentido =  1; ultimoY = y; }
+    else if (d < -2) { sentido = -1; ultimoY = y; }
+  }, { passive: true });
+
+  /* ---- arrastar a barbatana rola a página ----
+     Ela já é o indicador de progresso; deixar puxar fecha o ciclo. O gesto é
+     um atalho, não a única forma de navegar: quem não usa mouse rola normal. */
+  if (pega && mar) {
+    var arrastando = false, xInicial = 0, yInicial = 0, faixa = 1;
+
+    pega.addEventListener('pointerdown', function (e) {
+      if (alcanceDaPagina() <= 0) return;
+      arrastando = true;
+      xInicial = e.clientX;
+      yInicial = window.scrollY;
+      faixa = faixaUtil();   // a mesma que o desenhar() usa
+      document.documentElement.classList.add('is-puxando-mar');
+      if (pega.setPointerCapture) pega.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+
+    pega.addEventListener('pointermove', function (e) {
+      if (!arrastando) return;
+      var alcance = alcanceDaPagina();
+      // puxar pra direita desce a página, que é o caminho que ela já fazia
+      var alvo = yInicial + (e.clientX - xInicial) * (alcance / faixa);
+      window.scrollTo(0, Math.min(alcance, Math.max(0, alvo)));
+      e.preventDefault();
+    });
+
+    ['pointerup', 'pointercancel'].forEach(function (evt) {
+      pega.addEventListener(evt, function (e) {
+        if (!arrastando) return;
+        arrastando = false;
+        document.documentElement.classList.remove('is-puxando-mar');
+        if (pega.releasePointerCapture) {
+          try { pega.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+      });
+    });
   }
 
   var relogio = 0, ultimo = 0, animando = false;

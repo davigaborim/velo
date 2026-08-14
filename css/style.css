@@ -326,8 +326,10 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 .cab{ max-width:44ch; margin-bottom:clamp(38px,5vw,58px); }
 .cab h2{ font-size:clamp(30px,4.2vw,48px); margin-bottom:16px; }
 .cab__texto{ color:var(--texto-fraco); font-size:17px; }
+.cab__texto strong{ color:var(--texto); font-weight:600; }
 .cab--claro h2{ color:#fff; }
 .cab--claro .cab__texto{ color:rgba(255,255,255,.72); }
+.cab--claro .cab__texto strong{ color:#fff; font-weight:600; }
 
 /* ==========================================================================
    5. SERVIÇOS
@@ -579,12 +581,56 @@ ul,ol{ margin:0; padding:0; list-style:none; }
    11. O MAR — assinatura da marca
    ========================================================================== */
 
+/* O mar vem em duas camadas empilhadas com a boia do WhatsApp no meio:
+   ondas de trás (40) · boia (45) · onda da frente e barbatana (50).
+   É o que faz a boia parecer meio afundada em vez de colada por cima. */
 .mar{
-  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  position:fixed; left:0; right:0; bottom:0;
   height:var(--mar-h); pointer-events:none;
-  filter:drop-shadow(0 -3px 12px rgba(46,134,214,.16));
 }
+.mar--fundo { z-index:40; }
+.mar--frente{ z-index:50; filter:drop-shadow(0 -3px 12px rgba(46,134,214,.16)); }
 .mar__svg{ display:block; width:100%; height:100%; }
+
+/* a barbatana é o único pedaço do mar que aceita o mouse: dá pra puxar ela
+   pra rolar a página. `touch-action:none` impede o dedo de rolar a página
+   por baixo do gesto no celular. */
+#finPega{ pointer-events:auto; cursor:grab; touch-action:none; }
+html.is-puxando-mar #finPega{ cursor:grabbing; }
+html.is-puxando-mar{ scroll-behavior:auto; }   /* senão o suave briga com o arrasto */
+html.is-puxando-mar body{ user-select:none; }
+
+/* ---------- o WhatsApp boiando na crista ---------- */
+
+/* Fica entre as duas camadas do mar: a onda da frente passa por cima do terço
+   de baixo, o rótulo continua acima da linha d'água. O padding de baixo é
+   maior de propósito — é o pedaço que fica submerso. O mar é
+   pointer-events:none, então o clique atravessa a água normalmente. */
+.zap-boia{
+  position:fixed; z-index:45;
+  right:clamp(14px,3.5vw,32px); bottom:24px;
+  display:inline-flex; align-items:center; gap:9px;
+  padding:10px 20px 26px 15px; border-radius:999px;
+  background:#25D366; color:#06321A; text-decoration:none;
+  font-weight:600; font-size:15px; line-height:1;
+  box-shadow:0 12px 26px -10px rgba(6,50,26,.75);
+  animation:boia 4.6s ease-in-out infinite;
+  transition:filter .2s ease;
+}
+.zap-boia:hover{ filter:brightness(1.07); }
+.zap-boia svg{ width:23px; height:23px; flex:0 0 auto; }
+
+/* sobe e desce como boia, com um gingado de onda. O movimento é curto porque
+   a própria água já está ondulando por cima dela. */
+@keyframes boia{
+  0%,100%{ transform:translateY(0) rotate(-2.5deg); }
+  50%    { transform:translateY(-7px) rotate(2.5deg); }
+}
+
+@media (max-width:560px){
+  .zap-boia{ padding:13px 15px 28px; gap:0; }
+  .zap-boia__texto{ display:none; }
+}
 
 /* ==========================================================================
    12. REVELAÇÃO NO SCROLL
@@ -660,7 +706,19 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   pointer-events:none; user-select:none;
   filter:drop-shadow(0 10px 18px rgba(11,46,88,.16));
 }
-@media (max-width:760px){ .planos__mascote{ display:none; } }
+
+/* O mascote fica pendurado pra fora, acima da borda dos cards. Quando tem
+   uma tarja de promoção logo acima, ela precisa ceder a altura dele — senão
+   o tubarão senta em cima do relógio. O 0.95 é a proporção da imagem
+   (630x600); o resto é folga. */
+.promo + .planos--com-mascote{
+  margin-top:calc(clamp(150px,17vw,212px) * .95 + 6px);
+}
+
+@media (max-width:760px){
+  .planos__mascote{ display:none; }
+  .promo + .planos--com-mascote{ margin-top:0; }
+}
 
 /* ---------- preço ---------- */
 
@@ -675,6 +733,30 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 }
 .plano__periodo{ font-size:15px; color:var(--texto-fraco); margin-left:3px; }
 .plano__lista li.plano__herda{ color:var(--texto); font-weight:600; }
+
+/* preço em dois tempos: a criação (uma vez) e a manutenção (todo mês).
+   Os dois moram no mesmo card porque são a mesma decisão. */
+.plano__duplo{
+  display:grid; gap:14px; padding-bottom:20px; margin-bottom:20px;
+  border-bottom:1px solid var(--borda);
+}
+.plano__linha{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.plano__cifra{ text-align:right; }
+.plano__cifra .plano__de{ margin-bottom:2px; }
+.plano__etapa{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.09em;
+  line-height:1.4; text-transform:uppercase; color:var(--texto-fraco); max-width:20ch;
+}
+.plano__valor--menor{ font-size:23px; }
+
+/* o item que resume a manutenção fica separado do resto da lista por um
+   tracinho: ele fala do depois, não do que é entregue na obra. */
+.plano__lista li.plano__mens{
+  margin-top:4px; padding-top:13px;
+  border-top:1px dashed var(--borda); font-size:14px;
+}
+.plano__lista li.plano__mens::before{ top:calc(.42em + 13px); }
+.plano--escuro .plano__lista li.plano__mens{ border-top-color:rgba(255,255,255,.22); }
 
 /* ---------- upsell ---------- */
 
@@ -729,7 +811,54 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 }
 .pl-extras__bloco li b small{ font-size:12px; color:var(--texto-fraco); }
 
+/* ---------- preço é conversa, não tabela ---------- */
+
+.pl-negocia{
+  display:flex; align-items:flex-start; gap:16px; margin-top:26px;
+  padding:20px 24px; border-radius:var(--raio);
+  background:var(--branco); border:1px dashed var(--raso);
+}
+.pl-negocia__icone{
+  flex:0 0 auto; display:grid; place-items:center;
+  width:38px; height:38px; border-radius:50%;
+  background:var(--espuma); color:var(--rotulo);
+}
+.pl-negocia__icone svg{ width:21px; height:21px; }
+.pl-negocia h3{ font-size:17px; margin-bottom:6px; }
+.pl-negocia p{ font-size:15px; color:var(--texto-fraco); max-width:76ch; }
+.pl-negocia strong{ color:var(--texto); font-weight:600; }
+
+@media (max-width:560px){
+  .pl-negocia{ flex-direction:column; gap:12px; }
+}
+
+/* ---------- como funciona o pagamento ---------- */
+
+.pagto{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(min(268px,100%),1fr));
+  gap:16px; margin-bottom:32px;
+}
+.pagto__item{
+  background:var(--branco); border:1px solid var(--borda);
+  border-radius:var(--raio); padding:22px 24px 24px;
+}
+.pagto__item--livre{ border-style:dashed; border-color:var(--raso); background:var(--espuma); }
+.pagto__quando{
+  display:block; font-family:var(--mono); font-size:11px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--rotulo); margin-bottom:9px;
+}
+.pagto__item h3{ font-size:18px; margin-bottom:8px; }
+.pagto__item p{ font-size:14.5px; color:var(--texto-fraco); }
+.pagto__item strong{ color:var(--texto); font-weight:600; }
+
 /* ---------- mensalidade ---------- */
+
+/* o card de manutenção não é um plano à parte: ele é a continuação do plano
+   de site de mesmo nome, e a etiqueta em cima deixa isso explícito. */
+.mens__amarra{
+  display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--rotulo); margin-bottom:5px;
+}
 
 .mens{
   display:grid; grid-template-columns:repeat(auto-fit,minmax(min(258px,100%),1fr));
@@ -744,8 +873,10 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 .mens__card:hover{ transform:translateY(-3px); box-shadow:var(--sombra); }
 .mens__card--destaque{ border:2px solid var(--abissal); box-shadow:var(--sombra); }
 
+/* flex-end e não baseline: o nome do plano vem embaixo da etiqueta
+   "manutenção do plano", e a baseline pegaria a etiqueta, não o nome. */
 .mens__topo{
-  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
   padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid var(--borda);
 }
 .mens__topo h3{ font-size:21px; }
@@ -798,38 +929,89 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   text-transform:uppercase; color:rgba(255,255,255,.55);
 }
 
-/* ---------- cards de mídia: o mar por trás ---------- */
+/* a mesma tarja, virada pra seção clara dos planos de site */
+.promo--claro{
+  border-color:rgba(214,146,0,.45);
+  background:linear-gradient(100deg,rgba(255,194,75,.30),rgba(255,194,75,.10));
+}
+.promo--claro .promo__selo{ color:#8A5B00; }
+.promo--claro .promo__frase{ color:var(--texto); }
+.promo--claro .promo__frase strong{ color:#8A5B00; }
+.promo--claro .promo__relogio > div{
+  background:var(--branco); border-color:rgba(11,46,88,.12);
+}
+.promo--claro .promo__relogio b{ color:var(--texto); }
+.promo--claro .promo__relogio span{ color:var(--texto-fraco); }
+
+/* ---------- o aceno pro Instagram ---------- */
+
+.insta-selo{
+  display:inline-flex; align-items:center; gap:9px; margin-bottom:14px;
+  padding:7px 15px 7px 11px; border-radius:999px;
+  background:linear-gradient(100deg,#F58529,#DD2A7B 40%,#8134AF 72%,#515BD4);
+  color:#fff; font-family:var(--mono); font-size:11px; font-weight:500;
+  letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
+  box-shadow:0 6px 18px -6px rgba(221,42,123,.7);
+}
+.insta-selo svg{ width:15px; height:15px; flex:0 0 auto; }
+a.insta-selo:hover{ filter:brightness(1.08); }
+
+/* ---------- cards escuros ----------
+   Dois sabores do mesmo card: os planos de site levam foto de mar por trás
+   (--mar), os de mídia ficam em vidro sobre o fundo escuro da seção
+   (--noite). O que os dois têm em comum mora em --escuro. */
 
 /* sem overflow:hidden aqui — ele cortaria a fita "Mais escolhido", que fica
    pendurada pra fora do card. Quem arredonda a foto é o border-radius:inherit. */
-.plano--mar{
+.plano--escuro{
   position:relative; isolation:isolate;
   background:var(--profundo); border:1px solid rgba(255,255,255,.16); color:#fff;
 }
-.plano--mar::before{
+.plano--escuro::before{
   content:""; position:absolute; inset:0; z-index:-2; border-radius:inherit;
-  background-image:var(--foto); background-size:cover; background-position:center;
+  background-image:var(--foto,none); background-size:cover; background-position:center;
 }
-.plano--mar::after{
+.plano--escuro::after{
   content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit;
-  background:linear-gradient(180deg,rgba(11,46,88,.62) 0%,rgba(11,46,88,.9) 58%,rgba(11,46,88,.97) 100%);
+  background:linear-gradient(180deg,rgba(11,46,88,.46) 0%,rgba(11,46,88,.82) 52%,rgba(11,46,88,.94) 100%);
   transition:opacity .5s ease;
 }
-.plano--mar:hover::after{ opacity:.87; }   /* a água clareia de leve */
+.plano--escuro:hover::after{ opacity:.87; }   /* a água clareia de leve */
 
-.plano--mar[data-fundo="raso"]{ --foto:url(../images/fundo-raso.jpg); }
-.plano--mar[data-fundo="correnteza"]{ --foto:url(../images/fundo-correnteza.jpg); }
-.plano--mar[data-fundo="alto-mar"]{ --foto:url(../images/fundo-alto-mar.jpg); }
+/* 1. sites: raso → correnteza → mar aberto, na mesma ordem dos planos */
+.plano--mar[data-fundo="recife"]{   --foto:url(../images/fundo-raso.jpg); }
+.plano--mar[data-fundo="alto-mar"]{ --foto:url(../images/fundo-correnteza.jpg); }
+.plano--mar[data-fundo="abissal"]{  --foto:url(../images/fundo-alto-mar.jpg); }
 
-.plano--mar.plano--destaque{ border:2px solid var(--sol); }
-.plano--mar .plano__pitch{ color:rgba(255,255,255,.7); }
-.plano--mar .plano__preco{ border-bottom-color:rgba(255,255,255,.2); }
-.plano--mar .plano__antes{ color:rgba(255,255,255,.6); }
-.plano--mar .plano__periodo{ color:rgba(255,255,255,.66); }
-.plano--mar .plano__lista li{ color:rgba(255,255,255,.8); }
-.plano--mar .plano__lista li.plano__herda{ color:#fff; }
-.plano--mar:not(.plano--destaque) .plano__lista li::before{ border-color:var(--raso); }
-.plano--mar:hover{ box-shadow:0 24px 56px -12px rgba(0,0,0,.5); }
+/* 2. mídia: sem foto — o próprio mar escuro da seção aparece por baixo, e um
+   fio com o degradê do Instagram no topo diz de que rede a gente está falando */
+.plano--noite{
+  background:
+    linear-gradient(90deg,#F58529,#DD2A7B 35%,#8134AF 68%,#515BD4) top/100% 3px no-repeat,
+    linear-gradient(165deg,rgba(46,134,214,.40),rgba(20,73,140,.30));
+}
+.plano--noite::after{
+  background:radial-gradient(120% 80% at 76% 0%,rgba(140,203,240,.16),transparent 64%);
+}
+.plano--noite:hover::after{ opacity:1; filter:brightness(1.6); }
+.plano--noite.plano--destaque{
+  background:
+    linear-gradient(90deg,#F58529,#DD2A7B 35%,#8134AF 68%,#515BD4) top/100% 3px no-repeat,
+    linear-gradient(165deg,rgba(255,194,75,.14),rgba(46,134,214,.42) 42%,rgba(20,73,140,.34));
+}
+
+.plano--escuro.plano--destaque{ border:2px solid var(--sol); }
+.plano--escuro .plano__pitch{ color:rgba(255,255,255,.7); }
+.plano--escuro .plano__preco{ border-bottom-color:rgba(255,255,255,.2); }
+.plano--escuro .plano__duplo{ border-bottom-color:rgba(255,255,255,.2); }
+.plano--escuro .plano__de,
+.plano--escuro .plano__etapa{ color:rgba(255,255,255,.66); }
+.plano--escuro .plano__antes{ color:rgba(255,255,255,.6); }
+.plano--escuro .plano__periodo{ color:rgba(255,255,255,.66); }
+.plano--escuro .plano__lista li{ color:rgba(255,255,255,.8); }
+.plano--escuro .plano__lista li.plano__herda{ color:#fff; }
+.plano--escuro:not(.plano--destaque) .plano__lista li::before{ border-color:var(--raso); }
+.plano--escuro:hover{ box-shadow:0 24px 56px -12px rgba(0,0,0,.5); }
 
 .planos__nota--claro{ color:rgba(255,255,255,.66); }
 
@@ -857,7 +1039,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 
 /* o padding-top dá o espaço que a fita "Mais escolhido" precisa pra não ser
    comida pelo overflow:hidden que faz o corte da prévia. */
-.planos--teaser{ position:relative; max-height:416px; padding-top:16px; overflow:hidden; }
+.planos--teaser{ position:relative; max-height:472px; padding-top:16px; overflow:hidden; }
 .planos--teaser::after{
   content:""; position:absolute; inset:auto 0 0 0; height:210px; pointer-events:none;
   background:linear-gradient(180deg,rgba(242,249,254,0) 0%,var(--bruma) 76%);

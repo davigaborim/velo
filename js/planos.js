@@ -19,30 +19,41 @@
 
   var FIM_DA_PROMO = new Date(2026, 7, 31, 23, 59, 59);   // mês 7 = agosto
 
-  var promo   = document.getElementById('promo');
-  var relogio = document.getElementById('relogio');
-  var campos  = relogio && {
-    d: document.getElementById('relD'),
-    h: document.getElementById('relH'),
-    m: document.getElementById('relM'),
-    s: document.getElementById('relS')
-  };
+  // Duas tarjas com o mesmo prazo: a da criação de site e a de mídia.
+  var tarjas   = Array.prototype.slice.call(document.querySelectorAll('.promo'));
+  var relogios = Array.prototype.slice.call(document.querySelectorAll('.promo__relogio'))
+    .map(function (r) {
+      return {
+        d: r.querySelector('[data-rel="d"]'),
+        h: r.querySelector('[data-rel="h"]'),
+        m: r.querySelector('[data-rel="m"]'),
+        s: r.querySelector('[data-rel="s"]')
+      };
+    })
+    .filter(function (c) { return c.d && c.h && c.m && c.s; });
 
   function doisDigitos(n) { return (n < 10 ? '0' : '') + n; }
 
-  // Volta os preços de mídia pro valor cheio e tira a tarja de promoção.
+  /* Fim da promoção: cada card que tem um `.plano__antes` volta pro valor
+     cheio (o próprio texto riscado é a fonte da verdade) e as ofertas de
+     upsell trocam pelo texto do `data-fim`. Serve tanto pros cards de site
+     — onde o `.plano__antes` está na linha da criação — quanto pros de
+     mídia, que só têm um preço. */
   function encerrarPromo() {
-    if (promo) promo.hidden = true;
+    tarjas.forEach(function (t) { t.hidden = true; });
 
-    document.querySelectorAll('.plano--mar').forEach(function (card) {
-      var antes = card.querySelector('.plano__antes');
-      var valor = card.querySelector('.plano__valor');
-      if (antes && valor) {
-        valor.textContent = antes.textContent.replace(/^de\s+/i, '').trim();
-        antes.remove();
-      }
-      var linha = card.querySelector('.upsell__linha[data-fim]');
-      if (linha) linha.innerHTML = linha.getAttribute('data-fim');
+    document.querySelectorAll('.plano__antes').forEach(function (antes) {
+      var cifra = antes.parentNode;
+      var valor = cifra && cifra.querySelector('.plano__valor');
+      if (!valor) return;
+      var periodo = valor.querySelector('.plano__periodo');
+      valor.textContent = antes.textContent.replace(/^de\s+/i, '').trim();
+      if (periodo) valor.appendChild(periodo);
+      antes.remove();
+    });
+
+    document.querySelectorAll('.upsell__linha[data-fim]').forEach(function (linha) {
+      linha.innerHTML = linha.getAttribute('data-fim');
     });
   }
 
@@ -55,14 +66,20 @@
     }
 
     var s = Math.floor(falta / 1000);
-    campos.d.textContent = doisDigitos(Math.floor(s / 86400));
-    campos.h.textContent = doisDigitos(Math.floor(s / 3600) % 24);
-    campos.m.textContent = doisDigitos(Math.floor(s / 60) % 60);
-    campos.s.textContent = doisDigitos(s % 60);
+    var texto = {
+      d: doisDigitos(Math.floor(s / 86400)),
+      h: doisDigitos(Math.floor(s / 3600) % 24),
+      m: doisDigitos(Math.floor(s / 60) % 60),
+      s: doisDigitos(s % 60)
+    };
+    relogios.forEach(function (c) {
+      c.d.textContent = texto.d; c.h.textContent = texto.h;
+      c.m.textContent = texto.m; c.s.textContent = texto.s;
+    });
     return true;
   }
 
-  if (relogio && campos.d) {
+  if (relogios.length) {
     if (tique()) {
       var batida = setInterval(function () {
         if (!tique()) clearInterval(batida);
