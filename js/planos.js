@@ -19,8 +19,8 @@
 
   var FIM_DA_PROMO = new Date(2026, 7, 31, 23, 59, 59);   // mês 7 = agosto
 
-  // Duas tarjas com o mesmo prazo: a da criação de site e a de mídia.
-  var tarjas   = Array.prototype.slice.call(document.querySelectorAll('.promo'));
+  // Dois selos com o mesmo prazo: o da criação de site e o de mídia.
+  var tarjas   = Array.prototype.slice.call(document.querySelectorAll('.promo, .promo-selo'));
   var relogios = Array.prototype.slice.call(document.querySelectorAll('.promo__relogio'))
     .map(function (r) {
       return {

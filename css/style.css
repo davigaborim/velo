@@ -327,6 +327,11 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 .cab h2{ font-size:clamp(30px,4.2vw,48px); margin-bottom:16px; }
 .cab__texto{ color:var(--texto-fraco); font-size:17px; }
 .cab__texto strong{ color:var(--texto); font-weight:600; }
+.cab--linha{
+  max-width:none; display:flex; align-items:center; flex-wrap:wrap; gap:12px 18px;
+}
+.cab--linha h2{ margin-bottom:0; }
+.cab--linha .cab__texto{ flex-basis:100%; }
 .cab--claro h2{ color:#fff; }
 .cab--claro .cab__texto{ color:rgba(255,255,255,.72); }
 .cab--claro .cab__texto strong{ color:#fff; font-weight:600; }
@@ -392,28 +397,10 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   margin-left:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
-.tela__corpo{ display:block; height:calc(100% - 30px); padding:14px; }
-.tela__nav{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
-.tela__nav b{ width:52px; height:11px; border-radius:3px; background:var(--m1); }
-.tela__nav s{ width:26px; height:6px; border-radius:3px; background:var(--m3); }
-
-.tela__hero{ display:block; margin-bottom:16px; }
-.tela__hero b{ display:block; width:74%; height:19px; border-radius:5px; background:var(--m1); margin-bottom:8px; }
-.tela__hero i{ display:block; width:58%; height:7px; border-radius:4px; background:var(--m3); margin-bottom:6px; }
-.tela__hero u{ display:block; width:96px; height:22px; border-radius:999px; background:var(--m2); margin-top:12px; }
-
-.tela__linha{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
-.tela__linha i{ display:block; height:46px; border-radius:8px; background:var(--m4); }
-
-.tela__busca{ display:flex; gap:8px; margin-bottom:14px; }
-.tela__busca i{ flex:1; height:24px; border-radius:7px; background:var(--m4); }
-.tela__busca u{ width:60px; height:24px; border-radius:7px; background:var(--m2); }
-.tela__grade{ display:grid; grid-template-columns:repeat(2,1fr); gap:9px; }
-.tela__grade i{ display:block; height:42px; border-radius:8px; background:var(--m4); }
-
-/* cada preview usa a paleta real do cliente */
-.obra__tela--clinica{ --m1:#8A6B3D; --m2:#C9A227; --m3:#D9C9AE; --m4:#F3EDE2; background:#FDFBF7; }
-.obra__tela--imob{ --m1:#123B2E; --m2:#C7A253; --m3:#BFD2C8; --m4:#EEF3F0; background:#FAFCFB; }
+.tela__foto{
+  display:block; width:100%; height:calc(100% - 30px);
+  object-fit:cover; object-position:top center;
+}
 
 .obra__tipo{
   font-family:var(--mono); font-size:11.5px; letter-spacing:.1em;
@@ -711,13 +698,13 @@ html.is-puxando-mar body{ user-select:none; }
    uma tarja de promoção logo acima, ela precisa ceder a altura dele — senão
    o tubarão senta em cima do relógio. O 0.95 é a proporção da imagem
    (630x600); o resto é folga. */
-.promo + .planos--com-mascote{
+.planos--com-mascote{
   margin-top:calc(clamp(150px,17vw,212px) * .95 + 6px);
 }
 
 @media (max-width:760px){
   .planos__mascote{ display:none; }
-  .promo + .planos--com-mascote{ margin-top:0; }
+  .planos--com-mascote{ margin-top:0; }
 }
 
 /* ---------- preço ---------- */
@@ -897,51 +884,20 @@ html.is-puxando-mar body{ user-select:none; }
 .mens__card--destaque ul li::before{ border-color:var(--sol); }
 .mens__card .btn--bloco{ margin-top:auto; }
 
-/* ---------- promoção e relógio ---------- */
+/* ---------- selo de lançamento ----------
+   Substituiu a tarja com relógio: a promoção continua existindo, mas cabe
+   numa linha ao lado do título em vez de comer meia dobra da página. */
 
-.promo{
-  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
-  gap:18px 28px; margin-bottom:30px; padding:20px 24px;
-  border-radius:var(--raio); border:1px solid rgba(255,194,75,.42);
-  background:linear-gradient(100deg,rgba(255,194,75,.16),rgba(255,194,75,.05));
+.promo-selo{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px; border-radius:999px;
+  background:rgba(255,194,75,.18); border:1px solid rgba(255,194,75,.55);
+  color:#8A5B00; font-size:13.5px; line-height:1.35; white-space:nowrap;
 }
-.promo[hidden]{ display:none; }
-
-.promo__selo{
-  font-family:var(--mono); font-size:11px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--sol); margin-bottom:6px;
-}
-.promo__frase{ font-size:16.5px; color:rgba(255,255,255,.88); max-width:44ch; }
-.promo__frase strong{ color:var(--sol); font-weight:600; }
-
-.promo__relogio{ display:flex; gap:8px; }
-.promo__relogio > div{
-  min-width:58px; padding:9px 8px 7px; text-align:center;
-  border-radius:var(--raio-sm); background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.14);
-}
-.promo__relogio b{
-  display:block; font-family:var(--mono); font-size:21px; font-weight:500;
-  font-variant-numeric:tabular-nums; color:#fff; line-height:1.2;
-}
-.promo__relogio span{
-  font-family:var(--mono); font-size:10px; letter-spacing:.1em;
-  text-transform:uppercase; color:rgba(255,255,255,.55);
-}
-
-/* a mesma tarja, virada pra seção clara dos planos de site */
-.promo--claro{
-  border-color:rgba(214,146,0,.45);
-  background:linear-gradient(100deg,rgba(255,194,75,.30),rgba(255,194,75,.10));
-}
-.promo--claro .promo__selo{ color:#8A5B00; }
-.promo--claro .promo__frase{ color:var(--texto); }
-.promo--claro .promo__frase strong{ color:#8A5B00; }
-.promo--claro .promo__relogio > div{
-  background:var(--branco); border-color:rgba(11,46,88,.12);
-}
-.promo--claro .promo__relogio b{ color:var(--texto); }
-.promo--claro .promo__relogio span{ color:var(--texto-fraco); }
+.promo-selo svg{ width:15px; height:15px; flex:0 0 auto; }
+.promo-selo b{ font-weight:600; }
+.promo-selo[hidden]{ display:none; }
+.promo-selo--claro{ background:rgba(255,194,75,.16); color:var(--sol); }
 
 /* ---------- o aceno pro Instagram ---------- */
 
