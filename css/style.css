@@ -1039,7 +1039,7 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 
 /* o padding-top dá o espaço que a fita "Mais escolhido" precisa pra não ser
    comida pelo overflow:hidden que faz o corte da prévia. */
-.planos--teaser{ position:relative; max-height:472px; padding-top:16px; overflow:hidden; }
+.planos--teaser{ position:relative; max-height:560px; padding-top:16px; overflow:hidden; }
 .planos--teaser::after{
   content:""; position:absolute; inset:auto 0 0 0; height:210px; pointer-events:none;
   background:linear-gradient(180deg,rgba(242,249,254,0) 0%,var(--bruma) 76%);
@@ -1048,11 +1048,38 @@ a.insta-selo:hover{ filter:brightness(1.08); }
   position:relative; z-index:2; display:flex; justify-content:center; margin-top:-46px;
 }
 @media (max-width:760px){
-  .planos--teaser{ max-height:368px; }
+  .planos--teaser{ max-height:430px; }
   .planos--teaser::after{ height:170px; }
 }
 
-/* preços alinhados entre os cards: o pitch mais longo tem 3 linhas */
+/* Os planos de mídia moram numa seção escura na página de planos, então o card
+   --noite é translúcido de propósito. Na home a seção é clara: aqui ele precisa
+   de uma base sólida por baixo dos mesmos degradês, senão desbota. */
+.planos--midia.planos--teaser .plano--noite{
+  background:
+    linear-gradient(90deg,#F58529,#DD2A7B 35%,#8134AF 68%,#515BD4) top/100% 3px no-repeat,
+    linear-gradient(165deg,rgba(46,134,214,.40),rgba(20,73,140,.30)),
+    var(--profundo);
+}
+.planos--midia.planos--teaser .plano--noite.plano--destaque{
+  background:
+    linear-gradient(90deg,#F58529,#DD2A7B 35%,#8134AF 68%,#515BD4) top/100% 3px no-repeat,
+    linear-gradient(165deg,rgba(255,194,75,.14),rgba(46,134,214,.42) 42%,rgba(20,73,140,.34)),
+    var(--profundo);
+}
+
+/* segundo cabeçalho dentro da mesma seção (planos de Instagram na home) */
+.cab--sub{ margin-top:clamp(56px,7vw,84px); }
+
+/* preços alinhados entre os cards: a descrição mais longa tem 5 linhas */
 @media (min-width:761px){
-  .plano__pitch{ min-height:4.35em; }
+  .plano__pitch{ min-height:6.6em; }
+}
+
+/* ==========================================================================
+   16. COMO O PREÇO FUNCIONA (fim da página de planos)
+   ========================================================================== */
+
+.pl-aberto__textos{
+  display:grid; gap:14px; max-width:62ch;
 }
