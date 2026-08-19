@@ -35,6 +35,15 @@
 
   --sombra:0 2px 4px rgba(11,46,88,.04),0 12px 32px -8px rgba(11,46,88,.12);
   --sombra-alta:0 4px 8px rgba(11,46,88,.06),0 24px 56px -12px rgba(11,46,88,.20);
+
+  /* areia — só o rodapé usa. Do molhado (onde a água acabou de bater, no alto)
+     pro seco lá embaixo. */
+  --areia-molhada:#BFA179;
+  --areia-umida:#CDB28B;
+  --areia:#E0CDA8;
+  --areia-seca:#EDE0C6;
+  --areia-texto:#5A4531;
+  --areia-texto-fraco:#7A6449;
 }
 
 @media (max-width:640px){ :root{ --mar-h:78px; } }
@@ -231,6 +240,9 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
   gap:clamp(24px,4vw,56px); align-items:center;
 }
+/* o mascote é o primeiro no HTML (ver comentário lá) — no desktop a grade
+   devolve o texto pra esquerda */
+.hero__texto{ order:-1; }
 
 .hero__h1{
   font-size:clamp(42px,7.2vw,80px);
@@ -284,14 +296,33 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   animation:boia 6s ease-in-out infinite .3s;
 }
 
+/* No celular o mascote saía de cima do texto e comia a primeira tela inteira:
+   o título só começava depois de 240px de tubarão. Aqui a grade vira bloco e
+   ele passa a flutuar à direita, pequeno, com o título contornando — mesma
+   leitura do desktop (texto primeiro, mascote ao lado) num espaço só.
+
+   `shape-outside` faz o texto acompanhar o contorno do bicho em vez da caixa
+   retangular, e o `margin` reserva o respiro entre um e outro. */
 @media (max-width:900px){
   .hero{ padding-top:clamp(20px,4vw,40px); }
-  .hero__grid{ grid-template-columns:1fr; gap:20px; }
-  /* mascote em cima, mas pequeno: o CTA precisa caber na primeira tela */
-  .hero__mascote{ order:-1; max-width:180px; }
+  .hero__grid{ display:block; }
+  .hero__texto{ order:0; }
+  .hero__mascote{
+    float:right;
+    width:clamp(96px,27vw,150px); max-width:none;
+    margin:0 0 8px clamp(10px,3vw,18px);
+    shape-outside:margin-box;
+  }
   .balao{ display:none; }
-  .hero__h1{ font-size:clamp(38px,10vw,56px); }
+  /* a linha de cima quebra ao lado do mascote: melhor em duas metades
+     parecidas do que com "ANÚNCIOS" sozinho embaixo */
+  .hero .olho{ text-wrap:balance; letter-spacing:.13em; }
+  /* o grifo é nowrap: com o mascote ao lado, o título precisa caber na
+     coluna que sobrou sem estourar a linha "na crista da onda" */
+  .hero__h1{ font-size:clamp(30px,7.6vw,46px); margin-bottom:18px; }
   .hero__sub{ margin-bottom:24px; }
+  /* o texto abaixo do título já passou do mascote: volta a ser corrido */
+  .hero__acoes,.selos{ clear:right; }
 }
 
 /* ==========================================================================
@@ -523,43 +554,76 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 }
 
 /* ==========================================================================
-   10. RODAPÉ
+   10. RODAPÉ — A AREIA
+   O rodapé era a mesma água da chamada logo acima: dois blocos navy com a
+   mesma fumaça e a mesma lapela de onda, um colado no outro. Agora a página
+   termina chegando na praia — o mar fixo lá embaixo passa a lamber areia em
+   vez de mais mar.
+
+   A areia é só cor e bolinha, sem imagem nenhuma:
+     1. gradiente base — molhada em cima (onde a onda acabou de bater) e seca
+        embaixo;
+     2. grãos — três camadas de bolinha em `radial-gradient`, duas claras e
+        uma escura, cada uma num ladrilho de tamanho diferente. Os tamanhos
+        não são múltiplos um do outro de propósito: assim as três nunca
+        coincidem e o olho não acha a repetição. A bolinha não tem borda
+        dura — vai da cor ao transparente em ~2px. Com borda dura virava
+        bolinha de papel de parede; desbotada vira grão.
+
+   Já teve ondulação de maré aqui (linhas passadas num feDisplacementMap) e
+   ruído de textura por cima. Ficou com cara de textura de jogo antigo —
+   detalhe demais numa faixa que é só rodapé. Bolinha basta.
    ========================================================================== */
 
 .rodape{
   position:relative;
-  background:var(--abissal); color:rgba(255,255,255,.72);
+  color:var(--areia-texto);
+  background:
+    radial-gradient(circle at 30% 34%,rgba(255,255,255,.42) 0,rgba(255,255,255,0) 1.9px) 0 0/26px 22px,
+    radial-gradient(circle at 71% 66%,rgba(122,100,73,.19) 0,rgba(122,100,73,0) 2.1px) 0 0/33px 29px,
+    radial-gradient(circle at 47% 81%,rgba(255,255,255,.28) 0,rgba(255,255,255,0) 1.6px) 0 0/19px 37px,
+    linear-gradient(180deg,
+      var(--areia-molhada) 0,
+      var(--areia-umida) 30px,
+      var(--areia) 150px,
+      var(--areia-seca) 100%);
   padding-top:clamp(48px,6vw,72px);
   padding-bottom:calc(var(--mar-h) + 28px);   /* espaço pro mar fixo */
 }
-/* o rodapé também sobe em onda, fechando a linguagem da página */
+
+/* o texto mora acima do fundo */
+.rodape__in,.rodape__fim{ position:relative; z-index:1; }
+
+/* a mesma lapela de onda de antes, agora cor de areia molhada: é a praia
+   subindo na água da seção de cima, não mais navy sobre navy */
 .rodape::before{
   content:""; position:absolute; left:0; right:0; bottom:100%; height:34px;
-  background:var(--abissal);
+  background:var(--areia-molhada);
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34' preserveAspectRatio='none'%3E%3Cpath d='M0 34V16c10 0 10-11 20-11s10 11 20 11 10-11 20-11 10 11 20 11 10-11 20-11 10 11 20 11v18Z' fill='%23000'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34' preserveAspectRatio='none'%3E%3Cpath d='M0 34V16c10 0 10-11 20-11s10 11 20 11 10-11 20-11 10 11 20 11 10-11 20-11 10 11 20 11v18Z' fill='%23000'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;
 }
 
 .rodape__in{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:36px; padding-bottom:34px; }
-.rodape__marca p{ font-size:15px; max-width:32ch; margin-top:12px; }
-.marca--rodape{ color:#fff; }
-.marca--rodape .marca__fin{ fill:var(--raso); }
+.rodape__marca p{ font-size:15px; max-width:32ch; margin-top:12px; color:var(--areia-texto-fraco); }
+.marca--rodape{ color:var(--abissal); }
+.marca--rodape .marca__fin{ fill:var(--profundo); }
 
 .rodape__links{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:28px; }
 .rodape__links h4{
   font-family:var(--mono); font-weight:500; font-size:11.5px;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--raso); margin-bottom:14px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--areia-texto-fraco); margin-bottom:14px;
 }
 .rodape__links a{
   display:block; text-decoration:none; font-size:15px; padding:5px 0;
-  color:rgba(255,255,255,.72); transition:color .2s ease,padding-left .2s ease;
+  color:var(--areia-texto); transition:color .2s ease,padding-left .2s ease;
 }
-.rodape__links a:hover{ color:#fff; padding-left:5px; }
+.rodape__links a:hover{ color:var(--abissal); padding-left:5px; }
 
+/* linha de maré: o risco que separa o rodapé do crédito lá embaixo */
 .rodape__fim{
   display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px;
-  padding-top:22px; border-top:1px solid rgba(255,255,255,.14);
-  font-size:13.5px; color:rgba(255,255,255,.62);
+  padding-top:22px; border-top:1px solid rgba(90,69,49,.22);
+  font-size:13.5px; color:var(--areia-texto-fraco);
 }
 
 @media (max-width:760px){ .rodape__in{ grid-template-columns:1fr; } }
@@ -1139,9 +1203,7 @@ a.insta-selo:hover{ filter:brightness(1.08); }
   }
 }
 
-/* O rodapé tem texto espalhado nas duas pontas, então segue chapado — e mais
-   fechado, porque ali a água é só um eco. */
-.rodape .vivo::after{ background:linear-gradient(180deg,rgba(11,46,88,.72),rgba(11,46,88,.86)); }
+/* (o rodapé saiu daqui: virou areia, sem água por baixo — ver seção 10) */
 /* nos planos de Instagram os cards já cobrem quase tudo */
 .secao--fundo .vivo::after{ background:linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.7)); }
 
@@ -1368,4 +1430,61 @@ a.insta-selo:hover{ filter:brightness(1.08); }
   background:var(--bruma);
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34' preserveAspectRatio='none'%3E%3Cpath d='M0 34V16c10 0 10-11 20-11s10 11 20 11 10-11 20-11 10 11 20 11 10-11 20-11 10 11 20 11v18Z' fill='%23000'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34' preserveAspectRatio='none'%3E%3Cpath d='M0 34V16c10 0 10-11 20-11s10 11 20 11 10-11 20-11 10 11 20 11 10-11 20-11 10 11 20 11v18Z' fill='%23000'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;
+}
+
+/* ==========================================================================
+   19. PÁGINA 404
+   Mesma água do hero, mesma grade, mesmos botões — o que muda é o número
+   mordido e a altura: a página tem uma tela só, então ela ocupa a tela toda
+   em vez de terminar no meio do nada.
+   ========================================================================== */
+
+.erro{
+  display:flex; align-items:center;
+  min-height:100svh;
+  /* o mar é fixo na base da janela: sem esse respiro embaixo a última linha
+     nasce debaixo d'água */
+  padding-block:clamp(90px,12vw,130px) calc(var(--mar-h) + clamp(24px,4vw,48px));
+}
+.erro > .wrap{ width:100%; }
+
+/* O número é o gráfico da piada: ouro (a cor de destaque da marca, a mesma do
+   grifo do hero) com uma mordida arrancada do topo.
+
+   A mordida são três círculos vazados na máscara. `mask-composite:intersect`
+   é o que faz as três camadas se somarem como buracos em vez de se anularem
+   — em navegador que não suporte, as camadas se unem, a mordida some e o
+   número aparece inteiro. Perde a piada, não quebra a página. */
+.erro__num{
+  font-family:var(--display); font-weight:800;
+  font-size:clamp(66px,12vw,132px); line-height:.9;
+  letter-spacing:-.055em;
+  color:var(--sol);
+  margin:2px 0 14px;
+  width:max-content; max-width:100%;
+
+  /* raios em `em`: a mordida encolhe junto com o número no celular. Em px
+     ela ficava do mesmo tamanho e comia o 404 inteiro na tela pequena. */
+  --mordida:
+    radial-gradient(circle 0.26em at 44% -6%,transparent 98%,#000 100%),
+    radial-gradient(circle 0.2em at 62% -2%,transparent 98%,#000 100%),
+    radial-gradient(circle 0.16em at 74% 6%,transparent 98%,#000 100%);
+  -webkit-mask-image:var(--mordida);
+          mask-image:var(--mordida);
+  -webkit-mask-composite:source-in;
+          mask-composite:intersect;
+}
+
+.erro__h1{ font-size:clamp(34px,4.6vw,58px); max-width:16ch; }
+
+.erro__nota{ margin-top:26px; font-size:15px; color:rgba(255,255,255,.8); }
+
+/* o balão do mascote cabe aqui porque a coluna dele é mais folgada que na home */
+.balao--erro{ left:-16%; top:2%; }
+
+@media (max-width:900px){
+  /* o mascote já flutua à direita pela regra do hero; aqui só o número
+     acompanha o texto e o balão continua fora */
+  .erro__h1{ font-size:clamp(28px,7vw,44px); max-width:none; }
+  .erro__num{ font-size:clamp(56px,15vw,96px); }
 }

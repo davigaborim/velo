@@ -1,13 +1,16 @@
 # Site da Velo
 
-Site estático, sem build. É só subir a pasta inteira num servidor (Hostinger,
-Netlify, Vercel — qualquer um serve). Para ver localmente, abra `index.html`
-no navegador.
+Site estático, sem build. É só subir os arquivos num servidor (Hostinger,
+Netlify, Vercel — qualquer um serve); tem uma pasta `site-hostinger/` já
+separada pra isso, ver "Publicar na Hostinger" abaixo. Para ver localmente,
+abra `index.html` no navegador.
 
 ```
 velo/
 ├── index.html
 ├── planos.html                 (planos e preços, página inteira)
+├── 404.html                    (endereço errado — o tubarão comeu a página)
+├── .htaccess                   (liga o 404 no Apache/Hostinger + cache)
 ├── favicon.svg
 ├── css/style.css
 ├── js/
@@ -31,19 +34,113 @@ Os cinco `WhatsApp Image ....jpeg` na raiz são os originais de onde saíram os
 recortes acima. Não são usados pelo site — se for publicar, pode apagar ou
 mover pra fora da pasta, senão vão junto pro servidor.
 
-## Trocar antes de publicar
+## Publicar na Hostinger
 
-Estes valores estão como espaço reservado no `index.html`:
+A pasta `site-hostinger/` é o site pronto pra subir: as mesmas páginas, sem o
+`LEIA-ME.md`, sem os originais de WhatsApp e sem as três imagens que o site
+não usa (`mascote-velo.png`, `velo-logo-original.svg`, `barbatana.svg`).
 
-| O quê | Onde procurar | Está como |
+No hPanel, o caminho é **Gerenciador de arquivos → `public_html`** e arrastar
+pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `js/` e
+`images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
+o site cai em `seudominio.com/site-hostinger/` e os caminhos do `404.html`,
+que começam na raiz, quebram.
+
+Dois detalhes que costumam morder:
+
+- o `.htaccess` começa com ponto, e programa de FTP costuma escondê-lo. Se
+  ele não subir, o 404 do tubarão não aparece — o visitante vê a tela cinza
+  padrão do servidor;
+- essa pasta não está no Git (`site-hostinger/` está no `.gitignore`). Ela é
+  cópia do que já está versionado aqui do lado, então é só refazer quando for
+  publicar de novo.
+
+## Contatos (e o que ainda é espaço reservado)
+
+Os contatos reais já estão nas três páginas:
+
+| O quê | Está como | Onde |
 |---|---|---|
-| WhatsApp | `wa.me/5567000000000` (3 lugares) | número fictício |
-| E-mail | `contato@velo.com.br` (2 lugares) | domínio fictício |
-| Instagram | `https://instagram.com/` (2 lugares) e o texto `@velo` | link vazio |
-| Domínio | `og:image` no `<head>` | caminho relativo |
+| WhatsApp | `wa.me/5567991914699` — (67) 99191-4699 | 20 links (botões dos planos, rodapé, boia) |
+| E-mail | `naorespondavelo@gmail.com` | 9 lugares |
+| Instagram | `instagram.com/velocg` — `@velocg` | 5 lugares |
+
+Se o número, o e-mail ou o @ mudarem, é procurar e trocar tudo — eles estão
+escritos direto no HTML, sem variável.
+
+Ainda **falta** um: `og:url` e `og:image` no `<head>` do `index.html` e do
+`planos.html` apontam pro endereço antigo do GitHub Pages
+(`davigaborim.github.io/velo/`). São eles que montam a miniatura quando
+alguém cola o link no WhatsApp ou no Instagram — assim que o domínio da
+Hostinger estiver de pé, troque os dois pelo endereço novo.
 
 Os números do hero (`2 sites no ar`, `24h pra responder`, `0 fidelidade`)
 e os itens de cada plano estão no `index.html` em texto puro — é só editar.
+
+## A página de erro
+
+`404.html` reaproveita as classes do hero (`.hero`, `.hero__grid`,
+`.hero__texto`, `.hero__mascote`) — mesma água, mesma grade, mesmos botões.
+O que ela tem de próprio é o `.erro__num`: o "404" em ouro com uma mordida
+arrancada do topo. A mordida são três círculos vazados numa máscara CSS
+somados com `mask-composite:intersect`; em navegador que não suportar, as
+camadas se unem, a mordida some e o número aparece inteiro — perde a piada,
+não quebra a página. Os raios estão em `em` pra mordida encolher junto com o
+número no celular.
+
+Os caminhos do `404.html` começam na raiz (`/css/style.css`, `/images/...`)
+de propósito: essa página aparece em qualquer endereço errado, inclusive
+`seudominio.com/uma/pasta/funda/`, e caminho relativo quebraria o CSS lá.
+**Isso vale para site publicado na raiz do domínio.** Se um dia ele for pra
+uma subpasta, esses caminhos precisam do prefixo da subpasta.
+
+Quem liga o arquivo ao servidor é o `ErrorDocument 404 /404.html` do
+`.htaccess`. A Hostinger lê o `.htaccess` sozinha — é só o arquivo estar na
+mesma pasta do `index.html`. Cuidado ao subir por FTP: arquivo que começa com
+ponto costuma ficar escondido, e alguns programas não mostram por padrão.
+
+## O rodapé é areia
+
+O rodapé e a chamada de contato logo acima dele eram o mesmo bloco: navy com
+a mesma água em WebGL e a mesma lapela de onda, um colado no outro. Agora a
+página termina chegando na praia — o rodapé perdeu o `data-vivo` e virou
+areia, e o mar fixo lá embaixo passou a lamber areia em vez de mais mar.
+
+A areia é só cor e bolinha (seção 10 do CSS), sem imagem nenhuma:
+
+1. **gradiente base** — molhada no alto (onde a onda acabou de bater) e seca
+   embaixo;
+2. **grãos** — três camadas de bolinha em `radial-gradient`, duas claras e
+   uma escura, cada uma num ladrilho de tamanho diferente (26×22, 33×29,
+   19×37). Os tamanhos não são múltiplos um do outro de propósito: assim as
+   três nunca coincidem e o olho não acha a repetição. A bolinha vai da cor
+   ao transparente em ~2px — com borda dura ela vira papel de parede,
+   desbotada vira grão.
+
+Como não tem imagem, dá pra mudar a cor toda mexendo nas variáveis
+`--areia-*` lá no `:root`. E dá pra tirar as bolinhas inteiras: é só apagar
+as três primeiras linhas do `background` e deixar só o `linear-gradient`.
+
+> Já teve ondulação de maré aqui — linhas passadas num `feDisplacementMap`,
+> com sombra e luz pra simular relevo — e ruído de textura por cima. Ficou
+> com cara de textura de jogo antigo: detalhe demais numa faixa que é só
+> rodapé. Se um dia bater vontade de tentar de novo, o histórico do git tem.
+
+## O mascote no celular
+
+No desktop o hero é grade de duas colunas: texto na esquerda, tubarão na
+direita. No celular ele ficava **em cima** do texto e comia a primeira tela
+inteira — o título só começava depois de 240px de tubarão.
+
+Agora a grade vira bloco abaixo de 900px e o mascote flutua (`float:right`)
+pequeno ao lado do título, com o texto contornando ele. Por isso o
+`.hero__mascote` vem **antes** do `.hero__texto` no HTML: float só empurra o
+que vem depois dele na marcação. No desktop o `.hero__texto{order:-1}`
+devolve o texto pra primeira coluna.
+
+Detalhe que amarra tudo: o `.grifo` ("na crista da onda") é `nowrap`, então o
+título tem um tamanho menor no celular pra caber na coluna que sobra ao lado
+do bicho. Se aumentar essa fonte, confira se a linha não estoura a tela.
 
 ## Sobre os planos
 

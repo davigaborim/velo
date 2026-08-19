@@ -1,0 +1,27 @@
+# Velo — configuração do Apache (Hostinger)
+# Este arquivo só funciona em servidor Apache. Na Hostinger (hospedagem
+# compartilhada) ele vale automaticamente; em Netlify/Vercel/GitHub Pages é
+# ignorado — lá a página de erro é achada de outro jeito.
+
+# ---------------------------------------------------------------- página 404
+# Sem isto o visitante que erra o endereço vê a tela cinza padrão do servidor
+# em vez do tubarão. O caminho é a partir da raiz do domínio.
+ErrorDocument 404 /404.html
+
+# ------------------------------------------------------------------ compressão
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript image/svg+xml
+</IfModule>
+
+# ----------------------------------------------------------------------- cache
+# HTML sempre fresco (pra alteração no texto aparecer na hora); imagem, CSS e
+# JS podem ficar guardados no navegador.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html               "access plus 0 seconds"
+  ExpiresByType text/css                "access plus 7 days"
+  ExpiresByType application/javascript  "access plus 7 days"
+  ExpiresByType image/png               "access plus 30 days"
+  ExpiresByType image/jpeg              "access plus 30 days"
+  ExpiresByType image/svg+xml           "access plus 30 days"
+</IfModule>

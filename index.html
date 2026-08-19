@@ -61,6 +61,16 @@
 <!-- ============================ HERO ============================ -->
 <section class="hero" data-vivo data-vivo-semente="97" data-vivo-velocidade="0.62" data-vivo-escala="1.35" data-vivo-deriva="0.34">
   <div class="wrap hero__grid">
+    <!-- O mascote vem antes do texto no HTML de propósito: no celular o hero
+         vira bloco e ele flutua (float) à direita, com o título contornando.
+         Float só empurra o que vem DEPOIS dele na marcação. No desktop a
+         grade devolve o texto pra primeira coluna com `order`. -->
+    <div class="hero__mascote reveal" style="--d:2">
+      <div class="mascote__aura" aria-hidden="true" data-desliza="-0.12" data-desliza-max="40"></div>
+      <img src="images/mascote-novo.png" alt="Mascote da Velo: um tubarão de óculos e gravata-borboleta, sorrindo e apontando" width="717" height="886" fetchpriority="high">
+      <div class="balao" aria-hidden="true">Oi! Eu cuido do seu digital.</div>
+    </div>
+
     <div class="hero__texto">
       <p class="olho reveal">Sites <span>·</span> Redes sociais <span>·</span> Anúncios</p>
 
@@ -89,12 +99,6 @@
         <li><strong data-conta="24" data-sufixo="h">24h</strong> pra responder</li>
         <li><strong>0</strong> fidelidade</li>
       </ul>
-    </div>
-
-    <div class="hero__mascote reveal" style="--d:2">
-      <div class="mascote__aura" aria-hidden="true" data-desliza="-0.12" data-desliza-max="40"></div>
-      <img src="images/mascote-novo.png" alt="Mascote da Velo: um tubarão de óculos e gravata-borboleta, sorrindo e apontando" width="717" height="886" fetchpriority="high">
-      <div class="balao" aria-hidden="true">Oi! Eu cuido do seu digital.</div>
     </div>
   </div>
 </section>
@@ -376,14 +380,14 @@
         precisa contratar agora".
       </p>
       <div class="chamada__acoes reveal" style="--d:2">
-        <a class="btn btn--zap btn--lg" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Quero%20um%20or%C3%A7amento." target="_blank" rel="noopener">
+        <a class="btn btn--zap btn--lg" href="https://wa.me/5567991914699?text=Oi%2C%20Velo!%20Quero%20um%20or%C3%A7amento." target="_blank" rel="noopener">
           <svg class="btn__zap" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6a11.4 11.4 0 0 1-4.4-4c-.3-.5-.7-1.2-.7-2s.4-1.2.6-1.4c.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .5.4l.7 1.7c.1.1.1.3 0 .4l-.2.4-.3.3c-.1.1-.2.2-.1.4.2.4.7 1.2 1.4 1.8.9.8 1.6 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3v.9Z"/></svg>
           Chamar no WhatsApp
         </a>
-        <a class="btn btn--fantasma btn--lg" href="mailto:contato@velo.com.br?subject=Or%C3%A7amento%20Velo">Mandar e-mail</a>
+        <a class="btn btn--fantasma btn--lg" href="mailto:naorespondavelo@gmail.com?subject=Or%C3%A7amento%20Velo">Mandar e-mail</a>
       </div>
       <p class="chamada__rodape reveal" style="--d:3">
-        Prefere Instagram? <a class="link link--claro" href="https://instagram.com/" target="_blank" rel="noopener">@velo</a>
+        Prefere Instagram? <a class="link link--claro" href="https://instagram.com/velocg" target="_blank" rel="noopener">@velocg</a>
       </p>
     </div>
 
@@ -396,7 +400,8 @@
 </main>
 
 <!-- ============================ RODAPÉ ============================ -->
-<footer class="rodape" data-vivo data-vivo-semente="211" data-vivo-velocidade="0.55" data-vivo-escala="2.3" data-vivo-resolucao="0.45">
+<!-- sem data-vivo: aqui embaixo é areia, não água (ver seção 10 do CSS) -->
+<footer class="rodape">
   <div class="wrap rodape__in">
     <div class="rodape__marca">
       <a class="marca marca--rodape" href="#topo" aria-label="Velo — voltar ao topo">
@@ -415,9 +420,9 @@
       </div>
       <div>
         <h4>Falar com a gente</h4>
-        <a href="https://wa.me/5567000000000" target="_blank" rel="noopener">WhatsApp</a>
-        <a href="mailto:contato@velo.com.br">contato@velo.com.br</a>
-        <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://wa.me/5567991914699" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:naorespondavelo@gmail.com">naorespondavelo@gmail.com</a>
+        <a href="https://instagram.com/velocg" target="_blank" rel="noopener">Instagram</a>
       </div>
     </nav>
   </div>
@@ -459,7 +464,7 @@
 
 
 <!-- ======================= WHATSAPP BOIANDO NA CRISTA ======================= -->
-<a class="zap-boia" href="https://wa.me/5567000000000?text=Oi%2C%20Velo!%20Vim%20pelo%20site%20e%20quero%20conversar." target="_blank" rel="noopener" aria-label="Falar com a Velo no WhatsApp">
+<a class="zap-boia" href="https://wa.me/5567991914699?text=Oi%2C%20Velo!%20Vim%20pelo%20site%20e%20quero%20conversar." target="_blank" rel="noopener" aria-label="Falar com a Velo no WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6a11.4 11.4 0 0 1-4.4-4c-.3-.5-.7-1.2-.7-2s.4-1.2.6-1.4c.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .5.4l.7 1.7c.1.1.1.3 0 .4l-.2.4-.3.3c-.1.1-.2.2-.1.4.2.4.7 1.2 1.4 1.8.9.8 1.6 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3v.9Z"/></svg>
   <span class="zap-boia__texto">WhatsApp</span>
 </a>

@@ -3,3 +3,8 @@
 # o que o site usa são os arquivos tratados dentro de images/.
 WhatsApp Image *.jpeg
 WhatsApp Image *.jpg
+
+# Pasta pronta pra subir na Hostinger. É cópia do que já está aqui do lado,
+# só sem o LEIA-ME e sem as imagens que o site não usa. Refaz na hora de
+# publicar; versionada, ela dobraria todo diff do site.
+site-hostinger/
