@@ -623,12 +623,52 @@ html.is-puxando-mar body{ user-select:none; }
    12. REVELAÇÃO NO SCROLL
    ========================================================================== */
 
+/* O elemento entra de longe e fora de foco, como coisa emergindo da água.
+   O desfoque some junto com o movimento; depois que acabou, o vivo.js marca
+   .is-limpo e o filtro sai de vez — filter fica ligado numa camada de
+   composição pra sempre e amolece o texto na GPU. */
 .reveal{
-  opacity:0; transform:translateY(22px);
-  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);
-  transition-delay:calc(var(--d,0) * 80ms);
+  opacity:0; transform:translateY(26px) scale(.988);
+  filter:blur(7px);
+  transition:opacity .8s cubic-bezier(.22,1,.36,1),
+             transform .8s cubic-bezier(.22,1,.36,1),
+             filter .8s cubic-bezier(.22,1,.36,1);
+  transition-delay:calc(var(--d,0) * 90ms);
 }
-.reveal.is-vista{ opacity:1; transform:none; }
+.reveal.is-vista{ opacity:1; transform:none; filter:blur(0); }
+.reveal.is-limpo{ filter:none; }
+
+/* Título entra por máscara: a frase é descoberta de baixo pra cima em vez de
+   simplesmente aparecer.
+
+   Máscara e não clip-path de propósito. clip-path zera a área do elemento, e
+   o IntersectionObserver que dispara o .is-vista passa a enxergar o título
+   como fora da tela — ele nunca é revelado e o site fica sem títulos. Máscara
+   é efeito de pintura: não mexe na geometria que o observador mede.
+
+   A imagem tem o dobro da altura da caixa: metade transparente em cima,
+   metade opaca embaixo. Escorregar a máscara de 0% pra 100% traz a parte
+   opaca pra cima do texto. */
+h2.reveal,.pl-abre__h1.reveal{
+  --mascara:linear-gradient(180deg,transparent 0,transparent 44%,#000 58%,#000 100%);
+  -webkit-mask-image:var(--mascara); mask-image:var(--mascara);
+  -webkit-mask-size:100% 200%;      mask-size:100% 200%;
+  -webkit-mask-repeat:no-repeat;    mask-repeat:no-repeat;
+  -webkit-mask-position:0 0;        mask-position:0 0;
+  transition:opacity .9s cubic-bezier(.22,1,.36,1),
+             transform .9s cubic-bezier(.22,1,.36,1),
+             filter .9s cubic-bezier(.22,1,.36,1),
+             -webkit-mask-position 1.05s cubic-bezier(.22,1,.36,1),
+             mask-position 1.05s cubic-bezier(.22,1,.36,1);
+  transition-delay:calc(var(--d,0) * 90ms);
+}
+h2.reveal.is-vista,.pl-abre__h1.reveal.is-vista{
+  -webkit-mask-position:0 100%; mask-position:0 100%;
+}
+/* máscara cumprida, some do caminho */
+h2.reveal.is-limpo,.pl-abre__h1.reveal.is-limpo{
+  -webkit-mask-image:none; mask-image:none;
+}
 
 /* ==========================================================================
    13. MOVIMENTO REDUZIDO
@@ -640,8 +680,12 @@ html.is-puxando-mar body{ user-select:none; }
     animation-duration:.001ms !important; animation-iteration-count:1 !important;
     transition-duration:.001ms !important;
   }
-  .reveal{ opacity:1; transform:none; }
+  .reveal{ opacity:1; transform:none; filter:none; }
+  h2.reveal,.pl-abre__h1.reveal{ -webkit-mask-image:none; mask-image:none; }
   .grifo__risco path{ stroke-dashoffset:0; }
+  .vivo__tela{ opacity:.55; }
+  [data-desliza]{ --px:0px !important; }
+  .card.is-inclinado,.plano.is-inclinado,.obra__tela.is-inclinado,.avulso.is-inclinado{ transform:none; }
 }
 
 /* ==========================================================================
@@ -1038,4 +1082,290 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 
 .pl-aberto__textos{
   display:grid; gap:14px; max-width:62ch;
+}
+
+/* ==========================================================================
+   17. VIDRO, PROFUNDIDADE E MOVIMENTO
+   A ideia: o site claro continua claro e legível; as faixas escuras deixam
+   de ser bloco de tinta e viram água de verdade, com fumaça de fbm rodando
+   no WebGL por baixo do texto.
+   ========================================================================== */
+
+/* ---------- o shader nas faixas escuras ---------- */
+
+[data-vivo]{ position:relative; isolation:isolate; }
+
+/* tudo que não é a água sobe uma camada */
+[data-vivo] > *:not(.vivo){ position:relative; z-index:1; }
+
+/* A água some nos 56px de cima e de baixo: é onde ficam as bordas de onda
+   recortadas, que continuam no navy chapado. Sem essa dissolvida daria pra
+   ver a emenda entre a fumaça e a lapela da onda. */
+.vivo{
+  position:absolute; inset:0; z-index:0;
+  overflow:hidden; pointer-events:none;
+  -webkit-mask:linear-gradient(180deg,transparent 0,#000 56px,#000 calc(100% - 56px),transparent 100%);
+  mask:linear-gradient(180deg,transparent 0,#000 56px,#000 calc(100% - 56px),transparent 100%);
+}
+
+/* Opacidade cheia: a água aparece como ela é. O que protege a leitura não é
+   apagar a água inteira, é onde o véu abaixo cai. */
+.vivo__tela{ display:block; width:100%; height:100%; }
+
+.vivo::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.72));
+}
+
+/* Nas seções de hero e chamada o texto mora na esquerda e o mascote na
+   direita. Então o véu é lateral, não chapado: cobre a coluna do texto e
+   abre no lado do mascote, onde a água pode aparecer limpa. É o mesmo truque
+   de vídeo de fundo — escurecer só onde precisa ler. */
+.hero .vivo::after,
+.chamada .vivo::after{
+  background:linear-gradient(100deg,
+    rgba(4,24,44,.88) 0%,
+    rgba(4,24,44,.7) 36%,
+    rgba(4,24,44,.26) 66%,
+    rgba(4,24,44,0) 100%);
+}
+
+/* No celular o texto ocupa a largura toda e o mascote sai de cena: o véu
+   volta a ser chapado, senão o fim das linhas cai na água limpa. */
+@media (max-width:900px){
+  .hero .vivo::after,
+  .chamada .vivo::after{
+    background:linear-gradient(180deg,rgba(4,24,44,.8),rgba(4,24,44,.66));
+  }
+}
+
+/* O rodapé tem texto espalhado nas duas pontas, então segue chapado — e mais
+   fechado, porque ali a água é só um eco. */
+.rodape .vivo::after{ background:linear-gradient(180deg,rgba(11,46,88,.72),rgba(11,46,88,.86)); }
+/* nos planos de Instagram os cards já cobrem quase tudo */
+.secao--fundo .vivo::after{ background:linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.7)); }
+
+/* ---------- barra de progresso de leitura ---------- */
+
+.progresso{
+  position:fixed; inset:0 0 auto; height:2px; z-index:80;
+  pointer-events:none;
+}
+.progresso i{
+  display:block; height:100%; transform:scaleX(0); transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--mare),var(--raso) 55%,var(--sol));
+}
+
+/* ---------- vidro no cabeçalho ---------- */
+
+.topo{ backdrop-filter:blur(16px) saturate(165%); -webkit-backdrop-filter:blur(16px) saturate(165%); }
+.topo.is-preso{
+  background:rgba(242,249,254,.74);
+  backdrop-filter:blur(24px) saturate(190%);
+  -webkit-backdrop-filter:blur(24px) saturate(190%);
+  box-shadow:0 10px 30px -22px rgba(11,46,88,.55);
+}
+
+/* botão fantasma vira vidro de verdade quando está sobre a água */
+.btn--fantasma{
+  background:rgba(255,255,255,.09);
+  backdrop-filter:blur(12px) saturate(150%);
+  -webkit-backdrop-filter:blur(12px) saturate(150%);
+}
+.btn--fantasma:hover{ background:rgba(255,255,255,.18); }
+
+/* ---------- deslize: parallax por variável ---------- */
+
+/* O halo do hero respira e desce mais devagar que o texto. */
+.hero::before{
+  translate:-50% var(--px,0px);
+  animation:respira 19s ease-in-out infinite;
+}
+@keyframes respira{
+  0%,100%{ transform:scale(1); opacity:1; }
+  50%    { transform:scale(1.09); opacity:.82; }
+}
+
+.mascote__aura{ transform:translate3d(0,var(--px,0px),0); }
+
+/* A foto é maior que a moldura de propósito: a sobra é o que permite ela
+   escorregar dentro do quadro conforme a página desce. */
+.tela__foto{
+  transform:scale(1.09) translate3d(0,var(--px,0px),0);
+  will-change:transform;
+}
+/* ...e a sobra de cima invadiria a barra de navegador falsa. A barra sobe
+   uma camada e a foto passa por baixo dela, como numa janela de verdade. */
+.tela__barra{ position:relative; z-index:1; }
+
+/* ---------- inclinação 3D e brilho no ponteiro ---------- */
+
+[data-inclina]{ transform-style:preserve-3d; }
+
+/* enquanto o mouse está em cima o transform precisa colar no ponteiro:
+   a curva elástica do repouso viraria borracha aqui */
+.is-inclinado{
+  transition:transform .1s linear,box-shadow .3s ease,border-color .3s ease;
+}
+
+.card.is-inclinado{
+  transform:perspective(1000px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg)) translate3d(0,-6px,0);
+  box-shadow:var(--sombra-alta); border-color:var(--raso);
+}
+.plano.is-inclinado{
+  transform:perspective(1100px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg)) translate3d(0,-5px,0);
+  box-shadow:var(--sombra-alta);
+}
+.obra__tela.is-inclinado{
+  transform:perspective(1200px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg)) translate3d(0,-6px,0) scale(1.012);
+  box-shadow:var(--sombra-alta);
+}
+.avulso.is-inclinado{
+  transform:perspective(900px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg)) translate3d(0,-3px,0);
+}
+
+/* Luz seguindo o ponteiro. No card ela passa POR BAIXO do texto: por cima,
+   um claro de 240px em cima de fundo branco apaga a leitura do parágrafo. E é
+   azul da marca, não branco — sobre papel branco, branco só lava. */
+.card::after{
+  content:""; position:absolute; inset:0; z-index:0;
+  border-radius:inherit; pointer-events:none; opacity:0;
+  transition:opacity .35s ease;
+  background:radial-gradient(220px circle at var(--bx,50%) var(--by,50%),
+    rgba(140,203,240,.5),rgba(140,203,240,0) 62%);
+}
+.card > *{ z-index:1; }
+.card.is-inclinado::after{ opacity:1; }
+
+/* Na moldura do trabalho pode ser reflexo branco mesmo, e por cima: ali
+   embaixo é foto, não texto — vira vidro. */
+.obra__tela{ position:relative; }
+.obra__tela::after{
+  content:""; position:absolute; inset:0; z-index:2;
+  border-radius:inherit; pointer-events:none; opacity:0;
+  transition:opacity .35s ease;
+  background:radial-gradient(300px circle at var(--bx,50%) var(--by,50%),
+    rgba(255,255,255,.3),rgba(255,255,255,0) 58%);
+}
+.obra__tela.is-inclinado::after{ opacity:1; }
+
+/* ---------- números do hero ---------- */
+
+/* largura fixa por dígito: sem isso a linha inteira dança durante a contagem */
+.selos strong{ font-variant-numeric:tabular-nums; }
+
+/* ---------- toques finais ---------- */
+
+/* a barbatana da marca ganha um respiro de sombra quando o topo gruda */
+.topo.is-preso .marca__fin{ filter:drop-shadow(0 2px 6px rgba(46,134,214,.45)); }
+
+/* ==========================================================================
+   18. OS DOIS HEROS NA ÁGUA
+   O hero da home e a abertura dos planos deixam de ser bruma e passam a ser
+   água aberta. Água em opacidade cheia não convive com texto navy — então o
+   texto vira claro. Só os dois topos e as faixas escuras: o miolo do site
+   (serviços, planos, trabalhos) continua claro como sempre foi.
+
+   Pra voltar atrás é só apagar este bloco e o `data-vivo` das duas seções.
+   ========================================================================== */
+
+.hero,
+.pl-abre{
+  background:linear-gradient(180deg,#04182C 0%,#0A2A50 62%,#0B2E58 100%);
+  color:#fff;
+}
+
+/* o halo de espuma virou a própria água */
+.hero::before{ display:none; }
+
+.hero .olho,
+.pl-abre .rotulo{ color:var(--raso); }
+
+.hero__h1,
+.pl-abre__h1{ color:#fff; }
+
+/* Na água, o azul do grifo desaparecia. Ouro é a cor de destaque da marca e
+   é o único pedaço colorido do bloco — combina com o risco, que já era ouro. */
+.hero .grifo{ color:var(--sol); }
+
+.hero__sub,
+.pl-abre__texto{ color:rgba(255,255,255,.82); }
+.pl-abre__texto strong{ color:#fff; }
+
+.selos{ color:rgba(255,255,255,.78); }
+.selos strong{ color:#fff; }
+
+.pl-volta{ color:var(--raso); border-bottom-color:rgba(140,203,240,.45); }
+.pl-volta:hover{ color:#fff; border-bottom-color:#fff; }
+
+/* Botão navy sobre água escura é um buraco. O principal vira ouro e os
+   secundários viram vidro. */
+.hero__acoes .btn--primario{ --bg:var(--sol); --fg:var(--abissal); --bd:var(--sol); }
+.hero__acoes .btn--vazado,
+.pl-pulo{
+  --bg:rgba(255,255,255,.1); --fg:#fff; --bd:rgba(255,255,255,.42);
+  background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.42);
+  backdrop-filter:blur(12px) saturate(150%);
+  -webkit-backdrop-filter:blur(12px) saturate(150%);
+}
+.hero__acoes .btn--vazado:hover,
+.pl-pulo:hover{
+  --bd:#fff;
+  background:rgba(255,255,255,.2); border-color:#fff;
+}
+.pl-pulo span{ color:var(--sol); }
+
+/* A aura era um clarão branco: sobre água escura viraria mancha. Vira uma luz
+   azul fria, que ainda separa o mascote do fundo agitado sem chapar nada. */
+.mascote__aura{
+  background:radial-gradient(50% 50% at 50% 50%,
+    rgba(140,203,240,.34),rgba(46,134,214,.14) 55%,rgba(11,46,88,0) 72%);
+}
+
+/* sombra do mascote precisa ser mais escura que a água pra existir */
+.hero__mascote img{ filter:drop-shadow(0 26px 34px rgba(2,14,28,.55)); }
+.pl-abre__mascote img{ filter:drop-shadow(0 18px 30px rgba(2,14,28,.5)); }
+
+/* ---------- cabeçalho antes de grudar ---------- */
+
+/* As duas páginas abrem na água agora, então o cabeçalho nasce escuro e
+   translúcido — barra clara sobre água escura parecia colada por cima. Ao
+   rolar 8px o main.js põe .is-preso e ele clareia pro estado de sempre, que é
+   o que serve pro miolo claro do site. */
+/* Sólido, não translúcido: o cabeçalho é sticky, então no topo da página ele
+   fica ACIMA do hero e não tem água nenhuma atrás pra borrar — o
+   backdrop-filter pegava a bruma do body e devolvia uma barra cinza. Pintando
+   ele com a primeira parada do gradiente do hero, cabeçalho e água viram um
+   bloco escuro só. */
+.topo:not(.is-preso){
+  background:#04182C;
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+}
+.topo:not(.is-preso) .marca{ color:#fff; }
+.topo:not(.is-preso) .marca__fin{ fill:var(--raso); }
+.topo:not(.is-preso) .topo__cta{ --bg:var(--sol); --fg:var(--abissal); --bd:var(--sol); }
+.topo:not(.is-preso) .hamburguer{
+  background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.38);
+}
+.topo:not(.is-preso) .hamburguer span{ background:#fff; }
+
+/* Só no desktop: abaixo de 900px o menu é um painel claro que desce, e clarear
+   os links aqui deixaria texto branco sobre fundo branco lá dentro. */
+@media (min-width:901px){
+  .topo:not(.is-preso) .nav a{ color:rgba(255,255,255,.8); }
+  .topo:not(.is-preso) .nav a:hover{ color:#fff; background:rgba(255,255,255,.14); }
+  .topo:not(.is-preso) .nav a.is-atual{ color:#fff; }
+}
+
+/* Na home, quem desenha a onda entre o hero e o miolo claro é o
+   `.secao--espuma::before` da seção de baixo. Aqui embaixo da abertura vem uma
+   `.secao` comum, que não tem lapela nenhuma — sem isso o corte entre a água e
+   a bruma fica uma linha reta. Então a abertura desenha a própria: a bruma
+   sobe em onda por dentro dela. */
+.pl-abre::after{
+  content:""; position:absolute; z-index:2;
+  left:0; right:0; bottom:0; height:34px;
+  background:var(--bruma);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34' preserveAspectRatio='none'%3E%3Cpath d='M0 34V16c10 0 10-11 20-11s10 11 20 11 10-11 20-11 10 11 20 11 10-11 20-11 10 11 20 11v18Z' fill='%23000'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34' preserveAspectRatio='none'%3E%3Cpath d='M0 34V16c10 0 10-11 20-11s10 11 20 11 10-11 20-11 10 11 20 11 10-11 20-11 10 11 20 11v18Z' fill='%23000'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;
 }

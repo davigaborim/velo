@@ -12,6 +12,8 @@ velo/
 ├── css/style.css
 ├── js/
 │   ├── main.js                 (o mar, scroll, menu — nas duas páginas)
+│   ├── shader.js               (a água viva em WebGL das faixas escuras)
+│   ├── vivo.js                 (parallax, inclinação 3D, contadores)
 │   └── planos.js               (relógio da promoção e upsell)
 └── images/
     ├── mascote-novo.png        (mascote atual, recortado)
@@ -117,11 +119,12 @@ encosta na borda de cima do card. Quem posiciona é `.planos__mascote`
 
 ## Trabalhos
 
-As duas miniaturas de site são desenhadas em CSS com a paleta real de cada
-cliente (`.obra__tela--clinica` e `.obra__tela--imob` no `style.css`), não são
-prints. Quando quiser trocar por screenshot de verdade, substitua o conteúdo
-de `.obra__tela` por um `<img>` — o enquadramento (`aspect-ratio: 16/11`) já
-está pronto.
+As duas miniaturas são prints de verdade (`images/trabalho-*.jpg`) dentro de
+uma moldura de navegador falsa. Pra trocar, basta substituir o arquivo: o
+enquadramento (`aspect-ratio: 16/11`) e o recorte já estão prontos. A foto é
+desenhada em `scale(1.09)` de propósito — a sobra é o que permite ela
+escorregar dentro da moldura conforme a página rola, e a `.tela__barra` sobe
+um `z-index` pra a foto passar por baixo dela em vez de tampar a URL.
 
 ## O mar
 
@@ -168,6 +171,83 @@ pedaço que fica submerso, então o rótulo continua acima da linha d'água. A
 animação `boia` sobe/desce com um gingado curto (a água já ondula por cima).
 Abaixo de 560px o texto some e sobra só o ícone. Está nas duas páginas, logo
 antes dos `<script>`.
+
+## A água viva (WebGL)
+
+As partes escuras do site — o hero da home, a abertura dos planos, a chamada
+final, o rodapé e os planos de Instagram — têm um shader de fumaça rodando por
+trás do texto. É WebGL1 puro, sem biblioteca nenhuma, em `js/shader.js`.
+
+O miolo (serviços, planos de site, trabalhos, avulsos) continua claro como
+sempre foi. A página abre e fecha na água, e o meio é papel.
+
+**Como ligar numa seção nova:** basta pôr `data-vivo` no elemento. O script
+cria o canvas sozinho, empurra o conteúdo pra cima dele e começa a desenhar.
+Ajustes opcionais, todos por atributo:
+
+| Atributo | Padrão | O que faz |
+|---|---|---|
+| `data-vivo-velocidade` | `0.97` | o quão rápido a fumaça anda |
+| `data-vivo-escala` | `1.72` | zoom: maior = desenho mais fino |
+| `data-vivo-semente` | `635` | muda o desenho sem mudar o resto |
+| `data-vivo-resolucao` | `0.6` | fração da tela em que ele desenha |
+| `data-vivo-deriva` | `0.55` | quanto a rolagem empurra a fumaça |
+
+Detalhes que importam se for mexer:
+
+- **Custo.** O canvas é renderizado a 60% do tamanho real e o `devicePixelRatio`
+  é limitado a 2. Fumaça é tudo gradiente macio, então ninguém enxerga a
+  diferença — e economiza uns 60% de fragmento. O rodapé roda ainda menor
+  (`0.45`), porque é só um eco.
+- **Quando não desenha.** Um `IntersectionObserver` desliga o `requestAnimation
+  Frame` de quem está fora da tela, e a aba escondida derruba o laço inteiro.
+  Todas as seções compartilham um único laço.
+- **Legibilidade.** O canvas roda em opacidade cheia; quem protege a leitura é
+  o véu do `.vivo::after`. No hero e na chamada ele é **lateral**: fecha na
+  esquerda, onde mora o texto, e abre na direita, onde está o mascote — assim
+  a água aparece limpa em vez de apagada por inteiro. É o mesmo truque de
+  vídeo de fundo. Abaixo de 900px o mascote sai de cena e o texto ocupa a
+  largura toda, então o véu volta a ser chapado. Se for mexer nele, confira o
+  texto por cima: os fiapos de espuma da paleta são quase brancos.
+- **Texto claro.** Água em opacidade cheia não convive com o texto navy do
+  site, então os dois topos têm o texto invertido — está tudo na seção 18 do
+  `style.css`, num bloco só. Pra voltar ao hero claro, apague a seção 18 e o
+  `data-vivo` das duas aberturas.
+- **Cabeçalho.** No topo da página ele é sólido `#04182C`, a mesma primeira
+  parada do gradiente do hero, e clareia quando ganha `.is-preso`. Sólido e
+  não translúcido de propósito: o cabeçalho é sticky, fica *acima* do hero, e
+  não tem água atrás pra o `backdrop-filter` borrar — translúcido ali pegava a
+  bruma do body e virava uma barra cinza.
+- **Sem WebGL.** Se o navegador não der contexto, o canvas é removido e a
+  faixa fica no gradiente navy de antes. Nada quebra.
+- **Movimento reduzido.** Desenha um quadro parado e não anima mais.
+
+## Movimento
+
+O `js/vivo.js` é a camada de vida. Se ele não carregar, o site continua
+inteiro e legível — nada ali é essencial.
+
+- **Reveal.** Todo `.reveal` entra de baixo, desfocado, e o `.is-vista` (posto
+  pelo `main.js`) traz ele. Assim que a transição acaba o `.is-limpo` tira o
+  `filter` de vez: `filter` deixa uma camada de composição ligada pra sempre e
+  amolece o texto na GPU.
+- **Títulos.** Os `h2` (e o `h1` da página de planos) são descobertos de baixo
+  pra cima por uma **máscara**, não por `clip-path`. É de propósito: `clip-path`
+  zera a área do elemento e o `IntersectionObserver` passa a enxergar o título
+  como fora da tela — ele nunca recebe `.is-vista` e o site fica sem títulos.
+  Máscara é efeito de pintura e não mexe na geometria que o observador mede.
+- **Parallax.** `data-desliza="-0.13"` faz o elemento andar mais devagar que a
+  página (`data-desliza-max` limita em px). O valor é escrito numa variável
+  CSS `--px` em vez de num `transform` direto — assim ele não briga com o
+  `transform` de hover nem com a animação de boia do mascote.
+- **Inclinação 3D.** `data-inclina="4"` (graus) faz o card inclinar seguindo o
+  ponteiro, com uma luz junto. Só liga em quem tem mouse de verdade
+  (`hover:hover` + `pointer:fine`): no celular seria transform morto ocupando
+  camada de composição. A luz do card passa **por baixo** do texto — por cima
+  ela apaga a leitura do parágrafo.
+- **Contadores.** `data-conta="24" data-sufixo="h"` num `<strong>` faz o número
+  contar do zero quando entra na tela.
+- **Barra de progresso.** Criada pelo próprio script, no topo de tudo.
 
 ## Fontes
 
