@@ -74,7 +74,7 @@ Ainda **falta** um: `og:url` e `og:image` no `<head>` do `index.html` e do
 alguém cola o link no WhatsApp ou no Instagram — assim que o domínio da
 Hostinger estiver de pé, troque os dois pelo endereço novo.
 
-Os números do hero (`2 sites no ar`, `24h pra responder`, `0 fidelidade`)
+Os números do hero (`3 sites no ar`, `24h pra responder`, `0 fidelidade`)
 e os itens de cada plano estão no `index.html` em texto puro — é só editar.
 
 ## A página de erro
