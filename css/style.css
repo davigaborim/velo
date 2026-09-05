@@ -433,12 +433,15 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   object-fit:cover; object-position:top center;
 }
 
-.obra__tipo{
-  font-family:var(--mono); font-size:11.5px; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--rotulo); margin-bottom:8px;
-}
 .obra__info h3{ font-size:24px; margin-bottom:10px; }
 .obra__info p{ color:var(--texto-fraco); font-size:15.5px; margin-bottom:16px; }
+
+/* Depois de `.obra__info p` e com uma classe a mais: senão o rótulo herda o
+   corpo do parágrafo e sai destoando dos outros rótulos mono da página. */
+.obra__info p.obra__tipo{
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--rotulo); margin-bottom:8px;
+}
 
 .obras__nota{ margin-top:clamp(32px,4vw,48px); color:var(--texto-fraco); font-size:16px; }
 

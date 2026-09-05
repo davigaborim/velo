@@ -216,7 +216,7 @@ encosta na borda de cima do card. Quem posiciona é `.planos__mascote`
 
 ## Trabalhos
 
-As duas miniaturas são prints de verdade (`images/trabalho-*.jpg`) dentro de
+As três miniaturas são prints de verdade (`images/trabalho-*.jpg`) dentro de
 uma moldura de navegador falsa. Pra trocar, basta substituir o arquivo: o
 enquadramento (`aspect-ratio: 16/11`) e o recorte já estão prontos. A foto é
 desenhada em `scale(1.09)` de propósito — a sobra é o que permite ela
