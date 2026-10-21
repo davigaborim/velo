@@ -486,10 +486,11 @@
     // o relógio da fumaça para junto com a rolagem: volta de onde estava
     if (ultimo) relogio += Math.min(0.05, (agora - ultimo) / 1000);
     ultimo = agora;
-    if (agora - rolouEm >= 200) {
-      for (var i = 0; i < telas.length; i++) {
-        if (telas[i].visivel) telas[i].desenhar(relogio);
-      }
+    var parada = agora - rolouEm >= 200;
+    for (var i = 0; i < telas.length; i++) {
+      var t = telas[i];
+      // o primeiro quadro sai mesmo rolando: canvas nunca desenhado é preto
+      if (t.visivel && (parada || !t.desenhou)) { t.desenhar(relogio); t.desenhou = true; }
     }
     agendar();
   }
