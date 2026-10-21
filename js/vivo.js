@@ -1,18 +1,13 @@
 /* ==========================================================================
    VELO — camada de vida
 
-   O que dá a sensação de site caro: coisas que entram de longe e desfocadas,
-   camadas que andam em velocidades diferentes e superfícies que reagem ao
-   ponteiro. Nada aqui é essencial — se este arquivo não carregar, o site
-   continua inteiro e legível.
+   Superfícies que reagem ao ponteiro e os números do hero contando. Nada
+   aqui é essencial: se este arquivo não carregar, o site continua inteiro.
 
-   1. Reveal: tira o desfoque do elemento depois que ele entrou (senão a
-      composição fica ligada pra sempre e o texto amolece na GPU).
-   2. Deslize: parallax por variável CSS, pra não brigar com transform de
-      hover nem com as animações de boia.
-   3. Contadores dos selos do hero.
-   4. Inclinação 3D e brilho seguindo o ponteiro.
-   5. Barra de progresso de leitura.
+   O parallax e a entrada dos elementos saíram daqui em 21/10: viraram CSS
+   com animation-timeline (seção 12 do style.css), que o compositor roda
+   sem ler layout a cada rolagem. Ficou aqui só a barra de leitura, para o
+   navegador que ainda não tem animation-timeline.
    ========================================================================== */
 
 (function () {
@@ -20,83 +15,38 @@
 
   var semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
   var pontFino = window.matchMedia('(hover:hover) and (pointer:fine)');
+  var linhaDoTempo = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
 
   /* ======================================================================
-     1. REVEAL — desligar o desfoque quando o bicho já entrou
-     ====================================================================== */
-
-  /* A folga de 300ms é porque a máscara dos títulos dura um pouco mais que a
-     opacidade: limpar no fim do fade cortaria o resto do movimento. */
-  document.addEventListener('transitionend', function (e) {
-    var el = e.target;
-    if (e.propertyName !== 'opacity') return;
-    if (!el.classList || !el.classList.contains('is-vista')) return;
-    setTimeout(function () { el.classList.add('is-limpo'); }, 300);
-  }, true);
-
-  /* ======================================================================
-     2. DESLIZE — parallax em camadas
-     ====================================================================== */
-
-  var deslizantes = Array.prototype.slice.call(document.querySelectorAll('[data-desliza]'));
-  var barra = null;
-  var sujo = true;
-  var laco = 0;
-
-  function passo() {
-    laco = 0;
-    if (!sujo) return;
-    sujo = false;
-
-    var meio = window.innerHeight / 2;
-
-    for (var i = 0; i < deslizantes.length; i++) {
-      var el = deslizantes[i];
-      var r = el.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
-
-      var fator = parseFloat(el.getAttribute('data-desliza')) || 0;
-      var limite = parseFloat(el.getAttribute('data-desliza-max')) || 60;
-      var centro = r.top + r.height / 2;
-      var y = (centro - meio) / window.innerHeight * fator * 100;
-      if (y > limite) y = limite; else if (y < -limite) y = -limite;
-
-      el.style.setProperty('--px', y.toFixed(2) + 'px');
-    }
-
-    if (barra) {
-      var alcance = document.documentElement.scrollHeight - window.innerHeight;
-      var t = alcance > 0 ? Math.min(1, Math.max(0, window.scrollY / alcance)) : 0;
-      barra.style.transform = 'scaleX(' + t.toFixed(4) + ')';
-    }
-  }
-
-  function marcar() {
-    sujo = true;
-    if (!laco) laco = requestAnimationFrame(passo);
-  }
-
-  /* ======================================================================
-     3. BARRA DE PROGRESSO
+     BARRA DE PROGRESSO
+     Com animation-timeline o CSS enche a barra sozinho; sem, este laço.
      ====================================================================== */
 
   if (document.querySelector('main')) {
     var trilho = document.createElement('div');
     trilho.className = 'progresso';
     trilho.setAttribute('aria-hidden', 'true');
-    barra = document.createElement('i');
+    var barra = document.createElement('i');
     trilho.appendChild(barra);
     document.body.appendChild(trilho);
-  }
 
-  if (deslizantes.length || barra) {
-    window.addEventListener('scroll', marcar, { passive: true });
-    window.addEventListener('resize', marcar, { passive: true });
-    marcar();
+    if (!linhaDoTempo) {
+      var laco = 0;
+      var passo = function () {
+        laco = 0;
+        var alcance = document.documentElement.scrollHeight - window.innerHeight;
+        var t = alcance > 0 ? Math.min(1, Math.max(0, window.scrollY / alcance)) : 0;
+        barra.style.transform = 'scaleX(' + t.toFixed(4) + ')';
+      };
+      var marcar = function () { if (!laco) laco = requestAnimationFrame(passo); };
+      window.addEventListener('scroll', marcar, { passive: true });
+      window.addEventListener('resize', marcar, { passive: true });
+      marcar();
+    }
   }
 
   /* ======================================================================
-     4. CONTADORES
+     CONTADORES
      ====================================================================== */
 
   function contar(el) {
@@ -133,7 +83,7 @@
   }
 
   /* ======================================================================
-     5. INCLINAÇÃO 3D E BRILHO
+     INCLINAÇÃO 3D E BRILHO
      Só em quem tem mouse de verdade: no celular isso seria só um transform
      morto ocupando camada de composição.
      ====================================================================== */
