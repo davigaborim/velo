@@ -206,6 +206,7 @@
 
   window.addEventListener('scroll', function () {
     rolouEm = performance.now();
+    if (animando) agendar();   // o mar acorda se estava parado
     var y = window.scrollY, d = y - ultimoY;
     if (d > 2)       { sentido =  1; ultimoY = y; }
     else if (d < -2) { sentido = -1; ultimoY = y; }
@@ -251,6 +252,44 @@
 
   var relogio = 0, ultimo = 0, animando = false, pedido = 0, espera = 0;
 
+  /* O mar mexe quando a página mexe. Parado no mesmo lugar, ele vai
+     acalmando até parar de vez, e o laço desliga: era a peça que mais
+     ocupava a placa de vídeo com a página parada (uns 15% num notebook
+     com vídeo integrado, medido em 21/10), porque está sempre na tela.
+     Rolou, ele volta a ondular. Na chegada ondula um pouco antes de
+     acalmar, para quem abre o site ver que é água. */
+  var agito = 1;                 // 1 = ondulando, 0 = parado
+  var AGITADO_MS = 1500;         // quanto tempo depois da rolagem ainda ondula
+  var acordouEm = performance.now();
+
+  /* As boias (os mascotes, o balão, o botão do WhatsApp) eram animação de
+     CSS infinita. Animação infinita obriga o navegador a recompor a página
+     inteira a 60 quadros por segundo, para sempre, mesmo com tudo parado:
+     custava uns 14% da placa de vídeo (21/10). Agora elas balançam no
+     relógio do mar e acalmam junto com ele.
+     [seletor, período (s), quanto sobe (px), giro de, giro até (graus), atraso (s)] */
+  var boias = [
+    ['.hero__mascote img', 6, 14, 0, 1.2, 0],
+    ['.balao', 6, 14, 0, 1.2, 0.3],
+    ['.chamada__mascote img', 7, 14, 0, 1.2, 0],
+    ['.zap-boia', 4.6, 7, -2.5, 2.5, 0]
+  ].reduce(function (lista, b) {
+    Array.prototype.forEach.call(document.querySelectorAll(b[0]), function (el) {
+      lista.push({ el: el, periodo: b[1], sobe: b[2], de: b[3], ate: b[4], atraso: b[5] });
+    });
+    return lista;
+  }, []);
+
+  function balancar(t, forca) {
+    for (var i = 0; i < boias.length; i++) {
+      var b = boias[i];
+      // 0 embaixo, 1 no alto, com a mesma curva suave do ease-in-out de antes
+      var k = (1 - Math.cos((t - b.atraso) / b.periodo * Math.PI * 2)) / 2;
+      var giro = b.de + (b.ate - b.de) * k;
+      b.el.style.transform = 'translateY(' + (-b.sobe * k * forca).toFixed(2) + 'px) rotate(' + (giro * forca).toFixed(2) + 'deg)';
+    }
+  }
+
   /* Com a página parada, a onda anda devagar o bastante pra 30 quadros por
      segundo parecerem 60 — e é metade do trabalho. Rolando, volta pra 60,
      senão a barbatana atrasa em relação ao dedo.
@@ -275,9 +314,15 @@
   function quadro(agora) {
     pedido = 0;
     if (!animando) return;
-    if (ultimo) relogio += Math.min(0.05, (agora - ultimo) / 1000);
+    var dt = ultimo ? Math.min(0.05, (agora - ultimo) / 1000) : 0;
     ultimo = agora;
+    var agitado = agora - rolouEm < AGITADO_MS || agora - acordouEm < 2500 || arrastando;
+    // acelera e freia aos poucos: o mar acalma, não congela
+    agito += ((agitado ? 1 : 0) - agito) * Math.min(1, dt * 2.2);
+    relogio += dt * agito;
     desenhar(relogio, avancoDaPagina());
+    balancar(relogio, agito);
+    if (!agitado && agito < 0.02) { agito = 0; ultimo = 0; return; }   // dorme até a próxima rolagem
     agendar();
   }
 

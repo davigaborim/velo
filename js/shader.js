@@ -101,7 +101,7 @@
     'float fbm(vec2 p) {',
     '  float v = 0.0;',
     '  float a = 0.5;',
-    '  for (int i = 0; i < 5; i++) {',
+    '  for (int i = 0; i < 4; i++) {',
     '    v += a * noise(p);',
     '    p = p * 2.03 + vec2(17.0, 9.2);',
     '    a *= 0.5;',
@@ -352,7 +352,9 @@
       // O canvas é sempre menor que o CSS: fumaça é tudo gradiente macio, então
       // ninguém enxerga a diferença — e economiza uns 60% de fragmento.
       resolucao:  num('resolucao', 0.6),
-      deriva:     num('deriva', 0.55)   // quanto a rolagem empurra a fumaça
+      // quanto a fumaça fica para trás na rolagem, em fração da altura da
+      // seção (o canvas sobra 12% em cima e embaixo para isso)
+      deriva:     num('deriva', 0.55) * 0.2
     };
 
     gl.uniform3fv(u.colors, new Float32Array(CORES));
@@ -362,7 +364,7 @@
     gl.uniform4f(u.transform, conf.semente, 0.0, 0.0, 0.0);
     gl.uniform4f(u.cursor, 0.0, 2.0, 0.65, 0.46);   // cursor desligado
 
-    var larg = 0, alt = 0, offsetY = 0;
+    var larg = 0, alt = 0, deslocado = '';
 
     /* Tamanho e posição da seção ficam guardados e só são relidos quando ela
        muda de tamanho. Perguntar isso ao navegador dentro do quadro, depois
@@ -376,27 +378,36 @@
     }
 
     function medir() {
-      // Teto de 0.75: em celular e tela retina (dpr 2) a conta antiga dava
-      // 1.2 pixel de canvas por pixel CSS — mais que a tela normal, para uma
-      // fumaça que é só gradiente macio.
-      var dpr = Math.min((window.devicePixelRatio || 1) * conf.resolucao, 0.75);
+      // Teto de 0.45 pixel de canvas por pixel CSS, e no máximo ~300 mil
+      // pixels: a fumaça é só gradiente macio, e o navegador amplia o canvas
+      // sem ninguém ver a diferença. Era 0.75, e o hero ainda pesava no
+      // notebook com vídeo integrado (21/10).
+      var dpr = Math.min((window.devicePixelRatio || 1) * conf.resolucao, 0.45);
+      var area = caixaL * caixaA * SOBRA * dpr * dpr;
+      if (area > 300000) dpr *= Math.sqrt(300000 / area);
       var w = Math.max(1, Math.round(caixaL * dpr));
-      var h = Math.max(1, Math.round(caixaA * dpr));
+      var h = Math.max(1, Math.round(caixaA * SOBRA * dpr));
       if (w === larg && h === alt) return;
       larg = canvas.width = w;
       alt = canvas.height = h;
       gl.viewport(0, 0, w, h);
     }
 
-    /* A fumaça anda junto com a rolagem: entrando na seção ela vem de baixo,
-       saindo ela continua subindo. É o que dá profundidade sem parallax de
-       transform (que borraria o texto por cima). */
+    /* Parallax: a fumaça anda mais devagar que a página. Antes isso era
+       feito DENTRO do shader, o que obrigava a redesenhar a 60 quadros
+       enquanto a página rolava, bem na hora em que o notebook mais
+       precisa da placa de vídeo. Agora é um transform no canvas, que o
+       compositor faz de graça, e o shader nem desenha durante a rolagem. */
     function derivar() {
       var alcance = window.innerHeight + caixaA;
       if (alcance <= 0) return;
       var topoNaTela = caixaTopo - window.scrollY;
       var t = (window.innerHeight - topoNaTela) / alcance;   // 0 entrando, 1 saindo
-      offsetY = (t - 0.5) * conf.deriva;
+      t = Math.max(0, Math.min(1, t));
+      var y = ((t - 0.5) * 2 * conf.deriva * caixaA).toFixed(1);
+      if (y === deslocado) return;
+      deslocado = y;
+      canvas.style.transform = 'translate3d(0,' + y + 'px,0)';
     }
 
     medirCaixa();
@@ -413,18 +424,21 @@
 
     function desenhar(segundos) {
       medir();
-      derivar();
       gl.uniform4f(u.scene, larg, alt, segundos * conf.velocidade, 4.0);
-      gl.uniform4f(u.space, 0.0, offsetY, 0.0, 0.0);
+      gl.uniform4f(u.space, 0.0, 0.0, 0.0, 0.0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
+    derivar();
+
     canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); }, false);
 
-    return { alvo: alvo, desenhar: desenhar, visivel: false };
+    return { alvo: alvo, desenhar: desenhar, derivar: derivar, visivel: false };
   }
 
   /* ------------------------------------------------- laço único pra todos */
+
+  var SOBRA = 1.24;   // o canvas é 24% mais alto que a seção (ver .vivo__tela)
 
   var telas = [];
   Array.prototype.forEach.call(alvos, function (a) {
@@ -441,34 +455,41 @@
     return false;
   }
 
+  var derivaPedida = 0;
+  function derivaTodas() {
+    derivaPedida = 0;
+    for (var i = 0; i < telas.length; i++) if (telas[i].visivel) telas[i].derivar();
+  }
   window.addEventListener('scroll', function () {
     rolouEm = performance.now();
+    if (!derivaPedida) derivaPedida = requestAnimationFrame(derivaTodas);
   }, { passive: true });
 
   /* A fumaça anda devagar: 30 quadros por segundo bastam e cortam pela metade
-     o trabalho da placa de vídeo — que em notebook com vídeo integrado é o
-     que travava a rolagem. Enquanto a página rola, volta pra 60 pra deriva
-     acompanhar a rolagem sem degrau. A espera parada é por relógio (ver o
-     comentário do agendar() no main.js). */
+     o trabalho da placa de vídeo. Enquanto a página rola, ela NÃO desenha:
+     a rolagem é a hora em que o notebook com vídeo integrado mais precisa
+     da placa, e uma fumaça lenta parada por meio segundo ninguém nota. O
+     parallax continua, porque é transform (ver derivar()). A espera é por
+     relógio (ver o comentário do agendar() no main.js). */
   function agendar() {
     if (pedido || espera) return;
-    if (performance.now() - rolouEm < 300) {
+    var rolando = performance.now() - rolouEm < 200;
+    espera = setTimeout(function () {
+      espera = 0;
       pedido = requestAnimationFrame(quadro);
-    } else {
-      espera = setTimeout(function () {
-        espera = 0;
-        pedido = requestAnimationFrame(quadro);
-      }, PASSO - performance.now() % PASSO);
-    }
+    }, rolando ? 200 : PASSO - performance.now() % PASSO);
   }
 
   function quadro(agora) {
     pedido = 0;
     if (!rodando) return;
+    // o relógio da fumaça para junto com a rolagem: volta de onde estava
     if (ultimo) relogio += Math.min(0.05, (agora - ultimo) / 1000);
     ultimo = agora;
-    for (var i = 0; i < telas.length; i++) {
-      if (telas[i].visivel) telas[i].desenhar(relogio);
+    if (agora - rolouEm >= 200) {
+      for (var i = 0; i < telas.length; i++) {
+        if (telas[i].visivel) telas[i].desenhar(relogio);
+      }
     }
     agendar();
   }
