@@ -364,10 +364,24 @@
 
     var larg = 0, alt = 0, offsetY = 0;
 
+    /* Tamanho e posição da seção ficam guardados e só são relidos quando ela
+       muda de tamanho. Perguntar isso ao navegador dentro do quadro, depois
+       que o mar já mexeu no SVG, força um layout inteiro a cada quadro. */
+    var caixaL = 0, caixaA = 0, caixaTopo = 0;
+
+    function medirCaixa() {
+      caixaL = alvo.clientWidth;
+      caixaA = alvo.clientHeight;
+      caixaTopo = alvo.getBoundingClientRect().top + window.scrollY;
+    }
+
     function medir() {
-      var dpr = Math.min(window.devicePixelRatio || 1, 2) * conf.resolucao;
-      var w = Math.max(1, Math.round(alvo.clientWidth * dpr));
-      var h = Math.max(1, Math.round(alvo.clientHeight * dpr));
+      // Teto de 0.75: em celular e tela retina (dpr 2) a conta antiga dava
+      // 1.2 pixel de canvas por pixel CSS — mais que a tela normal, para uma
+      // fumaça que é só gradiente macio.
+      var dpr = Math.min((window.devicePixelRatio || 1) * conf.resolucao, 0.75);
+      var w = Math.max(1, Math.round(caixaL * dpr));
+      var h = Math.max(1, Math.round(caixaA * dpr));
       if (w === larg && h === alt) return;
       larg = canvas.width = w;
       alt = canvas.height = h;
@@ -378,11 +392,23 @@
        saindo ela continua subindo. É o que dá profundidade sem parallax de
        transform (que borraria o texto por cima). */
     function derivar() {
-      var r = alvo.getBoundingClientRect();
-      var alcance = window.innerHeight + r.height;
+      var alcance = window.innerHeight + caixaA;
       if (alcance <= 0) return;
-      var t = (window.innerHeight - r.top) / alcance;   // 0 entrando, 1 saindo
+      var topoNaTela = caixaTopo - window.scrollY;
+      var t = (window.innerHeight - topoNaTela) / alcance;   // 0 entrando, 1 saindo
       offsetY = (t - 0.5) * conf.deriva;
+    }
+
+    medirCaixa();
+    if ('ResizeObserver' in window) {
+      // observa o body também: a seção não muda de tamanho quando uma foto
+      // lá em cima termina de carregar, mas o topo dela desce
+      var vigia = new ResizeObserver(medirCaixa);
+      vigia.observe(alvo);
+      vigia.observe(document.body);
+    } else {
+      window.addEventListener('resize', medirCaixa, { passive: true });
+      window.addEventListener('load', medirCaixa);
     }
 
     function desenhar(segundos) {
@@ -407,33 +433,57 @@
   });
   if (!telas.length) return;
 
-  var relogio = 0, ultimo = 0, rodando = false, pedido = 0;
+  var relogio = 0, ultimo = 0, rodando = false, pedido = 0, espera = 0, rolouEm = 0;
+  var PASSO = 1000 / 30;   // a mesma grade do mar no main.js
 
   function algumaVisivel() {
     for (var i = 0; i < telas.length; i++) if (telas[i].visivel) return true;
     return false;
   }
 
+  window.addEventListener('scroll', function () {
+    rolouEm = performance.now();
+  }, { passive: true });
+
+  /* A fumaça anda devagar: 30 quadros por segundo bastam e cortam pela metade
+     o trabalho da placa de vídeo — que em notebook com vídeo integrado é o
+     que travava a rolagem. Enquanto a página rola, volta pra 60 pra deriva
+     acompanhar a rolagem sem degrau. A espera parada é por relógio (ver o
+     comentário do agendar() no main.js). */
+  function agendar() {
+    if (pedido || espera) return;
+    if (performance.now() - rolouEm < 300) {
+      pedido = requestAnimationFrame(quadro);
+    } else {
+      espera = setTimeout(function () {
+        espera = 0;
+        pedido = requestAnimationFrame(quadro);
+      }, PASSO - performance.now() % PASSO);
+    }
+  }
+
   function quadro(agora) {
+    pedido = 0;
     if (!rodando) return;
     if (ultimo) relogio += Math.min(0.05, (agora - ultimo) / 1000);
     ultimo = agora;
     for (var i = 0; i < telas.length; i++) {
       if (telas[i].visivel) telas[i].desenhar(relogio);
     }
-    pedido = requestAnimationFrame(quadro);
+    agendar();
   }
 
   function ligar() {
     if (rodando || semMovimento.matches || document.hidden || !algumaVisivel()) return;
     rodando = true; ultimo = 0;
-    pedido = requestAnimationFrame(quadro);
+    agendar();
   }
 
   function desligar() {
     rodando = false;
     if (pedido) cancelAnimationFrame(pedido);
-    pedido = 0;
+    if (espera) clearTimeout(espera);
+    pedido = 0; espera = 0;
   }
 
   /* Movimento reduzido: um quadro parado e mais nada. A imagem continua lá,

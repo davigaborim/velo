@@ -643,7 +643,9 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   height:var(--mar-h); pointer-events:none;
 }
 .mar--fundo { z-index:40; }
-.mar--frente{ z-index:50; filter:drop-shadow(0 -3px 12px rgba(46,134,214,.16)); }
+/* sem filter aqui: um drop-shadow na camada que muda a cada quadro obriga a
+   repintar e desfocar o mar inteiro sempre. O halo é um traço no main.js. */
+.mar--frente{ z-index:50; }
 .mar__svg{ display:block; width:100%; height:100%; }
 
 /* a barbatana é o único pedaço do mar que aceita o mouse: dá pra puxar ela

@@ -30,6 +30,28 @@
   var L = 0, A = 0;              // largura e altura do mar, em px
   var bolhas = [];               // pontos de espuma na crista
 
+  /* Medidas da página, guardadas. Ler scrollHeight ou offsetWidth dentro do
+     quadro, logo depois de mexer no SVG, obriga o navegador a recalcular o
+     layout inteiro a cada quadro — era isso que deixava o site pesado em
+     notebook. Agora elas só são lidas quando a página muda de tamanho. */
+  var alcance = 0;               // quanto dá pra rolar, em px
+  var reservaBoia = 0;           // espaço da boia do WhatsApp na direita
+
+  /* O brilho azul em cima da onda da frente. Antes era um drop-shadow em CSS
+     na camada inteira, que repinta o mar todo a cada quadro; um traço largo
+     e transparente atrás da crista dá o mesmo halo quase de graça. */
+  var pBrilho = null;
+  if (svgFrente && pFrente) {
+    pBrilho = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pBrilho.setAttribute('fill', 'none');
+    pBrilho.setAttribute('stroke', '#2E86D6');
+    pBrilho.setAttribute('stroke-opacity', '.09');
+    pBrilho.setAttribute('stroke-width', '16');
+    pBrilho.setAttribute('stroke-linecap', 'round');
+    pBrilho.setAttribute('transform', 'translate(0,-4)');
+    svgFrente.insertBefore(pBrilho, pFrente);
+  }
+
   // +1 = nadando pra direita (a página está descendo), -1 = pra esquerda.
   // O tubarão vira de lado junto com o sentido do scroll.
   var sentido = 1;
@@ -79,8 +101,12 @@
      da borda direita: é onde a boia do WhatsApp está ancorada, e o tubarão
      passando por cima esconderia justamente o botão. */
   function faixaUtil() {
-    var reserva = boia ? Math.min(L * 0.28, boia.offsetWidth + 22) : 0;
-    return Math.max(1, L - margem() * 2 - reserva);
+    return Math.max(1, L - margem() * 2 - reservaBoia);
+  }
+
+  function medirPagina() {
+    alcance = document.documentElement.scrollHeight - window.innerHeight;
+    reservaBoia = boia ? Math.min(L * 0.28, boia.offsetWidth + 22) : 0;
   }
 
   function desenhar(t, avanco) {
@@ -104,6 +130,7 @@
       linha += ' L' + x + ',' + alturaEm(frente, x, t).toFixed(1);
     }
     pCrista.setAttribute('d', linha);
+    if (pBrilho) pBrilho.setAttribute('d', linha);
 
     // espuma acompanhando a crista
     for (i = 0; i < bolhas.length; i++) {
@@ -162,7 +189,7 @@
   }
 
   function alcanceDaPagina() {
-    return document.documentElement.scrollHeight - window.innerHeight;
+    return alcance;
   }
 
   function avancoDaPagina() {
@@ -175,8 +202,10 @@
      A folga de 2px evita que ele fique piscando de lado com o tremor de
      trackpad; enquanto ela não é vencida, o ponto de partida não se move. */
   var ultimoY = window.scrollY;
+  var rolouEm = 0;               // quando a página rolou pela última vez
 
   window.addEventListener('scroll', function () {
+    rolouEm = performance.now();
     var y = window.scrollY, d = y - ultimoY;
     if (d > 2)       { sentido =  1; ultimoY = y; }
     else if (d < -2) { sentido = -1; ultimoY = y; }
@@ -220,26 +249,49 @@
     });
   }
 
-  var relogio = 0, ultimo = 0, animando = false;
+  var relogio = 0, ultimo = 0, animando = false, pedido = 0, espera = 0;
+
+  /* Com a página parada, a onda anda devagar o bastante pra 30 quadros por
+     segundo parecerem 60 — e é metade do trabalho. Rolando, volta pra 60,
+     senão a barbatana atrasa em relação ao dedo.
+     A espera é por relógio, não pulando quadro: pedir requestAnimationFrame
+     e não desenhar ainda faz o navegador montar o quadro inteiro. O passo cai
+     sempre na mesma grade de 1/30 s que o shader.js usa, então os dois acordam
+     juntos e dividem o mesmo quadro. */
+  var PASSO = 1000 / 30;
+
+  function agendar() {
+    if (pedido || espera) return;
+    if (performance.now() - rolouEm < 300) {
+      pedido = requestAnimationFrame(quadro);
+    } else {
+      espera = setTimeout(function () {
+        espera = 0;
+        pedido = requestAnimationFrame(quadro);
+      }, PASSO - performance.now() % PASSO);
+    }
+  }
 
   function quadro(agora) {
+    pedido = 0;
     if (!animando) return;
     if (ultimo) relogio += Math.min(0.05, (agora - ultimo) / 1000);
     ultimo = agora;
     desenhar(relogio, avancoDaPagina());
-    requestAnimationFrame(quadro);
+    agendar();
   }
 
   function ligarMar() {
     if (!mar) return;
     medir();
+    medirPagina();
     if (semMovimento.matches) {
       animando = false;
       desenhar(0, avancoDaPagina());
       window.addEventListener('scroll', function () { desenhar(0, avancoDaPagina()); }, { passive: true });
     } else if (!animando) {
       animando = true; ultimo = 0;
-      requestAnimationFrame(quadro);
+      agendar();
     }
   }
 
@@ -248,16 +300,26 @@
     clearTimeout(remedir);
     remedir = setTimeout(function () {
       medir();
+      medirPagina();
       desenhar(relogio, avancoDaPagina());
     }, 150);
   });
+
+  // A página cresce sozinha quando foto e fonte terminam de chegar; o
+  // alcance da rolagem precisa acompanhar sem ninguém redimensionar a janela.
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(medirPagina).observe(document.body);
+  } else {
+    window.addEventListener('load', medirPagina);
+  }
 
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
       animando = false;
     } else if (!semMovimento.matches) {
+      // agendar() não duplica o laço se o pedido de antes ainda está na fila
       animando = true; ultimo = 0;
-      requestAnimationFrame(quadro);
+      agendar();
     }
   });
 
