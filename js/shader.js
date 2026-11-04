@@ -6,7 +6,9 @@
    espuma, devagar o bastante pra não competir com o texto por cima.
 
    Cada elemento com [data-vivo] ganha o seu canvas. Só desenha o que está na
-   tela — fora dela o rAF nem roda, e a aba escondida derruba tudo.
+   tela — fora dela o rAF nem roda, e a aba escondida derruba tudo. E só
+   NASCE quando chega perto da tela: a chamada lá do fim não cria contexto
+   nem compila shader enquanto o visitante ainda está no hero.
    ========================================================================== */
 
 (function () {
@@ -24,9 +26,16 @@
     'void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }'
   ].join('\n');
 
-  /* "Smoke" — feito com o 21st.dev Shader Builder.
-     Uniforms empacotados em vec4 pra caber no mínimo garantido do WebGL1
-     (16 vetores no fragmento); as macros u_* mantêm o código legível. */
+  /* "Smoke" — feito com o 21st.dev Shader Builder, e depois enxugado à mão.
+
+     A receita original vinha com cursor, desfoque, vinheta, grão, giro de
+     matiz, OKLab, deriva, warp extra e paleta de até 8 cores, tudo ligado por
+     uniform. O site usa só o caminho de base, com 4 cores e contraste 1.22 —
+     o resto ficava zerado, mas o navegador compilava tudo mesmo assim, duas
+     ou três vezes por página (uma por faixa escura). Sobrou só a conta que
+     de fato desenha, na mesma ordem, então o desenho é o mesmo de antes: a
+     paleta abaixo é o laço antigo de 7 voltas aberto nas 3 que contavam, e o
+     contraste e a intensidade (0.60 → warp 4.4) viraram constantes. */
   var FRAGMENT = [
     '#ifdef GL_FRAGMENT_PRECISION_HIGH',
     'precision highp float;',
@@ -34,44 +43,23 @@
     'precision mediump float;',
     '#endif',
     '',
-    'uniform vec3 u_colors[8];',
-    'uniform vec4 u_scene;      // resolution.xy, time, contagem de cores',
-    'uniform vec4 u_shape;      // scale, intensity, paramA, warp',
-    'uniform vec4 u_surface;    // detail, contrast, brightness, saturation',
-    'uniform vec4 u_finish;     // hue, vignette, blur, grain',
-    'uniform vec4 u_transform;  // seed, rotation, drift, OKLab',
-    'uniform vec4 u_space;      // offset.xy, pointer.xy',
-    'uniform vec4 u_cursor;',
+    'uniform vec4 u_scene;      // resolution.xy, time, scale',
+    'uniform float u_seedRaw;',
     '',
     '#define u_resolution u_scene.xy',
     '#define u_time u_scene.z',
-    '#define u_colorCount u_scene.w',
-    '#define u_scale u_shape.x',
-    '#define u_intensity u_shape.y',
-    '#define u_paramA u_shape.z',
-    '#define u_warp u_shape.w',
-    '#define u_detail u_surface.x',
-    '#define u_contrast u_surface.y',
-    '#define u_brightness u_surface.z',
-    '#define u_saturation u_surface.w',
-    '#define u_hue u_finish.x',
-    '#define u_vignette u_finish.y',
-    '#define u_blur u_finish.z',
-    '#define u_grain u_finish.w',
+    '#define u_scale u_scene.w',
     '#ifdef GL_FRAGMENT_PRECISION_HIGH',
-    '#define u_seed u_transform.x',
+    '#define u_seed u_seedRaw',
     '#else',
-    '#define u_seed mod(u_transform.x, 31.0)',
+    '#define u_seed mod(u_seedRaw, 31.0)',
     '#endif',
-    '#define u_rotate u_transform.y',
-    '#define u_drift u_transform.z',
-    '#define u_oklab u_transform.w',
-    '#define u_offset u_space.xy',
-    '#define u_mouse u_space.zw',
-    '#define u_cursorPresence u_cursor.x',
-    '#define u_cursorEffect u_cursor.y',
-    '#define u_cursorStrength u_cursor.z',
-    '#define u_cursorRadius u_cursor.w',
+    '',
+    // do fundo do mar até a espuma: #031C26 → #1B6CA8 → #5AD2F4 → #EAF9FF
+    'const vec3 C0 = vec3(0.012, 0.110, 0.149);',
+    'const vec3 C1 = vec3(0.106, 0.424, 0.659);',
+    'const vec3 C2 = vec3(0.353, 0.824, 0.957);',
+    'const vec3 C3 = vec3(0.918, 0.976, 1.000);',
     '',
     'float hash21(vec2 p) {',
     '#ifndef GL_FRAGMENT_PRECISION_HIGH',
@@ -80,12 +68,6 @@
     '  p = fract(p * vec2(234.34, 435.345));',
     '  p += dot(p, p + 34.23);',
     '  return fract(p.x * p.y);',
-    '}',
-    '',
-    'float grainHash(vec2 p) {',
-    '  vec3 p3 = fract(vec3(p.xyx) * 0.1031);',
-    '  p3 += dot(p3, p3.yzx + 33.33);',
-    '  return fract((p3.x + p3.y) * p3.z);',
     '}',
     '',
     'float noise(vec2 p) {',
@@ -109,175 +91,37 @@
     '  return v;',
     '}',
     '',
-    'vec3 srgbToLinear(vec3 c) {',
-    '  return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)),',
-    '    step(0.04045, c));',
-    '}',
-    'vec3 linearToSrgb(vec3 c) {',
-    '  return mix(c * 12.92, 1.055 * pow(max(c, vec3(0.0)), vec3(1.0 / 2.4)) - 0.055,',
-    '    step(0.0031308, c));',
-    '}',
-    'vec3 linToOklab(vec3 c) {',
-    '  float l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;',
-    '  float m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;',
-    '  float s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;',
-    '  l = pow(max(l, 0.0), 1.0 / 3.0);',
-    '  m = pow(max(m, 0.0), 1.0 / 3.0);',
-    '  s = pow(max(s, 0.0), 1.0 / 3.0);',
-    '  return vec3(',
-    '    0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,',
-    '    1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,',
-    '    0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s);',
-    '}',
-    'vec3 oklabToLin(vec3 c) {',
-    '  float l = c.x + 0.3963377774 * c.y + 0.2158037573 * c.z;',
-    '  float m = c.x - 0.1055613458 * c.y - 0.0638541728 * c.z;',
-    '  float s = c.x - 0.0894841775 * c.y - 1.2914855480 * c.z;',
-    '  l = l * l * l; m = m * m * m; s = s * s * s;',
-    '  return vec3(',
-    '    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,',
-    '    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,',
-    '    -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s);',
-    '}',
-    'vec3 mixColour(vec3 a, vec3 b, float t) {',
-    '  if (u_oklab > 0.5) {',
-    '    vec3 la = linToOklab(srgbToLinear(a));',
-    '    vec3 lb = linToOklab(srgbToLinear(b));',
-    '    return clamp(linearToSrgb(oklabToLin(mix(la, lb, t))), 0.0, 1.0);',
-    '  }',
-    '  return mix(a, b, t);',
-    '}',
-    '',
     'vec3 palette(float x) {',
-    '  float n = max(u_colorCount - 1.0, 1.0);',
-    '  float f = clamp(x, 0.0, 1.0) * n;',
-    '  vec3 col = u_colors[0];',
-    '  for (int i = 0; i < 7; i++) {',
-    '    if (float(i) < n)',
-    '      col = mixColour(col, u_colors[i + 1],',
-    '        smoothstep(0.0, 1.0, clamp(f - float(i), 0.0, 1.0)));',
-    '  }',
+    '  float f = clamp(x, 0.0, 1.0) * 3.0;',
+    '  vec3 col = mix(C0, C1, smoothstep(0.0, 1.0, clamp(f, 0.0, 1.0)));',
+    '  col = mix(col, C2, smoothstep(0.0, 1.0, clamp(f - 1.0, 0.0, 1.0)));',
+    '  col = mix(col, C3, smoothstep(0.0, 1.0, clamp(f - 2.0, 0.0, 1.0)));',
     '  return col;',
     '}',
     '',
-    'vec3 hueRotate(vec3 col, float a) {',
-    '  const mat3 toYIQ = mat3(0.299, 0.596, 0.211,',
-    '                          0.587, -0.274, -0.523,',
-    '                          0.114, -0.322, 0.312);',
-    '  const mat3 toRGB = mat3(1.0, 1.0, 1.0,',
-    '                          0.956, -0.272, -1.106,',
-    '                          0.621, -0.647, 1.703);',
-    '  vec3 yiq = toYIQ * col;',
-    '  float ca = cos(a), sa = sin(a);',
-    '  yiq = vec3(yiq.x, yiq.y * ca - yiq.z * sa, yiq.y * sa + yiq.z * ca);',
-    '  return toRGB * yiq;',
-    '}',
-    '',
-    'vec3 shade(vec2 uv, vec2 p, float t) {',
-    '  float warp = 2.0 + u_intensity * 4.0;',
+    'void main() {',
+    '  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy)',
+    '    / min(u_resolution.x, u_resolution.y);',
+    '  p *= u_scale;',
+    '  float t = u_time;',
+    '  const float warp = 4.4;',   // 2.0 + intensidade 0.60 * 4.0
     '  vec2 q = vec2(fbm(p + t * 0.08), fbm(p + vec2(5.2, 1.3) - t * 0.06));',
     '  vec2 r = vec2(fbm(p + warp * q + vec2(1.7, 9.2)),',
     '                fbm(p + warp * q + vec2(8.3, 2.8)));',
-    '  return palette(fbm(p + 3.0 * r + u_seed));',
-    '}',
-    '',
-    'void main() {',
-    '  vec2 uv = gl_FragCoord.xy / u_resolution.xy;',
-    '  vec2 screenUv = uv;',
-    '  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy)',
-    '    / min(u_resolution.x, u_resolution.y);',
-    '  float cursorMask = 0.0;',
-    '',
-    '  if (u_cursorPresence > 0.001) {',
-    '    vec2 cursor = (0.5 * u_mouse * u_resolution.xy)',
-    '      / min(u_resolution.x, u_resolution.y);',
-    '    vec2 cursorDelta = p - cursor;',
-    '    if (u_cursorEffect < 0.5) {',
-    '      p += cursor * u_cursorPresence * u_cursorStrength * 0.55;',
-    '    } else {',
-    '      float cursorDistance = length(cursorDelta);',
-    '      vec2 cursorDirection = cursorDelta / max(cursorDistance, 0.0001);',
-    '      cursorMask = u_cursorPresence',
-    '        * (1.0 - smoothstep(0.0, u_cursorRadius, cursorDistance));',
-    '      if (u_cursorEffect < 1.5) {',
-    '        p -= cursorDirection * cursorMask * u_cursorStrength * 0.24;',
-    '      } else if (u_cursorEffect < 2.5) {',
-    '        float cursorAngle = cursorMask * u_cursorStrength * 2.2;',
-    '        float cc = cos(cursorAngle), cs = sin(cursorAngle);',
-    '        p = cursor + mat2(cc, -cs, cs, cc) * cursorDelta;',
-    '      } else if (u_cursorEffect < 3.5) {',
-    '        float ripple = sin(',
-    '          cursorDistance / max(u_cursorRadius, 0.001) * 18.0 - u_time * 5.0);',
-    '        p -= cursorDirection * ripple * cursorMask * u_cursorStrength * 0.07;',
-    '      }',
-    '    }',
-    '  }',
-    '',
-    '  uv = p * min(u_resolution.x, u_resolution.y) / u_resolution.xy + 0.5;',
-    '  p *= u_scale;',
-    '  if (abs(u_rotate) > 0.0001) {',
-    '    float cr = cos(u_rotate), sr = sin(u_rotate);',
-    '    p = mat2(cr, -sr, sr, cr) * p;',
-    '  }',
-    '  p += u_offset;',
-    '  if (u_drift > 0.0001)',
-    '    p += u_drift * vec2(sin(u_time * 0.31), cos(u_time * 0.23));',
-    '  if (u_warp > 0.0) {',
-    '    p += u_warp * (vec2(',
-    '      fbm(p * u_detail + u_seed),',
-    '      fbm(p * u_detail + vec2(5.2, 1.3))) - 0.5);',
-    '  }',
-    '  vec3 col;',
-    '  if (u_blur > 0.0) {',
-    '    float e = u_blur;',
-    '    float pe = e * u_scale;',
-    '    vec2 uvE = vec2(e) * min(u_resolution.x, u_resolution.y) / u_resolution.xy;',
-    '    col  = shade(uv, p, u_time) * 0.36;',
-    '    col += shade(uv + vec2(uvE.x, 0.0), p + vec2(pe, 0.0), u_time) * 0.16;',
-    '    col += shade(uv - vec2(uvE.x, 0.0), p - vec2(pe, 0.0), u_time) * 0.16;',
-    '    col += shade(uv + vec2(0.0, uvE.y), p + vec2(0.0, pe), u_time) * 0.16;',
-    '    col += shade(uv - vec2(0.0, uvE.y), p - vec2(0.0, pe), u_time) * 0.16;',
-    '  } else {',
-    '    col = shade(uv, p, u_time);',
-    '  }',
-    '  if (abs(u_contrast - 1.0) > 0.0001)',
-    '    col = (col - 0.5) * u_contrast + 0.5;',
-    '  if (abs(u_saturation - 1.0) > 0.0001) {',
-    '    float luma = dot(col, vec3(0.299, 0.587, 0.114));',
-    '    col = mix(vec3(luma), col, u_saturation);',
-    '  }',
-    '  if (abs(u_hue) > 0.0001)',
-    '    col = hueRotate(col, u_hue);',
-    '  if (abs(u_brightness) > 0.0001)',
-    '    col += u_brightness;',
-    '  if (u_vignette > 0.0001) {',
-    '    float vd = length(screenUv - 0.5) * 1.41421356;',
-    '    col *= 1.0 - u_vignette * smoothstep(0.35, 1.0, vd);',
-    '  }',
-    '  if (u_cursorPresence > 0.001 && u_cursorEffect > 3.5)',
-    '    col += (vec3(0.18) + col * 0.12) * cursorMask * u_cursorStrength;',
-    '  if (u_grain > 0.0001)',
-    '    col += (grainHash(',
-    '      gl_FragCoord.xy + vec2(u_seed * 17.0, u_seed * 31.0)) - 0.5) * u_grain;',
+    '  vec3 col = palette(fbm(p + 3.0 * r + u_seed));',
+    '  col = (col - 0.5) * 1.22 + 0.5;',   // contraste
     '  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);',
     '}'
   ].join('\n');
-
-  /* Paleta da receita, do fundo do mar até a espuma. É praticamente a paleta
-     da Velo: #031C26 → #1B6CA8 → #5AD2F4 → #EAF9FF. */
-  var CORES = [
-    0.012, 0.110, 0.149,
-    0.106, 0.424, 0.659,
-    0.353, 0.824, 0.957,
-    0.918, 0.976, 1.000,
-    0, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0
-  ];
 
   /* ------------------------------------------------------- uma instância */
 
   function montar(alvo) {
     var canvas = document.createElement('canvas');
     canvas.className = 'vivo__tela';
+    // Escondido até o primeiro quadro: canvas WebGL nunca desenhado é preto,
+    // e o gradiente navy da seção fica por baixo enquanto isso.
+    canvas.style.visibility = 'hidden';
 
     var caixa = document.createElement('div');
     caixa.className = 'vivo';
@@ -298,47 +142,52 @@
       var s = gl.createShader(tipo);
       gl.shaderSource(s, fonte);
       gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-        console.warn('[velo/vivo] shader:', gl.getShaderInfoLog(s));
-        gl.deleteShader(s);
-        return null;
-      }
       return s;
     }
 
     var vs = compilar(gl.VERTEX_SHADER, VERTEX);
     var fs = compilar(gl.FRAGMENT_SHADER, FRAGMENT);
-    if (!vs || !fs) { caixa.remove(); return null; }
-
     var prog = gl.createProgram();
     gl.attachShader(prog, vs);
     gl.attachShader(prog, fs);
     gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      console.warn('[velo/vivo] link:', gl.getProgramInfoLog(prog));
-      caixa.remove();
-      return null;
+
+    /* Compilação sem travar a página. Perguntar "compilou?" logo depois do
+       linkProgram faz o JS esperar a placa de vídeo terminar — no Windows,
+       onde o shader é traduzido pra Direct3D, isso pode levar centenas de
+       milissegundos com a página parada, bem na hora em que ela está
+       abrindo. Com a extensão de compilação paralela, o laço só confere se
+       ficou pronto e desenha no quadro seguinte. */
+    var paralela = gl.getExtension('KHR_parallel_shader_compile');
+    var pronto = false, falhou = false, u = null;
+
+    function terminar() {
+      if (pronto || falhou) return pronto;
+      if (paralela && !gl.getProgramParameter(prog, paralela.COMPLETION_STATUS_KHR)) return false;
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.warn('[velo/vivo] shader:', gl.getShaderInfoLog(fs) || gl.getProgramInfoLog(prog));
+        falhou = true;
+        caixa.remove();
+        return false;
+      }
+      gl.useProgram(prog);
+
+      // triângulo que cobre a tela inteira — mais barato que dois triângulos
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      var aPos = gl.getAttribLocation(prog, 'a_pos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      u = {
+        scene: gl.getUniformLocation(prog, 'u_scene'),
+        seed:  gl.getUniformLocation(prog, 'u_seedRaw')
+      };
+      gl.uniform1f(u.seed, conf.semente);
+      pronto = true;
+      return true;
     }
-    gl.useProgram(prog);
-
-    // triângulo que cobre a tela inteira — mais barato que dois triângulos
-    var buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    var aPos = gl.getAttribLocation(prog, 'a_pos');
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-    var u = {
-      colors:    gl.getUniformLocation(prog, 'u_colors[0]'),
-      scene:     gl.getUniformLocation(prog, 'u_scene'),
-      shape:     gl.getUniformLocation(prog, 'u_shape'),
-      surface:   gl.getUniformLocation(prog, 'u_surface'),
-      finish:    gl.getUniformLocation(prog, 'u_finish'),
-      transform: gl.getUniformLocation(prog, 'u_transform'),
-      space:     gl.getUniformLocation(prog, 'u_space'),
-      cursor:    gl.getUniformLocation(prog, 'u_cursor')
-    };
 
     function num(nome, padrao) {
       var v = parseFloat(alvo.getAttribute('data-vivo-' + nome));
@@ -356,13 +205,6 @@
       // seção (o canvas sobra 12% em cima e embaixo para isso)
       deriva:     num('deriva', 0.55) * 0.2
     };
-
-    gl.uniform3fv(u.colors, new Float32Array(CORES));
-    gl.uniform4f(u.shape, conf.escala, 0.60, 0.50, 0.00);
-    gl.uniform4f(u.surface, 2.40, 1.22, 0.00, 1.00);
-    gl.uniform4f(u.finish, 0.0, 0.0, 0.0, 0.0);
-    gl.uniform4f(u.transform, conf.semente, 0.0, 0.0, 0.0);
-    gl.uniform4f(u.cursor, 0.0, 2.0, 0.65, 0.46);   // cursor desligado
 
     var larg = 0, alt = 0, deslocado = '';
 
@@ -422,18 +264,24 @@
       window.addEventListener('load', medirCaixa);
     }
 
+    var inst = { alvo: alvo, desenhar: desenhar, derivar: derivar, visivel: false, desenhou: false };
+
+    // devolve false enquanto o shader ainda está compilando
     function desenhar(segundos) {
+      if (falhou) return true;   // nada a desenhar: a faixa ficou no gradiente
+      if (!terminar()) return false;
       medir();
-      gl.uniform4f(u.scene, larg, alt, segundos * conf.velocidade, 4.0);
-      gl.uniform4f(u.space, 0.0, 0.0, 0.0, 0.0);
+      gl.uniform4f(u.scene, larg, alt, segundos * conf.velocidade, conf.escala);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (!inst.desenhou) { inst.desenhou = true; canvas.style.visibility = ''; }
+      return true;
     }
 
     derivar();
 
     canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); }, false);
 
-    return { alvo: alvo, desenhar: desenhar, derivar: derivar, visivel: false };
+    return inst;
   }
 
   /* ------------------------------------------------- laço único pra todos */
@@ -441,11 +289,6 @@
   var SOBRA = 1.24;   // o canvas é 24% mais alto que a seção (ver .vivo__tela)
 
   var telas = [];
-  Array.prototype.forEach.call(alvos, function (a) {
-    var t = montar(a);
-    if (t) telas.push(t);
-  });
-  if (!telas.length) return;
 
   var relogio = 0, ultimo = 0, rodando = false, pedido = 0, espera = 0, rolouEm = 0;
   var PASSO = 1000 / 30;   // a mesma grade do mar no main.js
@@ -489,8 +332,9 @@
     var parada = agora - rolouEm >= 200;
     for (var i = 0; i < telas.length; i++) {
       var t = telas[i];
-      // o primeiro quadro sai mesmo rolando: canvas nunca desenhado é preto
-      if (t.visivel && (parada || !t.desenhou)) { t.desenhar(relogio); t.desenhou = true; }
+      // o primeiro quadro sai mesmo rolando: canvas nunca desenhado fica
+      // escondido, e a faixa sem água chamaria atenção
+      if (t.visivel && (parada || !t.desenhou)) t.desenhar(relogio);
     }
     agendar();
   }
@@ -509,12 +353,38 @@
   }
 
   /* Movimento reduzido: um quadro parado e mais nada. A imagem continua lá,
-     só não se mexe. */
+     só não se mexe. Se o shader ainda está compilando, tenta de novo no
+     próximo quadro. */
   function quadroParado() {
-    telas.forEach(function (t) { t.desenhar(0); });
+    var falta = false;
+    telas.forEach(function (t) { if (!t.desenhar(0)) falta = true; });
+    if (falta) requestAnimationFrame(quadroParado);
+  }
+
+  /* Cada faixa só monta o canvas quando chega a uma tela de distância. Quem
+     abre no hero não paga o contexto WebGL da chamada lá embaixo — e quem
+     nunca rola até lá, nunca paga. */
+  var porAlvo = [];
+  function instancia(alvo) {
+    for (var i = 0; i < porAlvo.length; i++) if (porAlvo[i][0] === alvo) return porAlvo[i][1];
+    var t = montar(alvo);
+    porAlvo.push([alvo, t]);
+    if (t) telas.push(t);
+    return t;
   }
 
   if ('IntersectionObserver' in window) {
+    // perto: monta o canvas com folga, antes de a faixa aparecer
+    var perto = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        perto.unobserve(e.target);
+        var t = instancia(e.target);
+        if (t) olho.observe(e.target);
+      });
+    }, { rootMargin: '100% 0px' });
+
+    // na tela: liga e desliga o desenho
     var olho = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (e) {
         for (var i = 0; i < telas.length; i++) {
@@ -525,9 +395,14 @@
       else if (algumaVisivel()) ligar();
       else desligar();
     }, { rootMargin: '15% 0px' });
-    telas.forEach(function (t) { olho.observe(t.alvo); });
+
+    Array.prototype.forEach.call(alvos, function (a) { perto.observe(a); });
   } else {
-    telas.forEach(function (t) { t.visivel = true; });
+    // navegador sem observador: monta todas e desenha todas, como era antes
+    Array.prototype.forEach.call(alvos, function (a) {
+      var t = instancia(a);
+      if (t) t.visivel = true;
+    });
   }
 
   document.addEventListener('visibilitychange', function () {
@@ -547,5 +422,7 @@
     else ligar();
   });
 
-  if (semMovimento.matches) quadroParado(); else ligar();
+  if (!('IntersectionObserver' in window)) {
+    if (semMovimento.matches) quadroParado(); else ligar();
+  }
 })();
