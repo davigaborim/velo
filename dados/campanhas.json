@@ -1,0 +1,88 @@
+{
+  "atualizado_em": "2026-11-04",
+
+  "campanhas": [
+    {
+      "id": "novembro-2026",
+      "inicio": "2026-11-01T00:00:00-04:00",
+      "fim": "2026-11-30T23:59:59-04:00",
+      "selo": "<b>{desconto}</b> em novembro, até {fim}",
+      "precos": {
+        "recife": 300,
+        "alto-mar": 550,
+        "abissal": 1500,
+        "presenca": 350,
+        "ataque": 650,
+        "dominancia": 850
+      },
+      "upsell": {
+        "recife": {
+          "texto": "Por mais <strong>R$ 200</strong> na criação você sobe pro <strong>Alto mar</strong> — de R$ 550 por <b>R$ 500</b>.",
+          "zap": "Oi, Velo! Quero o Alto mar por R$ 500 de criação."
+        },
+        "alto-mar": {
+          "texto": "Por mais <strong>R$ 850</strong> na criação você sobe pro <strong>Abissal</strong> — de R$ 1.500 por <b>R$ 1.400</b>.",
+          "zap": "Oi, Velo! Quero o Abissal por R$ 1.400 de criação."
+        },
+        "presenca": {
+          "texto": "Por mais <strong>R$ 250/mês</strong> você leva o <strong>Ataque</strong> — de R$ 650 por <b>R$ 600</b>.",
+          "zap": "Oi, Velo! Quero o plano Ataque por R$ 600/mês."
+        },
+        "ataque": {
+          "texto": "Por mais <strong>R$ 150/mês</strong> você leva a <strong>Dominância</strong> — de R$ 850 por <b>R$ 800</b>.",
+          "zap": "Oi, Velo! Quero o plano Dominância por R$ 800/mês."
+        }
+      }
+    },
+    {
+      "id": "fim-de-ano-2026",
+      "inicio": "2026-12-01T00:00:00-04:00",
+      "fim": "2026-12-31T23:59:59-04:00",
+      "selo": "<b>{desconto}</b> de fim de ano, até {fim}",
+      "saudacao": "Boas festas!",
+      "precos": {
+        "recife": 300,
+        "alto-mar": 550,
+        "abissal": 1500,
+        "presenca": 350,
+        "ataque": 650,
+        "dominancia": 850
+      },
+      "upsell": {
+        "recife": {
+          "texto": "Por mais <strong>R$ 200</strong> na criação você sobe pro <strong>Alto mar</strong> — de R$ 550 por <b>R$ 500</b>.",
+          "zap": "Oi, Velo! Quero o Alto mar por R$ 500 de criação."
+        },
+        "alto-mar": {
+          "texto": "Por mais <strong>R$ 850</strong> na criação você sobe pro <strong>Abissal</strong> — de R$ 1.500 por <b>R$ 1.400</b>.",
+          "zap": "Oi, Velo! Quero o Abissal por R$ 1.400 de criação."
+        },
+        "presenca": {
+          "texto": "Por mais <strong>R$ 250/mês</strong> você leva o <strong>Ataque</strong> — de R$ 650 por <b>R$ 600</b>.",
+          "zap": "Oi, Velo! Quero o plano Ataque por R$ 600/mês."
+        },
+        "ataque": {
+          "texto": "Por mais <strong>R$ 150/mês</strong> você leva a <strong>Dominância</strong> — de R$ 850 por <b>R$ 800</b>.",
+          "zap": "Oi, Velo! Quero o plano Dominância por R$ 800/mês."
+        }
+      }
+    }
+  ],
+
+  "atendimento": {
+    "seg": "08:00-18:00",
+    "ter": "08:00-18:00",
+    "qua": "08:00-18:00",
+    "qui": "08:00-18:00",
+    "sex": "08:00-18:00",
+    "sab": "08:00-12:00",
+    "dom": "",
+    "feriados": ["2026-11-20", "2026-12-25", "2027-01-01"]
+  },
+
+  "vagas": {
+    "ligado": false,
+    "mes": "2026-11",
+    "quantas": 3
+  }
+}

@@ -1539,3 +1539,95 @@ a.insta-selo:hover{ filter:brightness(1.08); }
   .erro__h1{ font-size:clamp(28px,7vw,44px); max-width:none; }
   .erro__num{ font-size:clamp(56px,15vw,96px); }
 }
+
+/* ==========================================================================
+   20. CAMPANHAS E ATENDIMENTO (js/campanhas.js)
+   Estados que o calendário de campanhas liga e desliga. As datas, preços e
+   o horário de atendimento estão em dados/campanhas.json.
+   ========================================================================== */
+
+/* O riscado "de R$ X" só aparece com campanha valendo; sem ela fica
+   invisível mas ocupa o lugar — assim o card não muda de altura quando a
+   campanha começa ou acaba com a página aberta. */
+.plano__antes[data-preco-antes]:not(.is-promo){ visibility:hidden; }
+
+/* valor que trocou com a página aberta: some e volta, sem mexer no tamanho */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes troca-valor{ from{ opacity:0; } to{ opacity:1; } }
+  .is-trocou{ animation:troca-valor .6s ease-out both; }
+}
+
+/* ---------- o selo da campanha ----------
+   Sem campanha vigente (ou sem JS) o selo some mas guarda o lugar: no
+   celular ele fica embaixo do título, e aparecer depois empurraria os cards. */
+
+.promo-selo[data-selo]:not(.is-vigente){ visibility:hidden; }
+.promo-selo__texto{ min-height:1.35em; }    /* vazio, mede o mesmo que com texto */
+
+/* Abaixo de 900px o título ocupa a linha inteira e o selo sempre desce pra
+   linha de baixo. Sem isso, um selo curto cabia do lado do título e um
+   longo ("Termina hoje · ... · faltam 05:12:33") quebrava linha — a troca
+   de estado com a página aberta empurrava os cards. */
+@media (max-width:900px){
+  .cab--linha:has(> [data-selo]) > h2{ flex-basis:100%; }
+}
+
+/* perto do fim */
+
+.promo-selo.promo-selo--urgente{
+  background:var(--sol); border-color:var(--sol); color:var(--abissal);
+}
+.promo-selo--urgente b{ font-weight:700; }
+.promo-selo__relogio{
+  display:inline-block; min-width:8ch; text-align:left;
+  font-family:var(--mono); font-size:.95em; font-variant-numeric:tabular-nums;
+}
+@media (prefers-reduced-motion:no-preference){
+  @keyframes selo-pulsa{
+    0%{ box-shadow:0 0 0 0 rgba(255,194,75,.6); }
+    70%,100%{ box-shadow:0 0 0 9px rgba(255,194,75,0); }
+  }
+  /* três pulsos quando entra e para: chama o olho sem repintar pra sempre */
+  .promo-selo--final{ animation:selo-pulsa 2.4s ease-out 3; }
+}
+
+/* ---------- vagas do mês (desligado por padrão no JSON) ---------- */
+
+.vagas{
+  display:inline-flex; align-items:center; padding:6px 14px; border-radius:999px;
+  border:1px solid var(--borda); color:var(--texto-fraco);
+  font-size:13.5px; line-height:1.35; white-space:nowrap;
+}
+.vagas[hidden]{ display:none; }
+
+/* ---------- atendimento na chamada final ---------- */
+
+.atende{
+  display:flex; align-items:center; gap:9px;
+  margin:-6px 0 20px; font-size:14.5px; line-height:1.4;
+  color:rgba(255,255,255,.82);
+}
+.atende[hidden]{ display:none; }
+.atende__ponto{
+  position:relative; flex:0 0 auto; width:9px; height:9px; border-radius:50%;
+  background:rgba(255,255,255,.42);
+}
+.atende[data-estado="aberto"] .atende__ponto{ background:#25D366; }
+/* a onda do ponto é transform + opacidade (compositor), e só três vezes */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes ponto-onda{
+    from{ transform:scale(1); opacity:.6; }
+    to{ transform:scale(2.8); opacity:0; }
+  }
+  .atende[data-estado="aberto"] .atende__ponto::after{
+    content:""; position:absolute; inset:0; border-radius:50%;
+    background:#25D366; animation:ponto-onda 2.2s ease-out 3 both;
+  }
+}
+
+/* a boia do WhatsApp ganha um pontinho quando é horário de atendimento */
+.zap-boia[data-atende="sim"]::after{
+  content:""; position:absolute; top:-2px; right:-2px;
+  width:11px; height:11px; border-radius:50%;
+  background:#fff; box-shadow:0 0 0 2.5px #128C4A;
+}
