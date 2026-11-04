@@ -19,6 +19,21 @@
 
   var semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  /* Computador sem placa de vídeo de verdade (driver bloqueado, aceleração
+     desligada, máquina virtual) ainda ganha WebGL: o navegador desenha com o
+     processador (SwiftShader, llvmpipe, "Microsoft Basic Render Driver").
+     Ali cada quadro da fumaça custa 150–250 ms de CPU, a página trava a
+     cada quadro e a rolagem cai pra uns 30 quadros por segundo (medido em
+     04/11). Nesses casos a fumaça vira um quadro parado — a mesma imagem,
+     só que sem andar — como no movimento reduzido. */
+  var software = null;   // descoberto no primeiro contexto
+  function semPlaca(gl) {
+    var info = gl.getExtension('WEBGL_debug_renderer_info');
+    var nome = String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER) || '');
+    return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(nome);
+  }
+  function parado() { return semMovimento.matches || software === true || congelado; }
+
   /* ---------------------------------------------------------------- shaders */
 
   var VERTEX = [
@@ -137,6 +152,7 @@
     // Sem WebGL o gradiente navy de sempre continua por baixo: a faixa fica
     // como era antes e ninguém vê buraco nenhum.
     if (!gl) { caixa.remove(); return null; }
+    if (software === null) software = semPlaca(gl);
 
     function compilar(tipo, fonte) {
       var s = gl.createShader(tipo);
@@ -224,7 +240,7 @@
       // pixels: a fumaça é só gradiente macio, e o navegador amplia o canvas
       // sem ninguém ver a diferença. Era 0.75, e o hero ainda pesava no
       // notebook com vídeo integrado (21/10).
-      var dpr = Math.min((window.devicePixelRatio || 1) * conf.resolucao, 0.45);
+      var dpr = Math.min((window.devicePixelRatio || 1) * conf.resolucao, 0.45) * qualidade;
       var area = caixaL * caixaA * SOBRA * dpr * dpr;
       if (area > 300000) dpr *= Math.sqrt(300000 / area);
       var w = Math.max(1, Math.round(caixaL * dpr));
@@ -292,6 +308,39 @@
 
   var relogio = 0, ultimo = 0, rodando = false, pedido = 0, espera = 0, rolouEm = 0;
   var PASSO = 1000 / 30;   // a mesma grade do mar no main.js
+  var passo = PASSO;
+
+  /* Governador: placa fraca de verdade (celular de entrada, notebook velho)
+     não avisa que é fraca — só atrasa. Com a página parada a fumaça pede um
+     quadro a cada 33 ms; se a média dos intervalos passa de ~55 ms por 2 s
+     seguidos, ela desce um degrau: 70% da resolução, depois 50%, depois 15
+     quadros por segundo, e por fim fica parada no último quadro. Nunca
+     sobe de volta (subir e descer ficaria piscando). Em máquina que dá
+     conta, nada disso acontece e o desenho é exatamente o de sempre. */
+  var qualidade = 1, degrau = 0, congelado = false;
+  var mediaQuadro = 0, ultimoQuadro = 0, ruimDesde = 0, ligouEm = 0;
+
+  function piorar() {
+    degrau++;
+    if (degrau === 1) qualidade = 0.7;
+    else if (degrau === 2) qualidade = 0.5;
+    else if (degrau === 3) passo = 1000 / 15;
+    else { congelado = true; desligar(); }
+    mediaQuadro = 0; ultimoQuadro = 0; ruimDesde = 0;
+  }
+
+  function vigiar(agora) {
+    if (ultimoQuadro) {
+      var dt = agora - ultimoQuadro;
+      mediaQuadro = mediaQuadro ? mediaQuadro * 0.85 + dt * 0.15 : dt;
+      // os primeiros 3 s não contam: a página ainda está carregando foto e fonte
+      if (agora - ligouEm > 3000 && mediaQuadro > passo * 1.65) {
+        if (!ruimDesde) ruimDesde = agora;
+        else if (agora - ruimDesde > 2000) piorar();
+      } else ruimDesde = 0;
+    }
+    ultimoQuadro = agora;
+  }
 
   function algumaVisivel() {
     for (var i = 0; i < telas.length; i++) if (telas[i].visivel) return true;
@@ -320,7 +369,7 @@
     espera = setTimeout(function () {
       espera = 0;
       pedido = requestAnimationFrame(quadro);
-    }, rolando ? 200 : PASSO - performance.now() % PASSO);
+    }, rolando ? 200 : passo - performance.now() % passo);
   }
 
   function quadro(agora) {
@@ -329,19 +378,22 @@
     // o relógio da fumaça para junto com a rolagem: volta de onde estava
     if (ultimo) relogio += Math.min(0.05, (agora - ultimo) / 1000);
     ultimo = agora;
-    var parada = agora - rolouEm >= 200;
+    var parada = agora - rolouEm >= 200, desenhou = false;
     for (var i = 0; i < telas.length; i++) {
       var t = telas[i];
       // o primeiro quadro sai mesmo rolando: canvas nunca desenhado fica
       // escondido, e a faixa sem água chamaria atenção
-      if (t.visivel && (parada || !t.desenhou)) t.desenhar(relogio);
+      if (t.visivel && (parada || !t.desenhou)) desenhou = t.desenhar(relogio) || desenhou;
     }
+    // só conta intervalo entre dois quadros desenhados com a página parada
+    if (parada && desenhou) vigiar(agora); else ultimoQuadro = 0;
+    if (!rodando) return;   // o governador pode ter congelado agora
     agendar();
   }
 
   function ligar() {
-    if (rodando || semMovimento.matches || document.hidden || !algumaVisivel()) return;
-    rodando = true; ultimo = 0;
+    if (rodando || parado() || document.hidden || !algumaVisivel()) return;
+    rodando = true; ultimo = 0; ultimoQuadro = 0; ligouEm = performance.now();
     agendar();
   }
 
@@ -352,13 +404,20 @@
     pedido = 0; espera = 0;
   }
 
-  /* Movimento reduzido: um quadro parado e mais nada. A imagem continua lá,
-     só não se mexe. Se o shader ainda está compilando, tenta de novo no
-     próximo quadro. */
-  function quadroParado() {
+  /* Movimento reduzido (ou placa sem aceleração): um quadro parado e mais
+     nada. A imagem continua lá, só não se mexe. Cada faixa é desenhada uma
+     vez só — sem placa, cada quadro custa caro — e de novo apenas quando a
+     tela muda de tamanho (tudo = true). Se o shader ainda está compilando,
+     tenta de novo no próximo quadro. */
+  function quadroParado(tudo) {
     var falta = false;
-    telas.forEach(function (t) { if (!t.desenhar(0)) falta = true; });
-    if (falta) requestAnimationFrame(quadroParado);
+    // congelado pelo governador: fica no instante em que parou, não no zero
+    var t0 = congelado ? relogio : 0;
+    telas.forEach(function (t) {
+      if (t.desenhou && tudo !== true) return;
+      if (!t.desenhar(t0)) falta = true;
+    });
+    if (falta) requestAnimationFrame(function () { quadroParado(tudo); });
   }
 
   /* Cada faixa só monta o canvas quando chega a uma tela de distância. Quem
@@ -391,7 +450,7 @@
           if (telas[i].alvo === e.target) telas[i].visivel = e.isIntersecting;
         }
       });
-      if (semMovimento.matches) quadroParado();
+      if (parado()) quadroParado();
       else if (algumaVisivel()) ligar();
       else desligar();
     }, { rootMargin: '15% 0px' });
@@ -413,16 +472,16 @@
   window.addEventListener('resize', function () {
     clearTimeout(remedir);
     remedir = setTimeout(function () {
-      if (!rodando) quadroParado();
+      if (!rodando) quadroParado(true);
     }, 150);
   }, { passive: true });
 
   semMovimento.addEventListener('change', function () {
-    if (semMovimento.matches) { desligar(); quadroParado(); }
+    if (parado()) { desligar(); quadroParado(true); }
     else ligar();
   });
 
   if (!('IntersectionObserver' in window)) {
-    if (semMovimento.matches) quadroParado(); else ligar();
+    if (parado()) quadroParado(); else ligar();
   }
 })();
