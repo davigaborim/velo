@@ -18,7 +18,8 @@ velo/
 │   ├── shader.js               (a água viva em WebGL das faixas escuras)
 │   ├── vivo.js                 (parallax, inclinação 3D, contadores)
 │   └── planos.js               (relógio da promoção e upsell)
-└── images/
+├── fonts/                      (Bricolage, Instrument Sans e DM Mono em woff2)
+└── images/                     (cada foto tem um .avif do lado — ver "Imagens em AVIF")
     ├── mascote-novo.png        (mascote atual, recortado)
     ├── mascote-apoiado.png     (mascote cortado na linha do braço, pra
     │                            apoiar na borda de cima dos cards)
@@ -40,8 +41,8 @@ A pasta `site-hostinger/` é o site pronto pra subir: as mesmas páginas, sem o
 não usa (`velo-logo-original.svg`, `barbatana.svg`).
 
 No hPanel, o caminho é **Gerenciador de arquivos → `public_html`** e arrastar
-pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `js/` e
-`images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
+pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `js/`,
+`fonts/` e `images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
 o site cai em `seudominio.com/site-hostinger/` e os caminhos do `404.html`,
 que começam na raiz, quebram.
 
