@@ -157,7 +157,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 
 .marca{ display:inline-flex; align-items:center; gap:9px; text-decoration:none; color:var(--abissal); flex:0 0 auto; }
 .marca__fin{ width:26px; height:26px; fill:currentColor; transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
-/* no hover a barbatana dá um mergulho curto e volta, em vez de só girar */
+/* hover: a barbatana dá um mergulho curto */
 @keyframes fin-mergulho{
   35%{ transform:translate(3px,5px) rotate(10deg); }
   70%{ transform:translate(1px,-3px) rotate(-7deg); }
@@ -231,16 +231,14 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   border:1.5px solid var(--bd); background:var(--bg); color:var(--fg);
   text-decoration:none; cursor:pointer; white-space:nowrap;
   transition:transform .22s cubic-bezier(.34,1.4,.64,1),translate .45s cubic-bezier(.3,1.5,.5,1),box-shadow .22s ease,background .22s ease,color .22s ease;
-  /* ímã (vivo.js, só com mouse): o botão grande puxa um pouco pro ponteiro */
+  /* ímã (vivo.js, só com mouse) */
   translate:var(--ima-x,0px) var(--ima-y,0px);
 }
 .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -8px rgba(11,46,88,.45); }
 .btn:active{ transform:translateY(0) scale(.985); }
 .btn.is-ima{ transition:transform .22s cubic-bezier(.34,1.4,.64,1),translate .1s linear,box-shadow .22s ease,background .22s ease,color .22s ease; }
 
-/* Onda: um anel que abre a partir de onde o ponteiro entrou (ou do dedo,
-   no toque). Quem põe a posição e dispara é o vivo.js; sem ele, nada
-   aparece. Era um brilho de sol atravessando — genérico, e igual em tudo. */
+/* onda: anel que abre de onde o ponteiro entrou (disparada pelo vivo.js) */
 .btn::after,.pl-pulo::after{
   content:""; position:absolute; z-index:-1; pointer-events:none;
   left:calc(var(--ox,50%) - var(--or,60px)); top:calc(var(--oy,50%) - var(--or,60px));
@@ -274,8 +272,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 }
 .link svg{ width:15px; height:15px; transition:translate .25s cubic-bezier(.3,1.5,.5,1); }
 .link--claro{ color:var(--sol); border-bottom-color:rgba(255,194,75,.4); }
-/* no hover o sublinhado reto vira uma onda correndo (a seta escapa um
-   pouquinho, sem mexer no tamanho do link como o `gap` fazia) */
+/* hover: o sublinhado vira onda correndo */
 .link::after{
   content:""; position:absolute; left:0; right:0; bottom:-4px; height:7px;
   background:var(--sol); opacity:0; pointer-events:none;
@@ -353,7 +350,6 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 .hero__mascote{ position:relative; justify-self:center; max-width:430px; }
 .hero__mascote img{
   position:relative; z-index:1; width:100%;
-  filter:drop-shadow(0 26px 34px rgba(11,46,88,.22));
   /* balança pelo main.js, no relógio do mar (ver balancar()) */
 }
 /* Os dois mascotes que balançam ganham camada própria. Sem ela, cada passo
@@ -365,6 +361,20 @@ ul,ol{ margin:0; padding:0; list-style:none; }
    numa camada pronta perde nitidez; e são pequenos, quase não pesam. */
 .hero__mascote img,
 .chamada__mascote img{ will-change:transform; }
+
+/* Sem drop-shadow nesses dois (04/11): com a água em vídeo animando atrás, o
+   compositor refazia o desfoque da sombra a cada quadro — ~1 s de CPU a cada
+   2,9 s com a página parada no topo, num desktop sem placa de vídeo. A sombra
+   agora é uma elipse pintada uma vez, embaixo, que fica parada enquanto o
+   bicho balança (e isso ainda ajuda a ler que ele está boiando). */
+.hero__mascote::after,
+.chamada__mascote::after{
+  content:""; position:absolute; z-index:0; pointer-events:none;
+  left:16%; right:16%; bottom:-3%; height:9%;
+  background:radial-gradient(closest-side,rgba(2,14,28,.5),rgba(2,14,28,.22) 55%,rgba(2,14,28,0));
+}
+.chamada__mascote{ position:relative; }
+.chamada__mascote img{ position:relative; z-index:1; }
 
 .mascote__aura{
   position:absolute; z-index:0; inset:8% -6% 6%;
@@ -466,9 +476,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 }
 .card:hover{ box-shadow:var(--sombra); border-color:var(--raso); }
 
-/* No hover a água enche o card por baixo, com a crista balançando de lado:
-   o card de serviço não sobe nem inclina, ele alaga. Sobe por transform
-   (antes era `height`, que refazia o layout do pseudo a cada quadro). */
+/* hover: o card alaga (água sobe por transform, crista balança de lado) */
 .card::before{
   content:""; position:absolute; z-index:0; pointer-events:none;
   left:-120px; right:0; bottom:0; height:58%;
@@ -488,7 +496,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   border-radius:14px; background:var(--espuma); color:var(--profundo);
   transition:background .3s ease,color .3s ease;
 }
-/* o ícone vira boia: fica navy e balança na água que subiu */
+/* ...e o ícone vira boia */
 @keyframes icone-boia{
   0%,100%{ transform:translateY(0) rotate(0deg); }
   50%{ transform:translateY(-4px) rotate(-7deg); }
@@ -515,8 +523,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   box-shadow:var(--sombra); text-decoration:none;
   transition:transform .35s cubic-bezier(.34,1.3,.64,1),box-shadow .35s ease;
 }
-/* No hover a janela "liga": as três bolinhas ganham as cores de semáforo e
-   a página dentro dela desce um pouco, como quem rola o site. */
+/* hover: a janela liga (bolinhas coloridas) e a página rola um pouco */
 .obra__tela:hover{ transform:translateY(-4px); box-shadow:var(--sombra-alta); }
 .tela__barra i{ transition:background-color .25s ease; }
 .obra__tela:hover .tela__barra i:nth-child(1){ background:#FF5F57; }
@@ -595,8 +602,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 }
 .plano:hover{ transform:translateY(-4px); box-shadow:var(--sombra-alta); }
 
-/* No hover os "checks" acendem um depois do outro, de cima pra baixo, e a
-   fita "Recomendado" boia. Nada inclina: o card de plano é pra ler. */
+/* hover: os checks acendem em sequência e a fita boia */
 .plano__lista li::before{ transition:border-color .25s ease; }
 .plano:hover .plano__lista li::before{ border-color:var(--sol); }
 .plano--destaque:hover .plano__lista li::before{ border-color:#fff; }
@@ -672,7 +678,7 @@ ul,ol{ margin:0; padding:0; list-style:none; }
 .chamada__rodape{ font-size:15px; color:rgba(255,255,255,.85); }
 
 .chamada__mascote{ justify-self:center; max-width:240px; }
-.chamada__mascote img{ filter:drop-shadow(0 20px 30px rgba(0,0,0,.35)); }
+/* a sombra do mascote é pintada (ver .hero__mascote::after) */
 
 @media (max-width:820px){
   .chamada__grid{ grid-template-columns:1fr; }
@@ -811,56 +817,33 @@ html.is-puxando-mar body{ user-select:none; }
    12. MOVIMENTO — O IDIOMA DO MAR
    ========================================================================== */
 
-/* Até 04/11 quase tudo era o mesmo gesto: alguma coisa andando no eixo Y
-   junto com a rolagem, e a mesma inclinação 3D no hover de todo card. O
-   dono enjoou, com razão. Agora cada parte da página mexe de um jeito que
-   só faz sentido aqui — tudo sai da água:
-
-   - títulos: as palavras sobem por uma linha d'água, uma de cada vez;
-   - hero: o tubarão salta pra fora da água ao abrir e mergulha quando você
-     desce; a onda da seção de baixo incha por cima dele (ressaca);
-   - serviços: os cards chegam alagados e a maré vaza de dentro deles;
-   - planos de site: o card emerge por uma superfície que fica parada na
-     tela, com a crista na cor da profundidade (Recife raso, Abissal fundo);
-   - planos de Instagram: um reflexo de luz atravessa o vidro;
-   - preços e números: rolam como odômetro (vivo.js);
-   - trabalhos: a persiana da janela sobe e a página "abre" (zoom de volta);
-   - chamada: a barbatana cruza a onda que separa a seção, e o mascote dá
-     um salto;
-   - avulsos: a linha de maré de cada item chega rolando da esquerda;
-   - parágrafos: parados. Texto de ler não precisa de truque.
-
-   Regras que não mudam:
-   - só transform (translate/rotate/scale, as propriedades separadas) na
-     rolagem. clip-path e mask animados repintam a cada quadro (medido em
-     04/11: 467 pinturas em 60 quadros contra 2 com translate). Por isso
-     toda "máscara" aqui é uma janela PARADA (clip-path ou overflow:clip
-     fixos) com o conteúdo andando por dentro dela — o compositor faz sozinho;
-   - nada de opacidade amarrada à rolagem (custo de GPU medido em 21/10);
-   - tudo que esconde alguma coisa mora dentro de @supports
-     (animation-timeline): Safari e Firefox veem a página inteira, parada,
-     no lugar. E dentro de prefers-reduced-motion:no-preference. */
+/* Cada seção mexe do seu jeito, tudo saindo da água. O porquê de cada
+   efeito e as regras (só transform na rolagem, janela parada com o
+   conteúdo andando dentro, nada escondido fora do @supports) estão no
+   LEIA-ME, em "Movimento". Comentário aqui custa: este CSS segura a
+   primeira pintura. */
 
 :root{
-  /* crista: a onda cheia por baixo, ladrilho de 120x16 que emenda sem costura */
+  /* onda cheia (ladrilho 120x16), risco de onda e a barbatana (#fin-d arredondado) */
+  /* águas já pintadas (cor no SVG, sem máscara): camada grande com máscara
+     custava ~0,5 s de rasterização numa rolagem da home (medido em 04/11) */
+  --agua-raso:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8V16H0Z' fill='%23F2F9FE'/%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8' fill='none' stroke='%238CCBF0' stroke-width='4'/%3E%3C/svg%3E");
+  --agua-mare:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8V16H0Z' fill='%23F2F9FE'/%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8' fill='none' stroke='%232E86D6' stroke-width='4'/%3E%3C/svg%3E");
+  --agua-funda:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8V16H0Z' fill='%23F2F9FE'/%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8' fill='none' stroke='%2314498C' stroke-width='4'/%3E%3C/svg%3E");
+  --agua-vaza:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8V16H0Z' fill='%238CCBF0' fill-opacity='.5'/%3E%3C/svg%3E");
   --crista:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8C15 0 45 0 60 8S105 16 120 8V16H0Z'/%3E%3C/svg%3E");
-  /* linha de onda: só o risco, pra linha de maré dos avulsos e o sublinhado */
   --linha-onda:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 7' preserveAspectRatio='none'%3E%3Cpath d='M0 3.5C7.5 0 22.5 0 30 3.5S52.5 7 60 3.5' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3C/svg%3E");
-  /* a barbatana da logo (o mesmo path do #fin-d do HTML) */
-  --barbatana:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='312 138 278 238'%3E%3Cpath d='M533.476,236.687c-2.868,7.051 -2.735,7.078 -5.375,14.202c-0.665,1.961 -0.655,1.933 -1.298,3.891c-1.359,3.837 -2.415,7.758 -2.599,8.44c-3.18,11.537 -3.532,18.194 -3.641,19.496c-3.623,43.295 36.017,53.731 49.881,58.988c5.008,1.899 7.762,1.144 7.697,2.551c-0.009,0.203 -0.031,0.669 -2.504,0.371c-4.062,-0.489 -4.062,-0.534 -20.09,-0.603c-48.63,-0.212 -77.812,3.609 -79.697,3.72c-5.437,0.32 -13.757,1.381 -14.95,1.533c-25.435,3.245 -58.062,7.095 -106.945,20.127c-9.177,2.447 -14.059,4.936 -14.778,4.507c-1.249,-0.745 1.896,-1.879 3.943,-2.766c30.979,-13.432 64.457,-29.235 122.385,-42.217c30.078,-6.741 32.151,-4.523 32.165,-6.027c0.001,-0.136 0.113,-0.306 0.023,-0.408c-0.58,-0.66 -11.619,0.619 -19.922,0.779c-3.922,0.076 -3.866,0.583 -7.777,0.645c-3.888,0.062 -3.859,0.211 -7.746,0.551c-31.949,2.797 -54.523,8.594 -64.805,10.858c-7.779,1.713 -13.864,3.713 -15.642,4.162c-14.314,3.617 -47.841,15.9 -61.395,22.523c-0.295,0.144 -6.348,4.121 -2.16,-0.947c0.458,-0.555 9.23,-13.298 15.267,-21.771c1.5,-1.967 2.606,-3.615 4.362,-5.968c3.101,-4.587 24.04,-32.709 30.929,-40.966c9.379,-11.241 42.024,-52.761 85.208,-88.447c9.427,-7.79 24.633,-18.578 25.909,-19.409c9.427,-6.146 9.43,-6.112 10.244,-6.653c18.32,-12.197 60.696,-32.06 96.508,-37.364c1.273,-0.189 1.379,0.538 0.539,1.536c-0.547,0.65 -1.793,2.132 -6.188,8.631c-27.413,40.547 -39.616,67.759 -47.547,86.037l-0.001,0.001Z'/%3E%3C/svg%3E");
+  --barbatana:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='312 138 278 238'%3E%3Cpath d='M533.5,236.7c-2.9,7.1-2.7,7.1-5.4,14.2c-0.7,2-0.7,1.9-1.3,3.9c-1.4,3.8-2.4,7.8-2.6,8.4c-3.2,11.5-3.5,18.2-3.6,19.5c-3.6,43.3 36,53.7 49.9,59c5,1.9 7.8,1.1 7.7,2.6c0,0.2 0,0.7-2.5,0.4c-4.1,-0.5-4.1,-0.5-20.1,-0.6c-48.6,-0.2-77.8,3.6-79.7,3.7c-5.4,0.3-13.8,1.4-14.9,1.5c-25.4,3.2-58.1,7.1-106.9,20.1c-9.2,2.4-14.1,4.9-14.8,4.5c-1.2,-0.7 1.9,-1.9 3.9,-2.8c31,-13.4 64.5,-29.2 122.4,-42.2c30.1,-6.7 32.2,-4.5 32.2,-6c0,-0.1 0.1,-0.3 0,-0.4c-0.6,-0.7-11.6,0.6-19.9,0.8c-3.9,0.1-3.9,0.6-7.8,0.6c-3.9,0.1-3.9,0.2-7.7,0.6c-31.9,2.8-54.5,8.6-64.8,10.9c-7.8,1.7-13.9,3.7-15.6,4.2c-14.3,3.6-47.8,15.9-61.4,22.5c-0.3,0.1-6.3,4.1-2.2,-0.9c0.5,-0.6 9.2,-13.3 15.3,-21.8c1.5,-2 2.6,-3.6 4.4,-6c3.1,-4.6 24,-32.7 30.9,-41c9.4,-11.2 42,-52.8 85.2,-88.4c9.4,-7.8 24.6,-18.6 25.9,-19.4c9.4,-6.1 9.4,-6.1 10.2,-6.7c18.3,-12.2 60.7,-32.1 96.5,-37.4c1.3,-0.2 1.4,0.5 0.5,1.5c-0.5,0.7-1.8,2.1-6.2,8.6c-27.4,40.5-39.6,67.8-47.5,86l0,0Z'/%3E%3C/svg%3E");
 }
 
 .reveal{ opacity:1; }
 
-/* ---------- palavras na linha d'água (estrutura) ----------
-   Cada palavra é uma janela (.pal) com a palavra de verdade dentro. O
-   padding com margem negativa estica a janela pra caber acento e perna de
-   letra sem mudar a altura da linha. Os h1 já vêm partidos no HTML (estão
-   na primeira tela, não dá pra esperar o JS); os h2 o vivo.js parte. */
+/* palavra = janela parada (.pal) + palavra que sobe; o padding/margem
+   negativa cabe acento e perna de letra sem mudar a altura da linha */
 .pal{ display:inline-block; padding-block:.12em .2em; margin-block:-.12em -.2em; }
 .pal > span{ display:inline-block; }
 
-/* ---------- odômetro (estrutura; quem monta é o vivo.js) ---------- */
+/* odômetro (montado pelo vivo.js) */
 .rola{ white-space:nowrap; }
 .rola__c{ display:inline-block; position:relative; clip-path:inset(0 -.4em); }
 .rola__alvo{ visibility:hidden; }
@@ -874,20 +857,15 @@ html.is-puxando-mar body{ user-select:none; }
   clip-path:inset(50%); white-space:nowrap;
 }
 
-/* a janela de água dos cards de plano: sem linha do tempo ela não existe */
+/* a janela de água dos planos só existe com linha do tempo */
 .plano__agua{ display:none; }
 
 @media (prefers-reduced-motion:no-preference){
 
-  /* ======================================================================
-     A CHEGADA (uma vez, ao abrir — não depende da rolagem)
-     Tudo pronto em ~0,8 s; o título e o mascote começam sem espera.
-     ====================================================================== */
+  /* ---- a chegada (uma vez, ao abrir): tudo pronto em ~0,8 s ---- */
 
   @keyframes aparece{ from{ opacity:0; } }
-  /* a opacidade aqui não é enfeite: a fonte troca uns 150 ms depois da
-     primeira pintura, e palavra visível nessa hora conta como layout shift */
-  @keyframes surge-palavra{ from{ opacity:0; translate:0 112%; rotate:7deg; } }
+  @keyframes surge-palavra{ from{ translate:0 112%; rotate:7deg; } }
   @keyframes mascote-salta{
     from{ opacity:0; translate:0 46px; rotate:7deg; }
     60%{ opacity:1; translate:0 -8px; rotate:-1.5deg; }
@@ -898,17 +876,18 @@ html.is-puxando-mar body{ user-select:none; }
   }
   @keyframes balao-estoura{ from{ opacity:0; scale:0; } 70%{ opacity:1; scale:1.08; } }
 
-  /* o que não tem gesto próprio só aparece: parágrafo não pula */
+  /* sem gesto próprio, só aparece: parágrafo não pula */
   .hero .reveal,.pl-abre .reveal{
     animation:aparece .5s ease-out both;
-    animation-delay:calc(var(--d,0) * 70ms);
+    animation-delay:calc(var(--d,0) * 60ms);
   }
 
-  /* título: palavra por palavra, saindo da água com um gingado */
-  /* o h1 inteiro só esmaece (curto): os espaços entre as palavras também
-     são texto, e visíveis na troca da fonte contavam como layout shift */
+  /* o h1 esmaece rápido por baixo das palavras: esconde a troca de fonte
+     (~150 ms), que contava como layout shift */
   .hero .hero__h1,.pl-abre .pl-abre__h1{ animation:aparece .3s ease-out both; }
-  .hero__h1 .pal,.pl-abre__h1 .pal{ clip-path:inset(-1em -.3em 0 -.3em); }
+  /* o parágrafo do hero é o LCP: sem espera */
+  .hero .hero__sub,.pl-abre .pl-abre__texto{ animation-delay:0s; }
+  .hero__h1 .pal,.pl-abre__h1 .pal{ overflow-y:clip; }
   .hero__h1 .pal > span,.pl-abre__h1 .pal > span{
     transform-origin:0 100%;
     animation:surge-palavra .62s cubic-bezier(.22,1.3,.45,1) both;
@@ -916,7 +895,19 @@ html.is-puxando-mar body{ user-select:none; }
   }
   .erro__h1{ --h1-espera:180ms; }      /* no 404 o número chega primeiro */
 
-  /* botões: boias estourando pra cima, uma depois da outra */
+  /* títulos de seção: o vivo.js parte em palavras (.pal só existe se ele
+     rodou) e põe .is-emersa quando o título passa do mar fixo. Animação de
+     tempo, não de rolagem: 35 palavras amarradas à rolagem custavam ~1
+     quadro/s na home; assim cada uma só vira camada durante 0,7 s */
+  .cab h2 .pal,.chamada h2 .pal{ overflow-y:clip; }
+  .cab h2 .pal > span,.chamada h2 .pal > span{ transform-origin:0 100%; translate:0 112%; rotate:8deg; }
+  .cab h2.is-emersa .pal > span,.chamada h2.is-emersa .pal > span{
+    translate:none; rotate:none;
+    animation:surge-palavra .7s cubic-bezier(.22,1.3,.45,1) both;
+    animation-delay:calc(var(--i) * 45ms);
+  }
+
+  /* botões: boias estourando, uma depois da outra */
   .hero .hero__acoes,.pl-abre .pl-abre__pulos{ animation:none; }
   .hero__acoes > *,.pl-abre__pulos > *{
     animation:boia-surge .55s cubic-bezier(.3,1.25,.5,1) both;
@@ -925,7 +916,6 @@ html.is-puxando-mar body{ user-select:none; }
   .hero__acoes > :nth-child(2),.pl-abre__pulos > :nth-child(2){ animation-delay:310ms; }
   .hero__acoes > :nth-child(3),.pl-abre__pulos > :nth-child(3){ animation-delay:380ms; }
 
-  /* o mascote salta pra fora da água */
   .hero .hero__mascote,.pl-abre .pl-abre__mascote{
     transform-origin:50% 90%;
     animation:mascote-salta .8s cubic-bezier(.25,1,.4,1) both;
@@ -934,9 +924,7 @@ html.is-puxando-mar body{ user-select:none; }
 
   @supports (animation-timeline:view()){
 
-    /* ======================================================================
-       HERO — o mascote mergulha, a onda de baixo incha por cima
-       ====================================================================== */
+    /* ---- hero: o mascote mergulha; a onda de baixo incha (ressaca) ---- */
 
     @keyframes mergulha{ to{ translate:0 84px; rotate:15deg; } }
     .hero .hero__mascote,.pl-abre .pl-abre__mascote{
@@ -950,57 +938,25 @@ html.is-puxando-mar body{ user-select:none; }
       animation-composition:replace,add;
     }
 
-    /* A lapela de onda que separa o hero do miolo cresce e rola de lado
-       enquanto o hero sai: é a ressaca subindo por cima dele. Um pouco mais
-       larga que a tela, pra o rolar de lado não mostrar a ponta. */
     @keyframes ressaca{ to{ scale:1 2; translate:-3% 0; } }
-    /* a sobra de lado fica dentro da seção, sem alargar a página */
     .hero + .secao,section.pl-abre{ overflow-x:clip; }
     .hero + .secao::before,
     section.pl-abre::after{          /* section.: ganha da regra da seção 18 */
       left:-4%; right:-4%; transform-origin:50% 100%;
-      /* 2px enfiados na seção: esticada, a borda de baixo cai em meio pixel
-         e abria uma costura escura entre a onda e o fundo */
-      height:36px; margin-bottom:-2px;
+      height:36px; margin-bottom:-2px;   /* sem costura ao esticar */
       animation:ressaca linear both;
       animation-timeline:scroll(root); animation-range:0 85vh;
     }
 
-    /* ======================================================================
-       TÍTULOS DE SEÇÃO — palavra por palavra pela linha d'água
-       Cada h2 é uma linha do tempo; as palavras pegam pedaços dela em
-       sequência (--i). Volta a afundar se você subir.
-       ====================================================================== */
-
-    @keyframes emerge{ from{ translate:0 112%; rotate:8deg; } }
-    .cab h2,.chamada h2{ view-timeline:--titulo block; }
-    .cab h2 .pal,.chamada h2 .pal{ clip-path:inset(-1em -.3em 0 -.3em); }
-    .cab h2 .pal > span,.chamada h2 .pal > span{
-      transform-origin:0 100%;
-      animation:emerge cubic-bezier(.25,1.25,.5,1) both;
-      animation-timeline:--titulo;
-      animation-range:cover calc(12vh + var(--i) * 2.2vh) cover calc(30vh + var(--i) * 2.2vh);
-    }
-
-    /* ======================================================================
-       SERVIÇOS — a maré vaza de dentro do card
-       O card chega alagado (água clara, translúcida: dá pra ler por baixo)
-       e a água escorre pra baixo e de lado conforme ele sobe na tela. Nas
-       três colunas do desktop a maré baixa em tempos diferentes: a linha da
-       água fica ondulada de um card pro outro.
-       ====================================================================== */
+    /* ---- serviços: a maré vaza de dentro do card ---- */
 
     @keyframes vazante{ from{ translate:-40px -18px; } to{ translate:0 104%; } }
-    /* linha do tempo com nome, no card: com view() o pseudo mediria a
-       rolagem do próprio card (overflow:hidden faz dele um "rolador", que
-       nunca rola) e a maré ficava parada no meio */
+    /* com nome: view() no pseudo mediria o card (overflow:hidden = rolador) */
     .cards .card{ view-timeline:--card block; }
     .cards .card::after{
       content:""; position:absolute; z-index:2; pointer-events:none;
       left:0; top:0; width:calc(100% + 40px); height:100%;
-      background:linear-gradient(180deg,rgba(140,203,240,.5),rgba(46,134,214,.3));
-      -webkit-mask:var(--crista) repeat-x 0 0/120px 16px,linear-gradient(#000,#000) no-repeat 0 15px/100% 100%;
-              mask:var(--crista) repeat-x 0 0/120px 16px,linear-gradient(#000,#000) no-repeat 0 15px/100% 100%;
+      background:var(--agua-vaza) repeat-x 0 0/120px 16px,linear-gradient(180deg,rgba(140,203,240,.5),rgba(46,134,214,.3)) no-repeat 0 16px/100% 100%;
       animation:vazante cubic-bezier(.4,0,.6,1) both;
       animation-timeline:--card; animation-range:cover 16vh cover 56vh;
     }
@@ -1009,62 +965,52 @@ html.is-puxando-mar body{ user-select:none; }
       .cards .card:nth-child(3n+3)::after{ animation-range:cover 26vh cover 66vh; }
     }
 
-    /* ======================================================================
-       PLANOS DE SITE — o card emerge por uma superfície
-       A água (cor do fundo da seção, com crista) desce DENTRO do card na
-       mesma velocidade em que ele sobe na tela: na prática a superfície fica
-       parada a ~24% do pé da tela (acima do mar fixo) e o card atravessa ela. A crista tem a cor
-       da profundidade de cada plano, e quanto mais fundo, de mais longe ele
-       sobe. A janela (.plano__agua) é fixa e recorta; quem anda são os
-       pseudo-elementos dela.
-       ====================================================================== */
+    /* ---- planos de site: o card atravessa uma superfície parada a 24vh
+       do pé da tela; crista e distância conforme a profundidade ---- */
 
-    @keyframes superficie{ from{ translate:-120px 0; } to{ translate:0 100%; } }
+    @keyframes superficie{ from{ translate:-120px 0; } to{ translate:0 calc(100cqh + 24px); } }
     @keyframes sobe-do-fundo{ from{ translate:0 var(--fundo); } }
 
     .plano--mar{
-      --fundo:28px; --crista-cor:var(--raso);
+      --fundo:28px; --agua:var(--agua-raso);
       view-timeline:--plano block;
       animation:sobe-do-fundo cubic-bezier(.3,0,.3,1) both;
       animation-timeline:--plano; animation-range:entry 24vh entry calc(100% + 24vh);
     }
-    .plano--mar[data-fundo="alto-mar"]{ --fundo:52px; --crista-cor:var(--mare); }
-    .plano--mar[data-fundo="abissal"]{ --fundo:80px; --crista-cor:var(--profundo); }
+    .plano--mar[data-fundo="alto-mar"]{ --fundo:52px; --agua:var(--agua-mare); }
+    .plano--mar[data-fundo="abissal"]{ --fundo:80px; --agua:var(--agua-funda); }
 
     .plano--mar .plano__agua{
-      display:block; position:absolute; inset:-2px; z-index:3;   /* -2px: cobre a borda do card também */
+      display:block; position:absolute; inset:-2px; z-index:3;   /* cobre a borda */
       border-radius:inherit; overflow:clip; pointer-events:none;
+      container-type:size;   /* 100cqh = altura do card, pros dois andarem igual */
     }
+    /* a crista (faixa de 16px) e a água lisa embaixo: cor chapada sem máscara
+       nem degradê, que o navegador compõe sem rasterizar */
     .plano--mar .plano__agua::before,
     .plano--mar .plano__agua::after{
-      content:""; position:absolute; left:0; top:-16px;
-      width:calc(100% + 120px); height:calc(100% + 16px);
-      -webkit-mask:var(--crista) repeat-x 0 0/120px 16px,linear-gradient(#000,#000) no-repeat 0 15px/100% 100%;
-              mask:var(--crista) repeat-x 0 0/120px 16px,linear-gradient(#000,#000) no-repeat 0 15px/100% 100%;
+      content:""; position:absolute; left:0; width:calc(100% + 120px);
       animation:superficie linear both;
       animation-timeline:--plano; animation-range:entry 24vh entry calc(100% + 24vh);
     }
-    /* a crista: a mesma onda, 5px acima, na cor da profundidade */
-    .plano--mar .plano__agua::before{ background:var(--crista-cor); margin-top:-5px; }
-    .plano--mar .plano__agua::after{ background:var(--bruma); }
-    /* a fita "Recomendado" boia na superfície antes do card chegar */
+    .plano--mar .plano__agua::before{ top:-16px; height:16px; background:var(--agua) repeat-x 0 0/120px 16px; }
+    .plano--mar .plano__agua::after{ top:-1px; height:calc(100% + 1px); background-color:var(--bruma); }
+    /* a fita boia na superfície */
     .plano--mar .plano__fita{ z-index:4; }
 
-    /* ======================================================================
-       PLANOS DE INSTAGRAM — um reflexo atravessa o vidro
-       Atrás do texto, por cima do fundo: é luz, não esconde nada.
-       ====================================================================== */
+    /* ---- planos de Instagram: um reflexo atravessa o vidro ---- */
 
     @keyframes reflexo{ from{ translate:-130% 0; } to{ translate:250% 0; } }
+    /* por cima do texto (é luz fraca): por baixo, o navegador teria que
+       promover o conteúdo do card inteiro a camada própria */
     .plano--noite .plano__agua{
-      display:block; position:absolute; inset:0; z-index:-1;
+      display:block; position:absolute; inset:0; z-index:3;
       border-radius:inherit; overflow:clip; pointer-events:none;
     }
     .plano--noite .plano__agua::before{
       content:""; position:absolute; top:0; left:0; width:46%; height:100%;
-      /* faixa reta, inclinada por skew (fixo): degradê em ângulo num card
-         alto não chegava ao transparente na borda e deixava um corte duro */
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,.08) 28%,rgba(140,203,240,.26) 50%,rgba(255,255,255,.08) 72%,transparent);
+      /* reta + skew: degradê em ângulo deixava corte duro no card alto */
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.06) 28%,rgba(140,203,240,.2) 50%,rgba(255,255,255,.06) 72%,transparent);
       transform:skewX(-14deg);
       animation:reflexo linear both;
       animation-timeline:view(); animation-range:cover 8% cover 62%;
@@ -1074,12 +1020,7 @@ html.is-puxando-mar body{ user-select:none; }
       .plano--noite:nth-child(3n+3) .plano__agua::before{ animation-range:cover 20% cover 74%; }
     }
 
-    /* ======================================================================
-       TRABALHOS — a persiana sobe e a janela abre
-       A persiana (ripas claras e um trilho embaixo) recolhe pra dentro da
-       barra do navegador falso, e a foto volta do zoom ao tamanho, como
-       quem chega perto da janela.
-       ====================================================================== */
+    /* ---- trabalhos: a persiana sobe e a janela abre ---- */
 
     @keyframes persiana{ to{ translate:0 -101%; } }
     @keyframes janela{ from{ scale:1.32; } }
@@ -1101,13 +1042,7 @@ html.is-puxando-mar body{ user-select:none; }
       .obra:nth-child(2) .obra__tela::after{ animation-range:cover 12% cover 42%; }
     }
 
-    /* ======================================================================
-       CHAMADA — a barbatana cruza a onda; o mascote salta
-       A barbatana mora em cima da lapela de onda da seção (mesmo navy: a
-       base dela some na água) e atravessa a tela enquanto a seção entra.
-       overflow-x:clip deixa ela sair pela borda sem criar rolagem de lado,
-       e não corta nada pra cima (a lapela fica pra fora da caixa).
-       ====================================================================== */
+    /* ---- chamada: a barbatana cruza a onda do divisor; o mascote salta ---- */
 
     .chamada{ overflow-x:clip; view-timeline:--chamada block; }
     @keyframes cruza{
@@ -1123,7 +1058,7 @@ html.is-puxando-mar body{ user-select:none; }
       background:#0B2E58; pointer-events:none;
       -webkit-mask:var(--barbatana) center/contain no-repeat;
               mask:var(--barbatana) center/contain no-repeat;
-      scale:-1 1;     /* o desenho aponta pra esquerda; ela nada pra direita */
+      scale:-1 1;     /* o desenho aponta pra esquerda */
       transform-origin:50% 100%;
       animation:cruza linear both;
       animation-timeline:--chamada; animation-range:cover 0% cover 52%;
@@ -1140,11 +1075,7 @@ html.is-puxando-mar body{ user-select:none; }
       animation-timeline:--chamada; animation-range:cover 6% cover 46%;
     }
 
-    /* ======================================================================
-       AVULSOS — a linha de maré chega rolando
-       O risco que separa um item do outro vira uma ondinha que entra da
-       esquerda; a janela é o próprio item (overflow-x:clip).
-       ====================================================================== */
+    /* ---- avulsos: a linha de maré chega rolando ---- */
 
     @keyframes mare-chega{ from{ translate:-100% 0; } }
     .avulso{ position:relative; overflow-x:clip; border-bottom-color:transparent; }
@@ -1689,16 +1620,13 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 
 
 
-/* A foto é maior que a moldura de propósito: a sobra é o que deixa a página
-   "rolar" dentro da janela no hover. É `scale`, não `transform`, pra somar
-   com o zoom de abrir a janela (seção 12) e com o deslize do hover. */
+/* foto maior que a moldura: a sobra deixa a página rolar no hover */
 .tela__foto{ scale:1.09; transition:translate 1.1s cubic-bezier(.3,0,.2,1); }
 /* ...e a sobra de cima invadiria a barra de navegador falsa. A barra sobe
    uma camada e a foto passa por baixo dela, como numa janela de verdade. */
 .tela__barra{ position:relative; z-index:1; }
 
-/* (a inclinação 3D com luz no ponteiro, igual em todo card, saiu em 04/11:
-   cada tipo de card tem o próprio hover agora — ver seções 5, 6, 8 e 12) */
+/* (a inclinação 3D saiu em 04/11: cada tipo de card tem o próprio hover) */
 
 .obra__tela{ position:relative; }
 
@@ -1774,7 +1702,6 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 }
 
 /* sombra do mascote precisa ser mais escura que a água pra existir */
-.hero__mascote img{ filter:drop-shadow(0 26px 34px rgba(2,14,28,.55)); }
 .pl-abre__mascote img{ filter:drop-shadow(0 18px 30px rgba(2,14,28,.5)); }
 
 /* ---------- cabeçalho antes de grudar ---------- */

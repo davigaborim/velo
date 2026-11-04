@@ -22,6 +22,10 @@
   var pontFino = window.matchMedia('(hover:hover) and (pointer:fine)');
   var linhaDoTempo = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: view()'));
   var temOlho = 'IntersectionObserver' in window;
+  function depoisDaCarga(fn) {
+    if (document.readyState === 'complete') setTimeout(fn, 0);
+    else window.addEventListener('load', function () { setTimeout(fn, 0); });
+  }
   var cada = function (lista, fn) { Array.prototype.forEach.call(lista, fn); };
 
   /* ======================================================================
@@ -58,9 +62,9 @@
      </span>: a de fora é a janela parada (a linha d'água), a de dentro é
      quem sobe. O texto não muda — o leitor de tela lê igual.
 
-     Só parte onde o CSS vai animar (tem linha do tempo, sem movimento
-     reduzido). E não parte título que JÁ está na tela quando a página abre
-     (recarregou no meio, link com #): ele sumiria e voltaria na sua frente.
+     Não parte com movimento reduzido, nem título que JÁ está na tela quando
+     a página abre (recarregou no meio, link com #): ele sumiria e voltaria
+     na sua frente.
      Pontuação colada ("R$ 600.") fica na mesma palavra, senão o ponto podia
      cair sozinho na linha de baixo. Elemento dentro do título (o preço que
      a campanha troca) vira uma palavra inteira — o campanhas.js continua
@@ -101,11 +105,30 @@
     });
   }
 
-  if (linhaDoTempo && !semMovimento.matches) {
-    var altura = window.innerHeight;
-    cada(document.querySelectorAll('.cab h2, .chamada h2'), function (h) {
-      if (h.getBoundingClientRect().top < altura) return;   // já está na tela
-      partir(h);
+  // Depois do `load` (nada disso pode atrasar a primeira pintura), um
+  // observador diz quem já está na tela — a primeira resposta dele vem sem
+  // forçar layout. Os outros são partidos e um segundo observador põe
+  // .is-emersa quando o título passa da linha do mar fixo: aí as palavras
+  // sobem (animação de tempo, não de rolagem — ver LEIA-ME). Partir e
+  // revelar moram no mesmo script: se um rodou, o outro também.
+  if (!semMovimento.matches && temOlho) {
+    depoisDaCarga(function () {
+      var olhoSobe = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          olhoSobe.unobserve(e.target);
+          e.target.classList.add('is-emersa');
+        });
+      }, { rootMargin: '0px 0px -16% 0px' });
+      var olhoTit = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          olhoTit.unobserve(e.target);
+          if (e.isIntersecting) return;      // já está na tela: fica como está
+          partir(e.target);
+          olhoSobe.observe(e.target);
+        });
+      });
+      cada(document.querySelectorAll('.cab h2, .chamada h2'), function (h) { olhoTit.observe(h); });
     });
   }
 
@@ -179,6 +202,10 @@
       if (feito) return;
       feito = true;
       if (visual.parentNode !== el) return;   // alguém já reescreveu o número
+      // Número decorativo (o 404) fica com a fita parada no lugar: devolver
+      // o texto depois de rolar era texto "novo" pintado, e o navegador
+      // contava de novo como maior pintura da página (LCP subia 1,5 s)
+      if (el.getAttribute('aria-hidden') === 'true') return;
       el.textContent = '';
       originais.forEach(function (no) { el.appendChild(no); });
     }
@@ -206,15 +233,19 @@
         rolar(e.target);
       });
     }, { rootMargin: '0px 0px -22% 0px', threshold: 0.9 });
-    var altura = window.innerHeight;
+    // Os números do hero fazem parte da chegada: se já estão na primeira
+    // tela (mesmo atrás do mar, lá embaixo), rolam logo depois da carga.
+    // Um observador sem margem responde isso sem forçar layout.
+    var olhoHero = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        olhoHero.unobserve(e.target);
+        if (e.isIntersecting) depoisDaCarga(function () { rolar(e.target); });
+        else olhoNum.observe(e.target);
+      });
+    });
     cada(numeros, function (el) {
-      // os números do hero fazem parte da chegada: se já estão na primeira
-      // tela (mesmo atrás do mar, lá embaixo), rolam junto com o resto
-      if (el.closest('.hero') && el.getBoundingClientRect().top < altura) {
-        rolar(el);
-        return;
-      }
-      olhoNum.observe(el);
+      if (el.closest('.hero')) olhoHero.observe(el);
+      else olhoNum.observe(el);
     });
   }
 
