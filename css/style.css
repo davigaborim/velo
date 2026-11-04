@@ -110,6 +110,10 @@ body{
 }
 
 img{ max-width:100%; height:auto; display:block; }
+/* <picture> só serve pra oferecer o AVIF: não gera caixa nenhuma, então o
+   <img> de dentro se comporta como filho direto, igual era antes */
+picture{ display:contents; }
+picture > source{ display:none; }   /* senão o <source> vira item da grade */
 a{ color:inherit; }
 
 h1,h2,h3,h4{
@@ -1145,6 +1149,14 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 .plano--mar[data-fundo="recife"]{   --foto:url(../images/fundo-raso.jpg); }
 .plano--mar[data-fundo="alto-mar"]{ --foto:url(../images/fundo-correnteza.jpg); }
 .plano--mar[data-fundo="abissal"]{  --foto:url(../images/fundo-alto-mar.jpg); }
+/* Mesma foto em AVIF, com metade do peso. O navegador que não entende
+   image-set com type() nem entra neste bloco e fica com o JPG de cima; o que
+   entende mas não abre AVIF escolhe o JPG da própria lista. */
+@supports (background-image:image-set(url("x.avif") type("image/avif"))){
+  .plano--mar[data-fundo="recife"]{   --foto:image-set(url(../images/fundo-raso.avif) type("image/avif"),url(../images/fundo-raso.jpg) type("image/jpeg")); }
+  .plano--mar[data-fundo="alto-mar"]{ --foto:image-set(url(../images/fundo-correnteza.avif) type("image/avif"),url(../images/fundo-correnteza.jpg) type("image/jpeg")); }
+  .plano--mar[data-fundo="abissal"]{  --foto:image-set(url(../images/fundo-alto-mar.avif) type("image/avif"),url(../images/fundo-alto-mar.jpg) type("image/jpeg")); }
+}
 
 /* 2. mídia: sem foto — o próprio mar escuro da seção aparece por baixo, e um
    fio com o degradê do Instagram no topo diz de que rede a gente está falando */
