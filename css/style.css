@@ -1277,37 +1277,103 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 /* ==========================================================================
    17. VIDRO, PROFUNDIDADE E MOVIMENTO
    A ideia: o site claro continua claro e legível; as faixas escuras deixam
-   de ser bloco de tinta e viram água de verdade, com fumaça de fbm rodando
-   no WebGL por baixo do texto.
+   de ser bloco de tinta e viram água de verdade, com uma fumaça em vídeo
+   rodando por baixo do texto (js/agua.js).
    ========================================================================== */
 
-/* ---------- o shader nas faixas escuras ---------- */
+/* ---------- a água nas faixas escuras ---------- */
 
 [data-vivo]{ position:relative; isolation:isolate; }
 
 /* tudo que não é a água sobe uma camada */
 [data-vivo] > *:not(.vivo){ position:relative; z-index:1; }
 
-/* A água some nos 56px de cima e de baixo: é onde ficam as bordas de onda
+/* clip (e não hidden): hidden faz da caixa um contêiner de rolagem, e aí o
+   parallax por view-timeline lá embaixo mediria a rolagem errada.
+
+   A água some nos 56px de cima e de baixo: é onde ficam as bordas de onda
    recortadas, que continuam no navy chapado. Sem essa dissolvida daria pra
-   ver a emenda entre a fumaça e a lapela da onda. */
+   ver a emenda entre a fumaça e a lapela da onda. Era uma máscara; agora é
+   a cor da própria faixa pintada por cima, junto com o véu (--vivo-bordas,
+   usado nos ::after abaixo). Dá no mesmo pro olho, e máscara em cima de
+   vídeo obriga o navegador a refazer uma camada inteira a cada quadro
+   (~15% da CPU da água em computador sem placa de vídeo, medido em 04/11).
+   As cores são as do gradiente de fundo de cada faixa, em cima e embaixo. */
 .vivo{
   position:absolute; inset:0; z-index:0;
-  overflow:hidden; pointer-events:none;
-  -webkit-mask:linear-gradient(180deg,transparent 0,#000 56px,#000 calc(100% - 56px),transparent 100%);
-  mask:linear-gradient(180deg,transparent 0,#000 56px,#000 calc(100% - 56px),transparent 100%);
+  overflow:hidden; overflow:clip; pointer-events:none;
+  --vivo-topo:#0B2E58; --vivo-base:#0B2E58;
+  --vivo-bordas:linear-gradient(180deg,var(--vivo-topo) 0,rgba(11,46,88,0) 56px,rgba(11,46,88,0) calc(100% - 56px),var(--vivo-base) 100%);
+}
+.hero > .vivo,
+.pl-abre > .vivo{ --vivo-topo:#04182C; }
+.chamada > .vivo{ --vivo-base:#1F6FBF; }
+
+/* A tela da água: 24% mais alta que a faixa (a folga do parallax). Dentro
+   dela o JS põe o pôster (<img>, o primeiro quadro do vídeo, 4 KB) e, por
+   cima, o <video>. Variações por faixa vêm do JS: --vivo-zoom,
+   --vivo-espelho, --vivo-foco, --vivo-deriva. Opacidade cheia: quem protege
+   a leitura é o véu do ::after, não apagar a água inteira. */
+.vivo__tela{
+  position:absolute; left:0; top:-12%; width:100%; height:124%;
+  /* espelho e zoom sempre pelo centro: girando em outro ponto, o lado
+     oposto ficaria descoberto. O --vivo-foco só move o recorte. */
+  transform:scale(calc(var(--vivo-espelho,1) * var(--vivo-zoom,1)),var(--vivo-zoom,1));
 }
 
-/* Opacidade cheia: a água aparece como ela é. O que protege a leitura não é
-   apagar a água inteira, é onde o véu abaixo cai. */
-.vivo__tela{ display:block; width:100%; height:100%; }
-/* 24% mais alto que a seção: é a folga do parallax (shader.js, derivar()).
-   O canvas desliza por transform, que não redesenha nada. */
-.vivo .vivo__tela{ position:absolute; left:0; top:-12%; height:124%; will-change:transform; }
+/* Pôster e vídeo NASCEM com 2 px, no meio da faixa (um pontinho da mesma
+   cor da água, ninguém vê), e só ganham o tamanho cheio (.is-pronto)
+   depois que o navegador já os pintou uma vez, com a faixa na tela.
+   Parece bobagem, mas é o que segura o LCP: o Chrome mede o "maior
+   elemento" no primeiro quadro em que cada imagem/vídeo aparece, e não
+   mede de novo depois. Sem isso a água
+   (bem maior que o título) virava o LCP da página e atrasava a nota.
+   Entra com um esmaecer, o vídeo por cima do pôster. */
+.vivo__tela > img,
+.vivo__tela > video{
+  position:absolute; left:50%; top:50%; width:2px; height:2px;
+  object-fit:cover; object-position:var(--vivo-foco,50%) 50%;
+}
+.vivo__tela > .is-pronto{
+  left:0; top:0; width:100%; height:100%;
+  animation:vivo-surge .8s ease both;
+}
+@keyframes vivo-surge{ from{ opacity:0; } }
+/* e nunca o botão de play que o iOS desenha quando não deixa tocar sozinho */
+.vivo__tela video::-webkit-media-controls-start-playback-button{ display:none !important; -webkit-appearance:none; }
+
+/* Parallax: a água anda mais devagar que a página dentro da faixa. É uma
+   animação presa à rolagem (view-timeline da própria .vivo), só de
+   translate — o compositor faz sozinho, sem JS e sem redesenhar nada. Vai
+   de -deriva (faixa entrando por baixo) a +deriva (saindo por cima).
+   Navegador sem animation-timeline: a água fica parada em relação à faixa.
+   Com movimento reduzido também. */
+@keyframes vivo-deriva{
+  from{ translate:0 calc(-1 * var(--vivo-deriva,8.87%)); }
+  to{ translate:0 var(--vivo-deriva,8.87%); }
+}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .vivo{ view-timeline:--vivo-agua block; }
+    .vivo__tela{
+      animation:vivo-deriva linear both;
+      animation-timeline:--vivo-agua;
+      animation-range:cover 0% cover 100%;
+    }
+  }
+}
+
+/* Faixa muito mais alta que a tela (o JS põe .vivo--alta): em vez de
+   esticar o vídeo nela inteira, a tela de vídeo vira uma janela do tamanho
+   da tela, grudada no topo enquanto a faixa passa. */
+.vivo--alta .vivo__tela{
+  position:sticky; top:0; height:100vh; height:100lvh;
+  animation:none;
+}
 
 .vivo::after{
   content:""; position:absolute; inset:0;
-  background:linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.72));
+  background:var(--vivo-bordas),linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.72));
 }
 
 /* Nas seções de hero e chamada o texto mora na esquerda e o mascote na
@@ -1316,7 +1382,7 @@ a.insta-selo:hover{ filter:brightness(1.08); }
    de vídeo de fundo — escurecer só onde precisa ler. */
 .hero .vivo::after,
 .chamada .vivo::after{
-  background:linear-gradient(100deg,
+  background:var(--vivo-bordas),linear-gradient(100deg,
     rgba(4,24,44,.88) 0%,
     rgba(4,24,44,.7) 36%,
     rgba(4,24,44,.26) 66%,
@@ -1328,13 +1394,13 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 @media (max-width:900px){
   .hero .vivo::after,
   .chamada .vivo::after{
-    background:linear-gradient(180deg,rgba(4,24,44,.8),rgba(4,24,44,.66));
+    background:var(--vivo-bordas),linear-gradient(180deg,rgba(4,24,44,.8),rgba(4,24,44,.66));
   }
 }
 
 /* (o rodapé saiu daqui: virou areia, sem água por baixo — ver seção 10) */
 /* nos planos de Instagram os cards já cobrem quase tudo */
-.secao--fundo .vivo::after{ background:linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.7)); }
+.secao--fundo .vivo::after{ background:var(--vivo-bordas),linear-gradient(180deg,rgba(6,32,60,.6),rgba(6,32,60,.7)); }
 
 /* ---------- barra de progresso de leitura ---------- */
 

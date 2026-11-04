@@ -16,6 +16,8 @@ ErrorDocument 404 /404.html
   AddType image/webp  .webp
   AddType image/avif  .avif
   AddType image/svg+xml .svg
+  AddType video/webm  .webm
+  AddType video/mp4   .mp4
 </IfModule>
 
 # ------------------------------------------------------------------ compressão
@@ -36,6 +38,10 @@ ErrorDocument 404 /404.html
 # Imagem fica 30 dias porque o LEIA-ME manda trocar print "substituindo o
 # arquivo", com o mesmo nome — cache longo demais seguraria a foto velha.
 # Fonte tem a versão no nome do arquivo e nunca muda: um ano, imutável.
+# A água (video/agua-*) é chamada com ?v=N pelo js/agua.js (VERSAO):
+# quando o vídeo for refeito, sobe o N — por isso também um ano, imutável.
+# (O Apache já atende pedido por pedaço, "Range", que o Safari exige pra
+# tocar vídeo; nada a configurar.)
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresDefault                        "access plus 7 days"
@@ -49,9 +55,14 @@ ErrorDocument 404 /404.html
   ExpiresByType image/avif              "access plus 30 days"
   ExpiresByType image/svg+xml           "access plus 30 days"
   ExpiresByType font/woff2              "access plus 1 year"
+  ExpiresByType video/webm              "access plus 1 year"
+  ExpiresByType video/mp4               "access plus 1 year"
 </IfModule>
 <IfModule mod_headers.c>
   <FilesMatch "\.woff2$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "^agua-[a-z]+\.(webm|mp4|avif|jpg)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
   # HTML: o navegador pode guardar, mas confere com o servidor antes de usar
