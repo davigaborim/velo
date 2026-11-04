@@ -3,6 +3,52 @@
    Paleta: o mar visto de cima. Navy da logo + azuis claros + espuma.
    ========================================================================== */
 
+/* ---------- fontes, servidas daqui mesmo ----------
+   Eram do Google Fonts: um CSS de outro domínio travando a primeira pintura
+   e mais uma conexão pro fonts.gstatic.com só pra começar a baixar as letras
+   — no 4G, quase meio segundo antes de aparecer qualquer coisa. Agora vêm
+   da pasta fonts/, e o <head> já pede as duas principais com preload.
+   A Bricolage vinha com o eixo de largura (wdth 75–100) que o site nunca
+   usa: sem ele o arquivo caiu de 131 KB pra 77 KB, com o mesmo desenho
+   (largura 100, a padrão). Os unicode-range são os mesmos do Google: o
+   latin-ext só desce se aparecer letra fora do português. */
+@font-face{ font-family:'Bricolage Grotesque'; font-style:normal; font-weight:600; font-stretch:100%; font-display:swap;
+  src:url(../fonts/bricolage-grotesque-v9-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face{ font-family:'Bricolage Grotesque'; font-style:normal; font-weight:600; font-stretch:100%; font-display:swap;
+  src:url(../fonts/bricolage-grotesque-v9-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face{ font-family:'Bricolage Grotesque'; font-style:normal; font-weight:800; font-stretch:100%; font-display:swap;
+  src:url(../fonts/bricolage-grotesque-v9-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face{ font-family:'Bricolage Grotesque'; font-style:normal; font-weight:800; font-stretch:100%; font-display:swap;
+  src:url(../fonts/bricolage-grotesque-v9-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face{ font-family:'DM Mono'; font-style:normal; font-weight:500; font-display:swap;
+  src:url(../fonts/dm-mono-v16-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face{ font-family:'DM Mono'; font-style:normal; font-weight:500; font-display:swap;
+  src:url(../fonts/dm-mono-v16-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face{ font-family:'Instrument Sans'; font-style:normal; font-weight:400; font-stretch:100%; font-display:swap;
+  src:url(../fonts/instrument-sans-v4-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face{ font-family:'Instrument Sans'; font-style:normal; font-weight:400; font-stretch:100%; font-display:swap;
+  src:url(../fonts/instrument-sans-v4-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face{ font-family:'Instrument Sans'; font-style:normal; font-weight:500; font-stretch:100%; font-display:swap;
+  src:url(../fonts/instrument-sans-v4-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face{ font-family:'Instrument Sans'; font-style:normal; font-weight:500; font-stretch:100%; font-display:swap;
+  src:url(../fonts/instrument-sans-v4-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face{ font-family:'Instrument Sans'; font-style:normal; font-weight:600; font-stretch:100%; font-display:swap;
+  src:url(../fonts/instrument-sans-v4-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face{ font-family:'Instrument Sans'; font-style:normal; font-weight:600; font-stretch:100%; font-display:swap;
+  src:url(../fonts/instrument-sans-v4-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 :root{
   /* cor */
   --abissal:#0B2E58;
