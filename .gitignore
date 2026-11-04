@@ -8,3 +8,6 @@ WhatsApp Image *.jpg
 # só sem o LEIA-ME e sem as imagens que o site não usa. Refaz na hora de
 # publicar; versionada, ela dobraria todo diff do site.
 site-hostinger/
+
+# Playwright instalado só pra gerar o vídeo da água (ver LEIA-ME)
+ferramentas/node_modules/

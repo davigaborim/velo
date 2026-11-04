@@ -17,10 +17,13 @@ velo/
 │   └── campanhas.json          (promoções com data, horário de atendimento)
 ├── js/
 │   ├── main.js                 (o mar, scroll, menu — nas duas páginas)
-│   ├── shader.js               (a água viva em WebGL das faixas escuras)
+│   ├── agua.js                 (a água em vídeo das faixas escuras)
 │   ├── vivo.js                 (parallax, inclinação 3D, contadores)
 │   ├── campanhas.js            (lê o campanhas.json e aplica — nas duas páginas)
 │   └── planos.js               (abre e fecha o upsell)
+├── video/                      (a água das faixas escuras: vídeo em loop + pôster)
+├── ferramentas/
+│   └── fumaca-video.js         (gera os vídeos de video/ — ver "A água viva")
 ├── fonts/                      (Bricolage, Instrument Sans e DM Mono em woff2)
 └── images/                     (cada foto tem um .avif do lado — ver "Imagens em AVIF")
     ├── mascote-novo.png        (mascote atual, recortado)
@@ -45,7 +48,7 @@ não usa (`velo-logo-original.svg`, `barbatana.svg`).
 
 No hPanel, o caminho é **Gerenciador de arquivos → `public_html`** e arrastar
 pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `dados/`,
-`js/`, `fonts/` e `images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
+`js/`, `fonts/`, `images/` e `video/` soltos (a `ferramentas/` não vai), não a pasta `site-hostinger` inteira. Se a pasta for junto,
 o site cai em `seudominio.com/site-hostinger/` e os caminhos do `404.html`,
 que começam na raiz, quebram.
 
@@ -372,43 +375,132 @@ animação `boia` sobe/desce com um gingado curto (a água já ondula por cima).
 Abaixo de 560px o texto some e sobra só o ícone. Está nas duas páginas, logo
 antes dos `<script>`.
 
-## A água viva (WebGL)
+## A água viva (vídeo)
 
-As partes escuras do site — o hero da home, a abertura dos planos, a chamada
-final, o rodapé e os planos de Instagram — têm um shader de fumaça rodando por
-trás do texto. É WebGL1 puro, sem biblioteca nenhuma, em `js/shader.js`.
+As partes escuras do site — o hero da home, a abertura dos planos, os planos
+de Instagram, a chamada final e a página 404 — têm uma fumaça/água andando
+por trás do texto. É um **vídeo curto em loop** (`video/agua-*`), posto e
+controlado por `js/agua.js`.
 
 O miolo (serviços, planos de site, trabalhos, avulsos) continua claro como
 sempre foi. A página abre e fecha na água, e o meio é papel.
 
+> Até 04/11 essa água era um shader WebGL desenhado ao vivo (`js/shader.js`).
+> Era o que mais pesava no site: em computador sem placa de vídeo ela tinha
+> que ficar parada, senão travava a página. O vídeo é feito **a partir do
+> mesmo shader** (mesma paleta, mesmo desenho), mas quem trabalha agora é o
+> decodificador de vídeo — e ele anda em qualquer máquina.
+
 **Como ligar numa seção nova:** basta pôr `data-vivo` no elemento. O script
-cria o canvas sozinho, empurra o conteúdo pra cima dele e começa a desenhar.
-Ajustes opcionais, todos por atributo:
+cria a camada da água sozinho e empurra o conteúdo pra cima dela. Ajustes
+opcionais, todos por atributo (os nomes são os do shader antigo):
 
 | Atributo | Padrão | O que faz |
 |---|---|---|
-| `data-vivo-velocidade` | `0.97` | o quão rápido a fumaça anda |
-| `data-vivo-escala` | `1.72` | zoom: maior = desenho mais fino |
-| `data-vivo-semente` | `635` | muda o desenho sem mudar o resto |
-| `data-vivo-resolucao` | `0.6` | fração da tela em que ele desenha |
-| `data-vivo-deriva` | `0.55` | quanto a rolagem empurra a fumaça |
+| `data-vivo-velocidade` | `0.97` | ritmo do vídeo (vira `playbackRate`, entre 0,75× e 1,3×) |
+| `data-vivo-escala` | `1.72` | tamanho da fumaça: menor = mais graúda (o vídeo é ampliado até 1,4×) |
+| `data-vivo-semente` | `635` | muda o ponto do loop em que a faixa começa, o enquadramento e, se for ímpar, espelha o vídeo |
+| `data-vivo-deriva` | `0.55` | quanto a rolagem empurra a água (parallax) |
 
-Detalhes que importam se for mexer:
+Todas as faixas usam **o mesmo arquivo** (baixa uma vez); são esses quatro
+atributos que fazem uma não parecer cópia da outra.
 
-- **Custo.** O canvas é renderizado a 60% do tamanho real e o `devicePixelRatio`
-  é limitado a 2. Fumaça é tudo gradiente macio, então ninguém enxerga a
-  diferença — e economiza uns 60% de fragmento. O rodapé roda ainda menor
-  (`0.45`), porque é só um eco.
-- **Quando não desenha.** Um `IntersectionObserver` desliga o `requestAnimation
-  Frame` de quem está fora da tela, e a aba escondida derruba o laço inteiro.
-  Todas as seções compartilham um único laço.
-- **Legibilidade.** O canvas roda em opacidade cheia; quem protege a leitura é
+### Os arquivos
+
+Ficam em `video/`, ~200–350 KB cada vídeo e 4 KB cada pôster:
+
+| Arquivo | O que é |
+|---|---|
+| `agua-largo.webm` / `agua-alto.webm` | AV1 (10 bits), o principal |
+| `agua-largo.mp4` / `agua-alto.mp4` | H.264, o de reserva |
+| `agua-largo.avif` / `.jpg`, `agua-alto.avif` / `.jpg` | pôster: o primeiro quadro (o JPG é só pra navegador sem AVIF) |
+
+- **Largo e alto.** `largo` (640×360) é pra computador e tablet; `alto`
+  (360×640) pra celular em pé (até 700 px de largura). No celular as faixas
+  são mais altas que largas, e o vídeo deitado esticado nelas deixaria a
+  fumaça graúda demais. Quem escolhe é o `js/agua.js` (`MOLDURA`), uma vez
+  por visita, pro vídeo e pro pôster.
+- **AV1 ou H.264.** O script pergunta ao navegador qual dos dois ele
+  decodifica **na placa de vídeo** e usa esse (não esquenta o celular nem
+  gasta bateria). Sem placa pra nenhum, vai de AV1, que é o menor. Safari
+  antigo e iPhone sem AV1 ficam com o H.264.
+- **Pôster.** É uma imagem por baixo do vídeo, que aparece enquanto ele não
+  chega e fica pra sempre pra quem tem **movimento reduzido** ligado ou
+  **economia de dados** (o vídeo nem é baixado). O vídeo entra por cima com
+  um esmaecer quando já está andando.
+- **LCP.** Pôster e vídeo nascem com 2 px e só crescem depois de pintados
+  uma vez (seção 17 do `style.css`, `crescer()` no `js/agua.js`). O Chrome
+  mede o "maior elemento da página" (LCP) no primeiro quadro em que cada
+  imagem ou vídeo aparece; sem esse truque, a água — bem maior que o título —
+  virava o LCP e a nota do PageSpeed caía. **Não tire o tamanho de 2 px
+  achando que é sobra.**
+- **Nada da água entra na abertura da página.** Até o `load` a faixa fica
+  no gradiente navy; no `load` chega o pôster; o vídeo só um segundo depois,
+  com o navegador ocioso (assim ele não disputa banda com fonte e mascote,
+  nem entra na conta do LCP do PageSpeed). Cada faixa só cria o seu
+  `<video>` quando está na tela; fora dela, ou com a aba escondida, ele
+  pausa.
+- **iPhone em Modo de Pouca Energia** não deixa vídeo tocar sozinho: fica o
+  pôster, e a água começa a andar no primeiro toque na tela.
+- **Cache.** O `.htaccess` guarda esses arquivos por um ano. Por isso eles
+  são chamados com `?v=1` (o `VERSAO` no topo do `js/agua.js`). **Refez o
+  vídeo? Suba esse número** (e o `?v=` do `agua.js` nos três HTML).
+
+### Parallax
+
+A água anda mais devagar que a página dentro da faixa. É CSS puro
+(`animation-timeline`, seção 17 do `style.css`): a camada é 24% mais alta
+que a faixa e desliza por `translate` conforme a faixa atravessa a tela —
+o compositor faz isso sozinho, sem JavaScript na rolagem. Navegador sem
+`animation-timeline` (Firefox, Safari antigo) mostra a água parada em relação
+à faixa, sem parallax. Faixa muito mais alta que a tela (os planos de
+Instagram no celular) ganha `.vivo--alta`: em vez de esticar o vídeo nela
+inteira, a água vira uma janela do tamanho da tela grudada no topo
+(`position: sticky`) enquanto os cards passam por cima.
+
+### Refazer o vídeo
+
+O vídeo sai do próprio shader, por `ferramentas/fumaca-video.js`. Precisa de
+Node, do pacote `playwright` (com o Chromium dele) e do `ffmpeg` com
+`libsvtav1` e `libx264`:
+
+```
+cd ferramentas && npm install --no-save playwright && npx playwright install chromium && cd ..
+node ferramentas/fumaca-video.js
+```
+
+(A primeira linha é só na primeira vez: instala o Playwright dentro de
+`ferramentas/node_modules/`, que está no `.gitignore` e não vai pro servidor.)
+
+Ele abre um Chromium sem janela, desenha 240 quadros (10 s a 24 quadros/s) de
+cada moldura e grava os oito arquivos em `video/` — leva uns 2 minutos. O
+AV1 sai um tiquinho diferente a cada vez (mesmo tamanho, mesma cara); se só
+quis mexer no pôster, dá pra devolver os `.webm` antigos pelo Git. A
+paleta, a escala, a semente e a velocidade base ficam no topo do script
+(`BASE` e no `FRAGMENT`, que é o shader). Depois de gerar: **suba o `?v=`**
+(ver "Cache" acima).
+
+O loop emenda sem pulo: o campo que deforma a fumaça é calculado em duas
+fases (a de agora e a de um ciclo atrás) e uma vai virando a outra ao longo
+dos 10 s; no último quadro a mistura chega exatamente no primeiro. As duas
+fases andam na mesma direção, então a fumaça continua escorrendo igual ao
+shader ao vivo.
+
+### Detalhes que importam se for mexer
+
+- **Legibilidade.** O vídeo roda em opacidade cheia; quem protege a leitura é
   o véu do `.vivo::after`. No hero e na chamada ele é **lateral**: fecha na
   esquerda, onde mora o texto, e abre na direita, onde está o mascote — assim
-  a água aparece limpa em vez de apagada por inteiro. É o mesmo truque de
-  vídeo de fundo. Abaixo de 900px o mascote sai de cena e o texto ocupa a
-  largura toda, então o véu volta a ser chapado. Se for mexer nele, confira o
-  texto por cima: os fiapos de espuma da paleta são quase brancos.
+  a água aparece limpa em vez de apagada por inteiro. Abaixo de 900px o
+  mascote sai de cena e o texto ocupa a largura toda, então o véu volta a ser
+  chapado. Se for mexer nele, confira o texto por cima: os fiapos de espuma
+  da paleta são quase brancos.
+- **Bordas.** A água some nos 56px de cima e de baixo da faixa, onde ficam
+  as lapelas de onda. Não é máscara (máscara em cima de vídeo custa caro a
+  cada quadro): é a cor do fundo da faixa pintada por cima, junto com o véu
+  (`--vivo-topo`, `--vivo-base` e `--vivo-bordas` na seção 17). **Faixa
+  nova com fundo de outra cor? Ajuste as duas variáveis**, senão aparece uma
+  tira da cor errada na emenda.
 - **Texto claro.** Água em opacidade cheia não convive com o texto navy do
   site, então os dois topos têm o texto invertido — está tudo na seção 18 do
   `style.css`, num bloco só. Pra voltar ao hero claro, apague a seção 18 e o
@@ -418,21 +510,11 @@ Detalhes que importam se for mexer:
   não translúcido de propósito: o cabeçalho é sticky, fica *acima* do hero, e
   não tem água atrás pra o `backdrop-filter` borrar — translúcido ali pegava a
   bruma do body e virava uma barra cinza.
-- **Sem WebGL.** Se o navegador não der contexto, o canvas é removido e a
-  faixa fica no gradiente navy de antes. Nada quebra.
-- **Movimento reduzido.** Desenha um quadro parado e não anima mais.
-- **Sem placa de vídeo.** Se o navegador desenha o WebGL no processador
-  (SwiftShader, llvmpipe, "Basic Render Driver" — aceleração desligada,
-  driver bloqueado, máquina virtual), a fumaça vira um quadro parado, como no
-  movimento reduzido. Animada ali, ela ocupava ~4 núcleos de CPU e travava a
-  página (medido em 04/11). Pra saber se um computador cai nisso: abrir
-  `chrome://gpu` e ver se "WebGL" diz "Software only".
-- **Placa fraca.** Um governador no `shader.js` mede os quadros: se atrasam
-  por 2 s seguidos, a fumaça desce de degrau (70% e 50% da resolução, 15
-  quadros/s, parada). Nunca sobe de volta. Em máquina boa não faz nada.
-- **Só nasce perto da tela.** O canvas (e o contexto WebGL) de cada faixa só
-  é criado quando ela chega a uma tela de distância; o shader compila sem
-  travar a página onde houver `KHR_parallel_shader_compile`.
+- **Sem JavaScript, ou vídeo que não carrega.** A faixa fica no gradiente
+  navy de sempre (sem JS) ou no pôster (vídeo com erro). Nada quebra.
+- **Servidor.** Pra o Safari tocar vídeo o servidor precisa atender pedido
+  "por pedaço" (Range). Hostinger, Netlify, Vercel e GitHub Pages atendem.
+  O `python3 -m http.server` não — no Safari, teste com outro servidor.
 
 ## Movimento
 
