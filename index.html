@@ -17,10 +17,10 @@
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600;12..96,75..100,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=4">
+<!-- fontes: servidas daqui, ver o topo do style.css. Sem preload de propósito
+     (medido em 04/11: no 4G, as fontes disputavam banda com o CSS e a primeira
+     pintura atrasava 0,6 s) -->
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -67,7 +67,9 @@
          grade devolve o texto pra primeira coluna com `order`. -->
     <div class="hero__mascote reveal" style="--d:2">
       <div class="mascote__aura" aria-hidden="true"></div>
+      <picture><source type="image/avif" srcset="images/mascote-novo-360.avif 360w, images/mascote-novo.avif 717w" sizes="(max-width: 555px) 27vw, (max-width: 900px) 150px, 430px">
       <img src="images/mascote-novo.png" alt="Mascote da Velo: um tubarão de óculos e gravata-borboleta, sorrindo e apontando" width="717" height="886" fetchpriority="high">
+      </picture>
       <div class="balao" aria-hidden="true">Oi! Eu cuido do seu digital.</div>
     </div>
 
@@ -330,7 +332,9 @@
       <article class="obra reveal">
         <a class="obra__tela" data-inclina="4" href="https://clinicacastellobrancocg.com.br" target="_blank" rel="noopener" aria-label="Abrir o site da Clínica Castello Branco em nova aba">
           <span class="tela__barra" aria-hidden="true"><i></i><i></i><i></i><em>clinicacastellobrancocg.com.br</em></span>
+          <picture><source type="image/avif" srcset="images/trabalho-clinica.avif">
           <img class="tela__foto" src="images/trabalho-clinica.jpg" alt="Página inicial do site da Clínica Castello Branco" width="1200" height="750" loading="lazy">
+          </picture>
         </a>
         <div class="obra__info">
           <p class="obra__tipo">Site institucional · Saúde</p>
@@ -346,7 +350,9 @@
       <article class="obra reveal" style="--d:1">
         <a class="obra__tela" data-inclina="4" href="https://dracarolinacastellobranco.com.br" target="_blank" rel="noopener" aria-label="Abrir o site da Dra. Carolina Castello Branco em nova aba">
           <span class="tela__barra" aria-hidden="true"><i></i><i></i><i></i><em>dracarolinacastellobranco.com.br</em></span>
+          <picture><source type="image/avif" srcset="images/trabalho-carolina.avif">
           <img class="tela__foto" src="images/trabalho-carolina.jpg" alt="Página inicial do site da Dra. Carolina Castello Branco" width="1200" height="750" loading="lazy">
+          </picture>
         </a>
         <div class="obra__info">
           <p class="obra__tipo">Página única · Saúde</p>
@@ -362,7 +368,9 @@
       <article class="obra reveal" style="--d:2">
         <a class="obra__tela" data-inclina="4" href="https://tagliacolo-ni.com.br" target="_blank" rel="noopener" aria-label="Abrir o site da Tagliacolo Negócios Imobiliários em nova aba">
           <span class="tela__barra" aria-hidden="true"><i></i><i></i><i></i><em>tagliacolo-ni.com.br</em></span>
+          <picture><source type="image/avif" srcset="images/trabalho-tagliacolo.avif">
           <img class="tela__foto" src="images/trabalho-tagliacolo.jpg" alt="Página inicial do site da Tagliacolo Negócios Imobiliários" width="1200" height="750" loading="lazy">
+          </picture>
         </a>
         <div class="obra__info">
           <p class="obra__tipo">Site + painel · Imobiliário</p>
@@ -404,7 +412,9 @@
     </div>
 
     <div class="chamada__mascote reveal" style="--d:1" aria-hidden="true">
+      <picture><source type="image/avif" srcset="images/mascote-novo-360.avif 360w, images/mascote-novo.avif 717w" sizes="240px">
       <img src="images/mascote-novo.png" alt="" width="717" height="886" loading="lazy">
+      </picture>
     </div>
   </div>
 </section>
@@ -482,7 +492,7 @@
 </a>
 
 <script src="js/main.js?v=4" defer></script>
-<script src="js/shader.js?v=4" defer></script>
+<script src="js/shader.js?v=5" defer></script>
 <script src="js/vivo.js?v=4" defer></script>
 <script src="js/campanhas.js?v=5" defer></script>
 </body>

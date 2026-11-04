@@ -10,12 +10,12 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/favicon.svg">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600;12..96,75..100,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<!-- fontes: servidas daqui, ver o topo do style.css. Sem preload de propósito
+     (medido em 04/11: no 4G, as fontes disputavam banda com o CSS e a primeira
+     pintura atrasava 0,6 s) -->
 <!-- caminhos a partir da raiz: o 404 aparece em qualquer endereço errado,
      inclusive /uma/pasta/funda/, e caminho relativo quebraria o CSS lá -->
-<link rel="stylesheet" href="/css/style.css?v=4">
+<link rel="stylesheet" href="/css/style.css?v=5">
 </head>
 <body>
 
@@ -58,7 +58,9 @@
   <div class="wrap hero__grid">
     <div class="hero__mascote reveal" style="--d:2">
       <div class="mascote__aura" aria-hidden="true"></div>
+      <picture><source type="image/avif" srcset="/images/mascote-novo-360.avif 360w, /images/mascote-novo.avif 717w" sizes="(max-width: 555px) 27vw, (max-width: 900px) 150px, 430px">
       <img src="/images/mascote-novo.png" alt="Mascote da Velo: um tubarão de óculos e gravata-borboleta, sorrindo sem nenhum arrependimento" width="717" height="886" fetchpriority="high">
+      </picture>
       <div class="balao balao--erro" aria-hidden="true">Foi mal. Estava com fome.</div>
     </div>
 
@@ -158,7 +160,7 @@
 </a>
 
 <script src="/js/main.js?v=4" defer></script>
-<script src="/js/shader.js?v=4" defer></script>
+<script src="/js/shader.js?v=5" defer></script>
 <script src="/js/vivo.js?v=4" defer></script>
 </body>
 </html>

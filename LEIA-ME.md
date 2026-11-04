@@ -21,11 +21,11 @@ velo/
 │   ├── vivo.js                 (parallax, inclinação 3D, contadores)
 │   ├── campanhas.js            (lê o campanhas.json e aplica — nas duas páginas)
 │   └── planos.js               (abre e fecha o upsell)
-└── images/
+├── fonts/                      (Bricolage, Instrument Sans e DM Mono em woff2)
+└── images/                     (cada foto tem um .avif do lado — ver "Imagens em AVIF")
     ├── mascote-novo.png        (mascote atual, recortado)
     ├── mascote-apoiado.png     (mascote cortado na linha do braço, pra
     │                            apoiar na borda de cima dos cards)
-    ├── mascote-velo.png        (o antigo, tubarão-leopardo — não usado)
     ├── fundo-raso.jpg          (praia    → card Recife)
     ├── fundo-correnteza.jpg    (surf     → card Alto mar)
     ├── fundo-alto-mar.jpg      (tubarão  → card Abissal)
@@ -41,11 +41,11 @@ mover pra fora da pasta, senão vão junto pro servidor.
 
 A pasta `site-hostinger/` é o site pronto pra subir: as mesmas páginas, sem o
 `LEIA-ME.md`, sem os originais de WhatsApp e sem as três imagens que o site
-não usa (`mascote-velo.png`, `velo-logo-original.svg`, `barbatana.svg`).
+não usa (`velo-logo-original.svg`, `barbatana.svg`).
 
 No hPanel, o caminho é **Gerenciador de arquivos → `public_html`** e arrastar
 pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `dados/`,
-`js/` e `images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
+`js/`, `fonts/` e `images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
 o site cai em `seudominio.com/site-hostinger/` e os caminhos do `404.html`,
 que começam na raiz, quebram.
 
@@ -417,6 +417,18 @@ Detalhes que importam se for mexer:
 - **Sem WebGL.** Se o navegador não der contexto, o canvas é removido e a
   faixa fica no gradiente navy de antes. Nada quebra.
 - **Movimento reduzido.** Desenha um quadro parado e não anima mais.
+- **Sem placa de vídeo.** Se o navegador desenha o WebGL no processador
+  (SwiftShader, llvmpipe, "Basic Render Driver" — aceleração desligada,
+  driver bloqueado, máquina virtual), a fumaça vira um quadro parado, como no
+  movimento reduzido. Animada ali, ela ocupava ~4 núcleos de CPU e travava a
+  página (medido em 04/11). Pra saber se um computador cai nisso: abrir
+  `chrome://gpu` e ver se "WebGL" diz "Software only".
+- **Placa fraca.** Um governador no `shader.js` mede os quadros: se atrasam
+  por 2 s seguidos, a fumaça desce de degrau (70% e 50% da resolução, 15
+  quadros/s, parada). Nunca sobe de volta. Em máquina boa não faz nada.
+- **Só nasce perto da tela.** O canvas (e o contexto WebGL) de cada faixa só
+  é criado quando ela chega a uma tela de distância; o shader compila sem
+  travar a página onde houver `KHR_parallel_shader_compile`.
 
 ## Movimento
 
@@ -448,5 +460,16 @@ inteiro e legível — nada ali é essencial.
 ## Fontes
 
 Bricolage Grotesque (títulos), Instrument Sans (texto) e DM Mono (rótulos
-pequenos), carregadas do Google Fonts. Se precisar funcionar offline, baixe os
-`.woff2` e troque o `<link>` por um `@font-face` local.
+pequenos), servidas do próprio site, da pasta `fonts/` (os `@font-face` estão
+no topo do `style.css`). Saíram do Google Fonts em 04/11: o CSS deles travava a
+primeira pintura e abria duas conexões a mais. A versão vai no nome do arquivo
+(`-v9`, `-v4`...), por isso o `.htaccess` guarda fonte por um ano.
+
+## Imagens em AVIF
+
+Cada foto e mascote tem um `.avif` do lado do original (metade do peso, mesma
+cara). Nos HTML o `<img>` continua apontando pro PNG/JPG, dentro de um
+`<picture>` com `<source type="image/avif">` — navegador sem AVIF fica com o
+original. Nos fundos dos cards é o `image-set()` do CSS. **Ao trocar uma
+imagem, gere o `.avif` de novo**, senão quem tem AVIF continua vendo a velha
+(ex.: `python3 -c "from PIL import Image; Image.open('x.png').save('x.avif', quality=70)"`).

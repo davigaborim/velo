@@ -17,10 +17,10 @@
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600;12..96,75..100,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=4">
+<!-- fontes: servidas daqui, ver o topo do style.css. Sem preload de propósito
+     (medido em 04/11: no 4G, as fontes disputavam banda com o CSS e a primeira
+     pintura atrasava 0,6 s) -->
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -75,7 +75,9 @@
     </div>
 
     <div class="pl-abre__mascote reveal" style="--d:2" aria-hidden="true">
+      <picture><source type="image/avif" srcset="images/mascote-novo-360.avif 360w, images/mascote-novo.avif 717w" sizes="(max-width: 1227px) 22vw, 270px">
       <img src="images/mascote-novo.png" alt="" width="717" height="886" fetchpriority="high">
+      </picture>
     </div>
   </div>
 </section>
@@ -93,7 +95,9 @@
     </header>
 
     <div class="planos planos--com-mascote">
+      <picture><source type="image/avif" srcset="images/mascote-apoiado.avif">
       <img class="planos__mascote" src="images/mascote-apoiado.png" alt="" width="630" height="600" loading="lazy" aria-hidden="true">
+      </picture>
 
       <article class="plano plano--escuro plano--mar reveal" data-inclina="3" data-fundo="recife" data-plano="Recife">
         <h3 class="plano__nome">Recife</h3>
@@ -386,7 +390,9 @@
     </div>
 
     <div class="chamada__mascote reveal" style="--d:1" aria-hidden="true">
+      <picture><source type="image/avif" srcset="images/mascote-novo-360.avif 360w, images/mascote-novo.avif 717w" sizes="240px">
       <img src="images/mascote-novo.png" alt="" width="717" height="886" loading="lazy">
+      </picture>
     </div>
   </div>
 </section>
@@ -532,7 +538,7 @@
 </a>
 
 <script src="js/main.js?v=4" defer></script>
-<script src="js/shader.js?v=4" defer></script>
+<script src="js/shader.js?v=5" defer></script>
 <script src="js/vivo.js?v=4" defer></script>
 <script src="js/campanhas.js?v=5" defer></script>
 <script src="js/planos.js?v=5" defer></script>
