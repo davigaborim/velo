@@ -18,7 +18,7 @@ velo/
 ├── js/
 │   ├── main.js                 (o mar, scroll, menu — nas duas páginas)
 │   ├── agua.js                 (a água em vídeo das faixas escuras)
-│   ├── vivo.js                 (parallax, inclinação 3D, contadores)
+│   ├── vivo.js                 (títulos em palavras, odômetro, onda e ímã dos botões)
 │   ├── campanhas.js            (lê o campanhas.json e aplica — nas duas páginas)
 │   └── planos.js               (abre e fecha o upsell)
 ├── video/                      (a água das faixas escuras: vídeo em loop + pôster)
@@ -325,9 +325,10 @@ encosta na borda de cima do card. Quem posiciona é `.planos__mascote`
 As miniaturas são prints de verdade (`images/trabalho-*.jpg`) dentro de
 uma moldura de navegador falsa. Pra trocar, basta substituir o arquivo: o
 enquadramento (`aspect-ratio: 16/11`) e o recorte já estão prontos. A foto é
-desenhada em `scale(1.09)` de propósito — a sobra é o que permite ela
-escorregar dentro da moldura conforme a página rola, e a `.tela__barra` sobe
-um `z-index` pra a foto passar por baixo dela em vez de tampar a URL.
+desenhada em `scale:1.09` de propósito — a sobra é o que deixa a página
+"rolar" dentro da janela no hover — e a `.tela__barra` sobe um `z-index` pra
+a foto (e a persiana, ver "Movimento") passar por baixo dela em vez de tampar
+a URL.
 
 ## O mar
 
@@ -518,30 +519,101 @@ shader ao vivo.
 
 ## Movimento
 
-O `js/vivo.js` é a camada de vida. Se ele não carregar, o site continua
-inteiro e legível — nada ali é essencial.
+Até 04/11 quase todo efeito era o mesmo gesto — alguma coisa andando no eixo
+Y junto com a rolagem — e todo card tinha a mesma inclinação 3D no hover. O
+dono enjoou. Agora cada parte da página mexe de um jeito próprio, e todos
+falam a mesma língua: **as coisas saem da água**. Parágrafo de ler continua
+parado.
 
-- **Reveal.** Todo `.reveal` entra de baixo, desfocado, e o `.is-vista` (posto
-  pelo `main.js`) traz ele. Assim que a transição acaba o `.is-limpo` tira o
-  `filter` de vez: `filter` deixa uma camada de composição ligada pra sempre e
-  amolece o texto na GPU.
-- **Títulos.** Os `h2` (e o `h1` da página de planos) são descobertos de baixo
-  pra cima por uma **máscara**, não por `clip-path`. É de propósito: `clip-path`
-  zera a área do elemento e o `IntersectionObserver` passa a enxergar o título
-  como fora da tela — ele nunca recebe `.is-vista` e o site fica sem títulos.
-  Máscara é efeito de pintura e não mexe na geometria que o observador mede.
-- **Parallax.** `data-desliza="-0.13"` faz o elemento andar mais devagar que a
-  página (`data-desliza-max` limita em px). O valor é escrito numa variável
-  CSS `--px` em vez de num `transform` direto — assim ele não briga com o
-  `transform` de hover nem com a animação de boia do mascote.
-- **Inclinação 3D.** `data-inclina="4"` (graus) faz o card inclinar seguindo o
-  ponteiro, com uma luz junto. Só liga em quem tem mouse de verdade
-  (`hover:hover` + `pointer:fine`): no celular seria transform morto ocupando
-  camada de composição. A luz do card passa **por baixo** do texto — por cima
-  ela apaga a leitura do parágrafo.
-- **Contadores.** `data-conta="24" data-sufixo="h"` num `<strong>` faz o número
-  contar do zero quando entra na tela.
-- **Barra de progresso.** Criada pelo próprio script, no topo de tudo.
+| Onde | O que faz | Por quê |
+|---|---|---|
+| Títulos (`h1` e `h2`) | as palavras sobem uma a uma por uma linha d'água, com um gingado — o `h1` ao abrir, cada `h2` quando passa do mar fixo lá embaixo | é a assinatura do site: a marca "na crista da onda" |
+| Hero (home, planos, 404) | ao abrir, o tubarão salta pra fora da água, os botões estouram como boias e o balão pipoca; rolando, o tubarão **mergulha** e a onda da seção de baixo incha por cima do hero (ressaca) | o hero chega e vai embora pela água, sem o texto fugir da tela |
+| Números do hero e o 404 | rolam como **odômetro** até o valor | número que conta é número que "vale" |
+| Serviços | os cards chegam **alagados** (água clara, dá pra ler por baixo) e a maré vaza; nas 3 colunas do desktop ela baixa em tempos diferentes | serviço é o raso: água que vai embora e mostra o que tem |
+| Planos de site | o card **emerge** por uma superfície parada na tela (a ~24% do pé, acima do mar fixo). A crista tem a cor da profundidade — Recife azul-claro, Alto mar azul, Abissal navy — e quanto mais fundo o plano, de mais longe ele sobe. A fita "Recomendado" boia na superfície antes | Recife → Alto mar → Abissal é profundidade de verdade |
+| Planos de Instagram | um reflexo de luz atravessa o vidro do card | o card de mídia é vidro escuro, não foto |
+| Preços (planos e avulsos) | odômetro quando aparecem | preço é o que a pessoa veio ver |
+| Trabalhos | a **persiana** da janela de navegador sobe e a foto volta do zoom ("abrir a janela") | é um site de verdade atrás de uma janela |
+| Chamada final | a **barbatana** cruza a onda que separa a seção enquanto ela entra; o mascote dá um salto | é o único lugar em que o tubarão aparece inteiro de novo |
+| Avulsos | a linha de maré de cada item chega rolando da esquerda | lista é lista: só a linha mexe |
+
+**Hover, por tipo de coisa** (antes era a mesma inclinação em tudo):
+
+- card de serviço: **alaga** — a água sobe por dentro, a crista balança de
+  lado e o ícone vira boia;
+- card de plano: os checks **acendem em sequência** e a fita boia;
+- print de trabalho: a janela **liga** (as três bolinhas ganham cor) e a
+  página desce um pouco, como quem rola o site;
+- botão: uma **onda** abre de onde o ponteiro entrou (ou de onde o dedo
+  tocou) e os botões grandes têm **ímã** — puxam alguns pixels pro mouse;
+- link: o sublinhado vira uma onda correndo;
+- avulso: a linha de maré escurece;
+- logo: a barbatana dá um mergulho curto.
+
+### Como é feito (e as regras pra não estragar a nota 98)
+
+- **Rolagem é CSS** (`animation-timeline`, seção 12 do `style.css`): quem
+  anima é o compositor, sem JS lendo layout a cada quadro.
+- **Os títulos não são amarrados à rolagem**, de propósito: são 35 palavras
+  só na home, e 35 animações presas à rolagem custavam ~1 quadro por segundo
+  (medido em 04/11). Viraram animação de tempo, disparada uma vez quando o
+  título passa do mar: cada palavra só vira camada durante 0,7 s. Bônus: o
+  Safari também vê.
+- **Só `translate`/`rotate`/`scale`** na rolagem. `clip-path` e `mask`
+  animados repintam a cada quadro (medido em 04/11: 467 pinturas em 60
+  quadros contra 2 com translate). Por isso toda "máscara" aqui é uma
+  **janela parada** (`clip-path` ou `overflow:clip` fixos) com o conteúdo
+  andando dentro dela: a palavra sobe dentro do `.pal`, a água desce dentro
+  do `.plano__agua`, a persiana sobe dentro da moldura.
+- **Sem opacidade amarrada à rolagem** (custo de GPU medido em 21/10).
+- **Nada some sem a animação.** Tudo o que esconde alguma coisa (a água dos
+  cards, a persiana, as palavras abaixo da linha) só existe dentro de
+  `@supports (animation-timeline:view())` e de
+  `prefers-reduced-motion:no-preference`. **Safari e Firefox** (que ainda não
+  têm `animation-timeline`) veem a página inteira, parada e no lugar — com a
+  chegada do hero, os títulos, o odômetro e os hovers, que não dependem dela.
+  Com movimento reduzido, tudo parado.
+- **Água pintada, não mascarada.** As camadas grandes que andam (a superfície
+  dos planos, a maré dos serviços) têm a onda desenhada num SVG com cor, sem
+  `mask`; a parte lisa da superfície é cor chapada, que o navegador compõe
+  sem rasterizar. Com máscara, só a superfície dos planos custava ~0,5 s de
+  rasterização numa rolagem da home.
+- **Linha do tempo com nome** quando o pseudo-elemento mora dentro de algo
+  com `overflow:hidden` (os cards de serviço): `view()` ali mediria a rolagem
+  do próprio card, que nunca rola, e a maré ficaria parada no meio.
+- **Comentário no CSS custa**: o `style.css` segura a primeira pintura, e
+  ~3 KB de comentário a mais tiravam um ponto do Lighthouse. Explicação longa
+  mora aqui.
+
+O `js/vivo.js` faz o que o CSS não sabe:
+
+- **Títulos em palavras.** Os `h2` são partidos em
+  `<span class="pal"><span style="--i:n">palavra</span></span>` depois do
+  `load`, e só os que ainda não estão na tela (senão sumiriam na sua frente);
+  um `IntersectionObserver` põe `.is-emersa` quando o título passa de ~16% do
+  pé da tela, e as palavras sobem. As duas coisas moram no mesmo script: sem
+  ele, o título fica inteiro, como no HTML.
+  Os `h1` já vêm partidos no HTML, porque estão na primeira tela. **Ao editar
+  um `h1`, mantenha um `.pal` por palavra** (o `--i` é a ordem). Pontuação
+  colada fica na palavra; o `<span data-preco>` do título vira uma palavra
+  inteira e o `campanhas.js` continua escrevendo nele.
+- **Odômetro.** Entra em `.plano__valor`, `.avulso__preco`, `.erro__num`,
+  `[data-conta]` e `[data-rola]`: cada dígito vira uma fita de 0 a 9 que rola
+  até o valor (`translate` numa janela parada). A largura não muda (cada
+  coluna guarda o dígito final invisível), o leitor de tela lê o número
+  inteiro, e no fim o elemento volta exatamente ao que era. Se o
+  `campanhas.js` trocar o preço no meio, ele escreve por cima e o odômetro
+  sai sem desfazer nada. O 404 (decorativo) fica com a fita parada: devolver
+  o texto contava como uma pintura nova e empurrava o LCP.
+- **Onda e ímã dos botões.** A onda é uma animação no `::after` do botão,
+  disparada no `pointerenter` (mouse) ou `pointerdown` (toque). O ímã só liga
+  com mouse de verdade (`hover:hover` + `pointer:fine`), escreve uma vez por
+  quadro e lê a caixa do botão ao entrar, não a cada movimento.
+- **Barra de progresso** do topo: CSS onde dá, este laço onde não dá.
+
+Se o `vivo.js` não carregar, o site continua inteiro e legível: os títulos
+ficam sem partir, os números parados, os botões sem onda.
 
 ## Fontes
 

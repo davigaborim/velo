@@ -295,8 +295,8 @@
      senão a barbatana atrasa em relação ao dedo.
      A espera é por relógio, não pulando quadro: pedir requestAnimationFrame
      e não desenhar ainda faz o navegador montar o quadro inteiro. O passo cai
-     sempre na mesma grade de 1/30 s que o shader.js usa, então os dois acordam
-     juntos e dividem o mesmo quadro. */
+     sempre na mesma grade de 1/30 s, pra o mar e as boias acordarem juntos
+     num quadro só. */
   var PASSO = 1000 / 30;
 
   function agendar() {

@@ -20,7 +20,7 @@
 <!-- fontes: servidas daqui, ver o topo do style.css. Sem preload de propósito
      (medido em 04/11: no 4G, as fontes disputavam banda com o CSS e a primeira
      pintura atrasava 0,6 s) -->
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=9">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
   <div class="wrap pl-abre__grid">
     <div>
       <p class="rotulo reveal"><a class="pl-volta" href="index.html">Velo</a> · Planos e preços</p>
-      <h1 class="pl-abre__h1 reveal" style="--d:1">Planos e preços.</h1>
+      <h1 class="pl-abre__h1 reveal" style="--d:1"><span class="pal"><span style="--i:0">Planos</span></span> <span class="pal"><span style="--i:1">e</span></span> <span class="pal"><span style="--i:2">preços.</span></span></h1>
       <p class="pl-abre__texto reveal" style="--d:2">
         Escolha por onde quer começar. Os detalhes de cada plano ficam logo
         abaixo dele, e a explicação de como o preço funciona está no fim da página.
@@ -99,7 +99,8 @@
       <img class="planos__mascote" src="images/mascote-apoiado.png" alt="" width="630" height="600" loading="lazy" aria-hidden="true">
       </picture>
 
-      <article class="plano plano--escuro plano--mar reveal" data-inclina="3" data-fundo="recife" data-plano="Recife">
+      <article class="plano plano--escuro plano--mar reveal" data-fundo="recife" data-plano="Recife">
+        <span class="plano__agua" aria-hidden="true"></span>
         <h3 class="plano__nome">Recife</h3>
         <p class="plano__pitch">Uma página só, com o que o cliente precisa saber e um botão pra chamar no WhatsApp. Bom pra quem ainda não tem site.</p>
         <div class="plano__duplo">
@@ -136,7 +137,8 @@
         </div>
       </article>
 
-      <article class="plano plano--escuro plano--mar plano--destaque reveal" data-inclina="3" style="--d:1" data-fundo="alto-mar" data-plano="Alto mar">
+      <article class="plano plano--escuro plano--mar plano--destaque reveal" style="--d:1" data-fundo="alto-mar" data-plano="Alto mar">
+        <span class="plano__agua" aria-hidden="true"></span>
         <span class="plano__fita">Recomendado</span>
         <h3 class="plano__nome">Alto mar</h3>
         <p class="plano__pitch">Site com várias páginas, pra quem tem vários serviços e precisa explicar cada um no seu espaço.</p>
@@ -174,7 +176,8 @@
         </div>
       </article>
 
-      <article class="plano plano--escuro plano--mar reveal" data-inclina="3" style="--d:2" data-fundo="abissal" data-plano="Abissal">
+      <article class="plano plano--escuro plano--mar reveal" style="--d:2" data-fundo="abissal" data-plano="Abissal">
+        <span class="plano__agua" aria-hidden="true"></span>
         <h3 class="plano__nome">Abissal</h3>
         <p class="plano__pitch">Pra quem tem catálogo grande ou quer mexer no site sozinho: busca com filtros, painel de edição e integração com agenda ou pagamento.</p>
         <div class="plano__duplo">
@@ -228,7 +231,8 @@
     </header>
 
     <div class="planos planos--midia">
-      <article class="plano plano--escuro plano--noite reveal" data-inclina="3" data-plano="Presença">
+      <article class="plano plano--escuro plano--noite reveal" data-plano="Presença">
+        <span class="plano__agua" aria-hidden="true"></span>
         <h3 class="plano__nome">Presença</h3>
         <p class="plano__pitch">Pra manter o perfil ativo: dois posts por semana e stories, sem você ter que pensar no que postar.</p>
         <p class="plano__preco">
@@ -251,7 +255,8 @@
         </div>
       </article>
 
-      <article class="plano plano--escuro plano--noite plano--destaque reveal" data-inclina="3" style="--d:1" data-plano="Ataque">
+      <article class="plano plano--escuro plano--noite plano--destaque reveal" style="--d:1" data-plano="Ataque">
+        <span class="plano__agua" aria-hidden="true"></span>
         <span class="plano__fita">Recomendado</span>
         <h3 class="plano__nome">Ataque</h3>
         <p class="plano__pitch">O dobro de posts da Presença, reels editados e uma campanha de anúncio rodando o mês todo.</p>
@@ -276,7 +281,8 @@
         </div>
       </article>
 
-      <article class="plano plano--escuro plano--noite reveal" data-inclina="3" style="--d:2" data-plano="Dominância">
+      <article class="plano plano--escuro plano--noite reveal" style="--d:2" data-plano="Dominância">
+        <span class="plano__agua" aria-hidden="true"></span>
         <h3 class="plano__nome">Dominância</h3>
         <p class="plano__pitch">A gente cuida das campanhas no Meta e no Google e senta com você uma vez por mês pra olhar os números.</p>
         <p class="plano__preco">
@@ -320,42 +326,42 @@
     </header>
 
     <ul class="avulsos">
-      <li class="avulso reveal" data-inclina="3">
+      <li class="avulso reveal">
         <div>
           <h3>Ensaio do ambiente de trabalho</h3>
           <p>2 a 3 horas no local — loja, consultório, escritório, obra. Saem 25 fotos tratadas, com direito de uso livre.</p>
         </div>
         <p class="avulso__preco">R$ 650</p>
       </li>
-      <li class="avulso reveal" data-inclina="3" style="--d:1">
+      <li class="avulso reveal" style="--d:1">
         <div>
           <h3>Dia de gravação</h3>
           <p>4 a 6 reels roteirizados, gravados e editados no mesmo dia. Rende conteúdo pra um mês inteiro.</p>
         </div>
         <p class="avulso__preco">R$ 900</p>
       </li>
-      <li class="avulso reveal" data-inclina="3" style="--d:2">
+      <li class="avulso reveal" style="--d:2">
         <div>
           <h3>Fotos de produto</h3>
           <p>Fundo neutro, tratadas e prontas pro catálogo ou pro site. Mínimo de 20 itens.</p>
         </div>
         <p class="avulso__preco">R$ 18 <small>/item</small></p>
       </li>
-      <li class="avulso reveal" data-inclina="3" style="--d:3">
+      <li class="avulso reveal" style="--d:3">
         <div>
           <h3>Identidade visual completa</h3>
           <p>Logo, paleta, tipografia, aplicações e um manual que mostra como usar tudo isso.</p>
         </div>
         <p class="avulso__preco">R$ 2.200</p>
       </li>
-      <li class="avulso reveal" data-inclina="3" style="--d:4">
+      <li class="avulso reveal" style="--d:4">
         <div>
           <h3>Logo + kit básico</h3>
           <p>Logo em três versões, cores e fontes definidas. O suficiente pra começar bem.</p>
         </div>
         <p class="avulso__preco">R$ 800</p>
       </li>
-      <li class="avulso reveal" data-inclina="3" style="--d:5">
+      <li class="avulso reveal" style="--d:5">
         <div>
           <h3>Google Meu Negócio</h3>
           <p>Criação, verificação, fotos e otimização — pra aparecer no mapa quando procurarem por perto.</p>
@@ -537,9 +543,9 @@
   <span class="zap-boia__texto">WhatsApp</span>
 </a>
 
-<script src="js/main.js?v=4" defer></script>
+<script src="js/main.js?v=5" defer></script>
 <script src="js/agua.js?v=1" defer></script>
-<script src="js/vivo.js?v=4" defer></script>
+<script src="js/vivo.js?v=5" defer></script>
 <script src="js/campanhas.js?v=6" defer></script>
 <script src="js/planos.js?v=5" defer></script>
 </body>
