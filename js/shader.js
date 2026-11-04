@@ -227,12 +227,18 @@
     /* Tamanho e posição da seção ficam guardados e só são relidos quando ela
        muda de tamanho. Perguntar isso ao navegador dentro do quadro, depois
        que o mar já mexeu no SVG, força um layout inteiro a cada quadro. */
-    var caixaL = 0, caixaA = 0, caixaTopo = 0;
+    var caixaL = 0, caixaA = 0, caixaTopo = 0, inst = null;
 
     function medirCaixa() {
-      caixaL = alvo.clientWidth;
-      caixaA = alvo.clientHeight;
+      var l = alvo.clientWidth, a = alvo.clientHeight;
       caixaTopo = alvo.getBoundingClientRect().top + window.scrollY;
+      if (l === caixaL && a === caixaA) return;
+      caixaL = l; caixaA = a;
+      // Parado (movimento reduzido, sem placa, congelado), o quadro só é
+      // desenhado uma vez; se a faixa muda de altura depois (a fonte chegou
+      // e o título quebrou diferente), ele precisa sair de novo, senão o
+      // navegador estica o canvas antigo e a fumaça fica achatada.
+      if (inst && inst.desenhou) { inst.mudou = true; redesenharParado(); }
     }
 
     function medir() {
@@ -280,7 +286,7 @@
       window.addEventListener('load', medirCaixa);
     }
 
-    var inst = { alvo: alvo, desenhar: desenhar, derivar: derivar, visivel: false, desenhou: false };
+    inst = { alvo: alvo, desenhar: desenhar, derivar: derivar, visivel: false, desenhou: false, mudou: false };
 
     // devolve false enquanto o shader ainda está compilando
     function desenhar(segundos) {
@@ -414,10 +420,21 @@
     // congelado pelo governador: fica no instante em que parou, não no zero
     var t0 = congelado ? relogio : 0;
     telas.forEach(function (t) {
-      if (t.desenhou && tudo !== true) return;
+      if (t.desenhou && !t.mudou && tudo !== true) return;
       if (!t.desenhar(t0)) falta = true;
+      else t.mudou = false;
     });
     if (falta) requestAnimationFrame(function () { quadroParado(tudo); });
+  }
+
+  // animando, o próprio laço já pega o tamanho novo no quadro seguinte
+  var redesenhoPedido = 0;
+  function redesenharParado() {
+    if (rodando || redesenhoPedido) return;
+    redesenhoPedido = requestAnimationFrame(function () {
+      redesenhoPedido = 0;
+      if (!rodando) quadroParado();
+    });
   }
 
   /* Cada faixa só monta o canvas quando chega a uma tela de distância. Quem
