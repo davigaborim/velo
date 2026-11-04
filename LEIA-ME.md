@@ -22,7 +22,6 @@ velo/
     ├── mascote-novo.png        (mascote atual, recortado)
     ├── mascote-apoiado.png     (mascote cortado na linha do braço, pra
     │                            apoiar na borda de cima dos cards)
-    ├── mascote-velo.png        (o antigo, tubarão-leopardo — não usado)
     ├── fundo-raso.jpg          (praia    → card Recife)
     ├── fundo-correnteza.jpg    (surf     → card Alto mar)
     ├── fundo-alto-mar.jpg      (tubarão  → card Abissal)
@@ -38,7 +37,7 @@ mover pra fora da pasta, senão vão junto pro servidor.
 
 A pasta `site-hostinger/` é o site pronto pra subir: as mesmas páginas, sem o
 `LEIA-ME.md`, sem os originais de WhatsApp e sem as três imagens que o site
-não usa (`mascote-velo.png`, `velo-logo-original.svg`, `barbatana.svg`).
+não usa (`velo-logo-original.svg`, `barbatana.svg`).
 
 No hPanel, o caminho é **Gerenciador de arquivos → `public_html`** e arrastar
 pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `js/` e
@@ -349,5 +348,16 @@ inteiro e legível — nada ali é essencial.
 ## Fontes
 
 Bricolage Grotesque (títulos), Instrument Sans (texto) e DM Mono (rótulos
-pequenos), carregadas do Google Fonts. Se precisar funcionar offline, baixe os
-`.woff2` e troque o `<link>` por um `@font-face` local.
+pequenos), servidas do próprio site, da pasta `fonts/` (os `@font-face` estão
+no topo do `style.css`). Saíram do Google Fonts em 04/11: o CSS deles travava a
+primeira pintura e abria duas conexões a mais. A versão vai no nome do arquivo
+(`-v9`, `-v4`...), por isso o `.htaccess` guarda fonte por um ano.
+
+## Imagens em AVIF
+
+Cada foto e mascote tem um `.avif` do lado do original (metade do peso, mesma
+cara). Nos HTML o `<img>` continua apontando pro PNG/JPG, dentro de um
+`<picture>` com `<source type="image/avif">` — navegador sem AVIF fica com o
+original. Nos fundos dos cards é o `image-set()` do CSS. **Ao trocar uma
+imagem, gere o `.avif` de novo**, senão quem tem AVIF continua vendo a velha
+(ex.: `python3 -c "from PIL import Image; Image.open('x.png').save('x.avif', quality=70)"`).
