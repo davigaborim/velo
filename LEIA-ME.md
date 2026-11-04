@@ -318,6 +318,18 @@ Detalhes que importam se for mexer:
 - **Sem WebGL.** Se o navegador não der contexto, o canvas é removido e a
   faixa fica no gradiente navy de antes. Nada quebra.
 - **Movimento reduzido.** Desenha um quadro parado e não anima mais.
+- **Sem placa de vídeo.** Se o navegador desenha o WebGL no processador
+  (SwiftShader, llvmpipe, "Basic Render Driver" — aceleração desligada,
+  driver bloqueado, máquina virtual), a fumaça vira um quadro parado, como no
+  movimento reduzido. Animada ali, ela ocupava ~4 núcleos de CPU e travava a
+  página (medido em 04/11). Pra saber se um computador cai nisso: abrir
+  `chrome://gpu` e ver se "WebGL" diz "Software only".
+- **Placa fraca.** Um governador no `shader.js` mede os quadros: se atrasam
+  por 2 s seguidos, a fumaça desce de degrau (70% e 50% da resolução, 15
+  quadros/s, parada). Nunca sobe de volta. Em máquina boa não faz nada.
+- **Só nasce perto da tela.** O canvas (e o contexto WebGL) de cada faixa só
+  é criado quando ela chega a uma tela de distância; o shader compila sem
+  travar a página onde houver `KHR_parallel_shader_compile`.
 
 ## Movimento
 
