@@ -74,9 +74,9 @@
       }
     ],
     atendimento: {
-      seg: '08:00-18:00', ter: '08:00-18:00', qua: '08:00-18:00',
-      qui: '08:00-18:00', sex: '08:00-18:00', sab: '08:00-12:00', dom: '',
-      feriados: ['2026-11-20', '2026-12-25', '2027-01-01']
+      seg: '00:00-24:00', ter: '00:00-24:00', qua: '00:00-24:00',
+      qui: '00:00-24:00', sex: '00:00-24:00', sab: '00:00-24:00', dom: '00:00-24:00',
+      feriados: []
     },
     vagas: { ligado: false, mes: '2026-11', quantas: 3 }
   };
@@ -463,6 +463,8 @@
   }
 
   function textoAtendimento(s) {
+    // Dia inteiro aberto ("00:00-24:00") não tem "até as 24h": é 24 horas.
+    if (s.aberto && s.ate >= 1440) return 'Respondendo no WhatsApp 24 horas por dia, todo dia';
     if (s.aberto) return 'Respondendo agora no WhatsApp, até as ' + hora(s.ate);
     var quando = s.emDias === 0 ? '' :
       s.emDias === 1 ? 'amanhã ' :

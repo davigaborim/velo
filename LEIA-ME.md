@@ -77,7 +77,7 @@ Ainda **falta** um: `og:url` e `og:image` no `<head>` do `index.html` e do
 alguém cola o link no WhatsApp ou no Instagram — assim que o domínio da
 Hostinger estiver de pé, troque os dois pelo endereço novo.
 
-Os números do hero (`3 sites no ar`, `24h pra responder`, `0 fidelidade`)
+Os números do hero (`2 sites no ar`, `24h pra responder`, `0 fidelidade`)
 e os itens de cada plano estão no `index.html` em texto puro — é só editar.
 
 ## A página de erro
@@ -259,11 +259,15 @@ No mesmo JSON:
 
 ```json
 "atendimento": {
-  "seg": "08:00-18:00", "ter": "08:00-18:00", "qua": "08:00-18:00",
-  "qui": "08:00-18:00", "sex": "08:00-18:00", "sab": "08:00-12:00", "dom": "",
-  "feriados": ["2026-11-20", "2026-12-25", "2027-01-01"]
+  "seg": "00:00-24:00", "ter": "00:00-24:00", "qua": "00:00-24:00",
+  "qui": "00:00-24:00", "sex": "00:00-24:00", "sab": "00:00-24:00", "dom": "00:00-24:00",
+  "feriados": []
 }
 ```
+
+Hoje o atendimento é 24 horas, todo dia, e a linha mostra "Respondendo no
+WhatsApp 24 horas por dia, todo dia". Pra voltar a ter horário, troque
+cada dia por algo como `"08:00-18:00"` (e o sábado por `"08:00-12:00"`).
 
 Dia vazio (`""`) é fechado; dia em `feriados` também. Sempre pela hora de
 Campo Grande, esteja o visitante onde estiver. A linha embaixo do botão de
@@ -315,7 +319,7 @@ encosta na borda de cima do card. Quem posiciona é `.planos__mascote`
 
 ## Trabalhos
 
-As três miniaturas são prints de verdade (`images/trabalho-*.jpg`) dentro de
+As miniaturas são prints de verdade (`images/trabalho-*.jpg`) dentro de
 uma moldura de navegador falsa. Pra trocar, basta substituir o arquivo: o
 enquadramento (`aspect-ratio: 16/11`) e o recorte já estão prontos. A foto é
 desenhada em `scale(1.09)` de propósito — a sobra é o que permite ela
