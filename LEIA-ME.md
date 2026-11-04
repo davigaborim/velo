@@ -13,11 +13,14 @@ velo/
 ├── .htaccess                   (liga o 404 no Apache/Hostinger + cache)
 ├── favicon.svg
 ├── css/style.css
+├── dados/
+│   └── campanhas.json          (promoções com data, horário de atendimento)
 ├── js/
 │   ├── main.js                 (o mar, scroll, menu — nas duas páginas)
 │   ├── shader.js               (a água viva em WebGL das faixas escuras)
 │   ├── vivo.js                 (parallax, inclinação 3D, contadores)
-│   └── planos.js               (relógio da promoção e upsell)
+│   ├── campanhas.js            (lê o campanhas.json e aplica — nas duas páginas)
+│   └── planos.js               (abre e fecha o upsell)
 └── images/
     ├── mascote-novo.png        (mascote atual, recortado)
     ├── mascote-apoiado.png     (mascote cortado na linha do braço, pra
@@ -41,8 +44,8 @@ A pasta `site-hostinger/` é o site pronto pra subir: as mesmas páginas, sem o
 não usa (`mascote-velo.png`, `velo-logo-original.svg`, `barbatana.svg`).
 
 No hPanel, o caminho é **Gerenciador de arquivos → `public_html`** e arrastar
-pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `js/` e
-`images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
+pra lá **o conteúdo** da pasta — os arquivos e as pastas `css/`, `dados/`,
+`js/` e `images/` soltos, não a pasta `site-hostinger` inteira. Se a pasta for junto,
 o site cai em `seudominio.com/site-hostinger/` e os caminhos do `404.html`,
 que começam na raiz, quebram.
 
@@ -167,46 +170,142 @@ da lista de cada card (`.plano__mens`) e no bloco `.pagto`.
 isso com todas as letras, e as manutenções são todas "a partir de". Se mudar
 essa política, mude o texto de lá junto.
 
-Pra mudar um preço, é texto puro no HTML: `<span class="plano__valor">` nos
-cards de site e mídia e `<p class="avulso__preco">` nos avulsos.
+Pra mudar um preço **cheio**, é texto puro no HTML: `<span class="plano__valor">`
+nos cards de site e mídia e `<p class="avulso__preco">` nos avulsos. Os preços
+**promocionais** não ficam no HTML — moram no calendário de campanhas, logo
+abaixo.
 
 Os cards escuros vêm em dois sabores: `.plano--mar` (site, com foto de fundo
 escolhida pelo `data-fundo`) e `.plano--noite` (mídia, sem foto — é o próprio
 fundo escuro da seção que aparece, com um fio no degradê do Instagram no topo).
 O que os dois têm em comum está em `.plano--escuro`.
 
-### O relógio da promoção
+### O calendário de campanhas
 
-A data de fim está numa constante só, no topo do `js/planos.js`:
+Promoção, selo, oferta de upsell e horário de atendimento estão num arquivo
+só: **`dados/campanhas.json`**. É ele que o dono edita; o `js/campanhas.js`
+lê e aplica nas duas páginas. Quem estiver com o site aberto vê a mudança
+em até 5 minutos, sem recarregar (o script relê o arquivo a cada 5 min e
+sempre que a aba volta a ficar visível).
 
-```js
-var FIM_DA_PROMO = new Date(2026, 7, 31, 23, 59, 59);   // mês 7 = agosto
+Cada campanha tem data de início e de fim **de verdade**, no fuso de Campo
+Grande (`-04:00`):
+
+```json
+{
+  "id": "novembro-2026",
+  "inicio": "2026-11-01T00:00:00-04:00",
+  "fim": "2026-11-30T23:59:59-04:00",
+  "selo": "<b>{desconto}</b> em novembro, até {fim}",
+  "saudacao": "",
+  "precos": { "recife": 300, "alto-mar": 550, "abissal": 1500,
+              "presenca": 350, "ataque": 650, "dominancia": 850 },
+  "upsell": {
+    "recife": { "texto": "Por mais <strong>R$ 200</strong> ...",
+                "zap": "Oi, Velo! Quero o Alto mar por R$ 500 de criação." }
+  }
+}
 ```
 
-São **duas tarjas com o mesmo prazo**: uma na criação dos sites
-(`.promo--claro`, versão clara) e outra na mídia. As duas leem a mesma
-constante e usam `data-rel="d|h|m|s"` nos dígitos — é assim que o script acha
-os dois relógios de uma vez.
+- **`precos`** — só o valor promocional, em número (`1500`, sem "R$" nem
+  ponto). O cheio é o que está no HTML. Plano que não aparece aqui fica no
+  preço cheio; promocional maior ou igual ao cheio é ignorado.
+- **`selo`** — o texto da tarja ao lado do título. `{desconto}` vira "50%
+  off" (calculado dos preços: se os planos da seção tiverem descontos
+  diferentes, vira "até X% off") e `{fim}` vira a data de fim ("30/11"). Pode
+  escrever o desconto à mão com `"desconto": "R$ 300 off"`.
+- **`saudacao`** — opcional, aparece antes do status de atendimento
+  ("Boas festas! Respondendo agora no WhatsApp").
+- **`upsell`** — a oferta que abre no "Tenho interesse" enquanto a campanha
+  vale: `texto` (pode ter `<strong>` e `<b>`) e `zap` (a mensagem que já vai
+  escrita no WhatsApp). Os números do upsell são texto: se mudar um preço,
+  confira a oferta junto. Sem campanha, vale a oferta que está no HTML.
+- **`fim`** vale até o fim daquele segundo: `23:59:59` cobre o dia todo, e
+  a campanha seguinte, começando `00:00:00`, assume sem um segundo de preço
+  cheio no meio. Se duas se sobrepõem, vale a que começou por último.
 
-É uma data **de verdade**: quando ela passa, os relógios e as tarjas somem
-sozinhos, todo preço que tiver um `.plano__antes` volta pro cheio (o próprio
-texto riscado é a fonte da verdade) e as ofertas de upsell trocam pelo texto do
-atributo `data-fim`. Pra esticar a promoção, muda a data e pronto.
+O que o visitante vê, tudo saído da data:
 
-O `index.html` também carrega o `planos.js` — sem ele a prévia da home ficaria
-com o preço promocional pra sempre depois que a promoção acabasse.
+| Quando | Selo |
+|---|---|
+| campanha valendo | o `selo` da campanha, tarja clara |
+| faltam menos de 72h | **Últimos dias** · 50% off até 30/11 (tarja amarela cheia) |
+| o fim é amanhã | **Termina amanhã** · 50% off até 23h59 |
+| faltam menos de 24h | **Termina hoje** · 50% off · faltam 05:12:33 (relógio de segundos) |
+| nenhuma campanha | selo some, preços voltam pro cheio, upsell volta pro do HTML |
 
-Resista à ideia de fazer o relógio reiniciar a cada visita: contador que
-nunca chega ao fim é propaganda enganosa (CDC art. 37) e queima a confiança
-justamente do cliente pequeno que a Velo quer atender.
+Quando uma campanha vence, a próxima do calendário assume na hora. O
+relógio de segundos só bate com ele na tela e a aba visível. **Pra criar a
+próxima promoção é só acrescentar outra campanha na lista** — não precisa
+apagar as antigas (as vencidas são ignoradas), mas dá pra limpar de vez em
+quando.
+
+**Sem JavaScript, o HTML mostra os preços cheios e esconde os selos.** De
+propósito: preço cheio vale em qualquer dia. Se o HTML trouxesse o
+promocional e o script falhasse, a promoção vencida ficaria no ar — foi o
+que aconteceu com a de agosto, que passou de 31/08 até novembro sem ninguém
+mexer. O riscado "de R$ X" e o selo continuam ocupando o lugar mesmo
+escondidos, pra nada pular quando o script liga a campanha.
+
+Resista à ideia de fazer o relógio reiniciar a cada visita, de inventar
+"visitantes online" ou "fulano acabou de comprar": contador que nunca chega
+ao fim é propaganda enganosa (CDC art. 37) e queima a confiança justamente
+do cliente pequeno que a Velo quer atender. Tudo que o site mostra de "vivo"
+sai de um dado real.
+
+#### Horário de atendimento
+
+No mesmo JSON:
+
+```json
+"atendimento": {
+  "seg": "08:00-18:00", "ter": "08:00-18:00", "qua": "08:00-18:00",
+  "qui": "08:00-18:00", "sex": "08:00-18:00", "sab": "08:00-12:00", "dom": "",
+  "feriados": ["2026-11-20", "2026-12-25", "2027-01-01"]
+}
+```
+
+Dia vazio (`""`) é fechado; dia em `feriados` também. Sempre pela hora de
+Campo Grande, esteja o visitante onde estiver. A linha embaixo do botão de
+WhatsApp da chamada final mostra "Respondendo agora no WhatsApp, até as 18h"
+ou "Fora do horário — respondemos amanhã a partir das 8h", e a boia do
+WhatsApp ganha um pontinho branco no horário de atendimento.
+
+#### Vagas do mês e "revisado em"
+
+- `"vagas": { "ligado": false, "mes": "2026-11", "quantas": 3 }` — com
+  `ligado: true`, aparece "3 vagas abertas para começar em novembro" ao lado
+  do selo dos sites. Só no mês escrito em `mes`: número esquecido some
+  sozinho no mês seguinte. **Só ligue com número de verdade.**
+- `"atualizado_em": "2026-11-04"` — aparece no rodapé como "preços revisados
+  em 04/11/2026". Troque sempre que mexer no arquivo.
+
+#### Cuidados ao editar
+
+- JSON não aceita vírgula sobrando no fim da lista nem comentário. Se o
+  arquivo quebrar, o site não cai: usa a última versão boa que o navegador
+  guardou ou a cópia de reserva (`RESERVA`, no topo do `js/campanhas.js`).
+  Dá pra conferir o arquivo colando em qualquer validador de JSON.
+- A `RESERVA` só entra quando o JSON não chega (servidor fora, ou a página
+  aberta direto do disco, que não deixa ler arquivo). Quando der, copie o
+  JSON novo pra lá também.
+- Os ganchos no HTML são atributos: `data-preco="recife"` no valor,
+  `data-preco-antes="recife"` no riscado, `data-selo` na tarja,
+  `data-upsell="recife"` na caixa de oferta (e `data-upsell-zap` no botão),
+  `data-atendimento` na linha de status, `data-vagas` e `data-atualizado`.
+  Card novo precisa deles pra entrar na campanha. Os ids dos planos são
+  `recife`, `alto-mar`, `abissal`, `presenca`, `ataque` e `dominancia`.
+- Os títulos da home ("Site a partir de R$ 300") seguem o preço do Recife e
+  da Presença pelo mesmo `data-preco`. A `<meta name="description">` do
+  `index.html` não muda sozinha — ela fala em "a partir de R$ 300".
 
 ### O upsell
 
 Cada "Tenho interesse" abre um bloco `.upsell` com a oferta do plano de cima
 ("por mais R$ X você leva o Y"), com desconto de ~15% do valor do plano menor.
-Só uma oferta fica aberta por vez, e `Esc` fecha. Pra mudar uma oferta, é o
-`<p class="upsell__linha">` dentro de cada card — e, nos cards de mídia,
-também o `data-fim` correspondente.
+Só uma oferta fica aberta por vez, e `Esc` fecha. O `<p class="upsell__linha">`
+de cada card traz a oferta **sem campanha**; enquanto uma campanha vale, o
+texto e a mensagem do botão vêm do `upsell` dela no `campanhas.json`.
 
 ### O mascote apoiado
 
