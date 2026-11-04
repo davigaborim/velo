@@ -10,9 +10,9 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/favicon.svg">
 
-<!-- fontes servidas daqui (ver o topo do style.css); as duas do primeiro olhar já descem junto com o CSS -->
-<link rel="preload" href="/fonts/bricolage-grotesque-v9-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/instrument-sans-v4-latin.woff2" as="font" type="font/woff2" crossorigin>
+<!-- fontes: servidas daqui, ver o topo do style.css. Sem preload de propósito
+     (medido em 04/11: no 4G, as fontes disputavam banda com o CSS e a primeira
+     pintura atrasava 0,6 s) -->
 <!-- caminhos a partir da raiz: o 404 aparece em qualquer endereço errado,
      inclusive /uma/pasta/funda/, e caminho relativo quebraria o CSS lá -->
 <link rel="stylesheet" href="/css/style.css?v=5">

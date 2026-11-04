@@ -7,7 +7,8 @@
    Eram do Google Fonts: um CSS de outro domínio travando a primeira pintura
    e mais uma conexão pro fonts.gstatic.com só pra começar a baixar as letras
    — no 4G, quase meio segundo antes de aparecer qualquer coisa. Agora vêm
-   da pasta fonts/, e o <head> já pede as duas principais com preload.
+   da pasta fonts/. Sem preload: no 4G lento as fontes disputavam banda com
+   este CSS, que é quem segura a primeira pintura (1,1 s sem x 1,8 s com).
    A Bricolage vinha com o eixo de largura (wdth 75–100) que o site nunca
    usa: sem ele o arquivo caiu de 131 KB pra 77 KB, com o mesmo desenho
    (largura 100, a padrão). Os unicode-range são os mesmos do Google: o
