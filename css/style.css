@@ -774,11 +774,16 @@ html.is-puxando-mar body{ user-select:none; }
 @media (prefers-reduced-motion:no-preference){
 
   /* ---- o hero chega uma vez, ao abrir (não depende da rolagem) ---- */
-  @keyframes chega{ from{ opacity:0; translate:0 30px; } }
+  /* Encurtado em 11/2026: com .95s e 110ms por degrau o hero só ficava
+     pronto em ~1s no desktop e ~2s no celular, e era isso que o dono
+     sentia como "demorado". O título e o mascote entram sem espera; o
+     resto vem logo atrás em degraus de 60ms. */
+  @keyframes chega{ from{ opacity:0; translate:0 16px; } }
   .hero .reveal,.pl-abre .reveal{
-    animation:chega .95s cubic-bezier(.22,1,.36,1) both;
-    animation-delay:calc(var(--d,0) * 110ms);
+    animation:chega .5s cubic-bezier(.22,1,.36,1) both;
+    animation-delay:calc(var(--d,0) * 60ms);
   }
+  .hero .hero__h1,.hero .hero__mascote{ animation-delay:0s; }
 
   @supports (animation-timeline:view()){
 
@@ -792,8 +797,8 @@ html.is-puxando-mar body{ user-select:none; }
     }
     /* o mascote também tem o "chega": este se soma a ele em vez de trocar */
     .hero .hero__mascote{
-      animation:chega .95s cubic-bezier(.22,1,.36,1) both,hero-mascote-fica linear both;
-      animation-delay:calc(var(--d,0) * 110ms),0s;
+      animation:chega .5s cubic-bezier(.22,1,.36,1) both,hero-mascote-fica linear both;
+      animation-delay:0s,0s;
       animation-timeline:auto,scroll(root);
       animation-range:normal,0 90vh;
       animation-composition:replace,add;
@@ -1472,8 +1477,8 @@ a.insta-selo:hover{ filter:brightness(1.08); }
 .hero .grifo{ color:var(--sol); }
 
 .hero__sub,
-.pl-abre__texto{ color:rgba(255,255,255,.82); }
-.pl-abre__texto strong{ color:#fff; }
+.pl-abre .pl-abre__texto{ color:rgba(255,255,255,.82); }
+.pl-abre .pl-abre__texto strong{ color:#fff; }
 
 .selos{ color:rgba(255,255,255,.78); }
 .selos strong{ color:#fff; }
