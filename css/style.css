@@ -328,6 +328,15 @@ ul,ol{ margin:0; padding:0; list-style:none; }
   filter:drop-shadow(0 26px 34px rgba(11,46,88,.22));
   /* balança pelo main.js, no relógio do mar (ver balancar()) */
 }
+/* Os dois mascotes que balançam ganham camada própria. Sem ela, cada passo
+   do balanço (30 a 60 por segundo) repintava a imagem inteira COM a sombra
+   de 34px de desfoque, e ainda redecodificava o PNG: 4,7 s de rasterização
+   em 4 s de página no notebook (trace de 04/11). Com a camada, a sombra é
+   pintada uma vez e o balanço vira só transform — caiu pra 0,3 s. O balão e
+   a boia do WhatsApp ficam de fora de propósito: têm texto, e texto girado
+   numa camada pronta perde nitidez; e são pequenos, quase não pesam. */
+.hero__mascote img,
+.chamada__mascote img{ will-change:transform; }
 
 .mascote__aura{
   position:absolute; z-index:0; inset:8% -6% 6%;
